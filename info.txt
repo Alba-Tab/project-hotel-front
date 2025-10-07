@@ -1,0 +1,137 @@
+========================================
+GUÍA COMPLETA PARA EJECUTAR EL PROYECTO ANGULAR
+Proyecto: MaterialM - Hotel Frontend
+========================================
+
+📋 REQUISITOS PREVIOS:
+- Node.js instalado (versión 18 o superior)
+- npm (viene incluido con Node.js)
+- Git (opcional, para control de versiones)
+
+========================================
+🔧 PASOS PARA CONFIGURAR EL PROYECTO:
+========================================
+
+1️⃣ VERIFICAR INSTALACIONES:
+   Verificar versión de Node.js:
+   node --version
+   
+   Verificar versión de npm:
+   npm --version
+
+2️⃣ NAVEGAR AL DIRECTORIO DEL PROYECTO:
+   cd "c:\Users\LENOVO\Desktop\SISTEMAS INF II (Martinez)\Grupal-proy\project-hotel-front"
+
+3️⃣ INSTALAR DEPENDENCIAS:
+   Instalar todas las dependencias del proyecto:
+   npm install
+   
+   Resolver vulnerabilidades de seguridad:
+   npm audit fix
+
+4️⃣ VERIFICAR ANGULAR CLI:
+   Verificar que Angular CLI esté funcionando:
+   npx ng version
+
+5️⃣ INICIAR EL SERVIDOR DE DESARROLLO:
+   Ejecutar el proyecto en modo desarrollo:
+   npm start
+   
+   O alternativamente:
+   ng serve
+
+========================================
+🌐 ACCESO A LA APLICACIÓN:
+========================================
+Una vez que el servidor esté corriendo, la aplicación estará disponible en:
+➜ Local: http://localhost:4200/
+
+El servidor se ejecuta en modo "watch", lo que significa que:
+- Los cambios en el código se reflejan automáticamente
+- No necesitas reiniciar el servidor manualmente
+- La página se recarga automáticamente
+
+========================================
+📝 COMANDOS ÚTILES PARA DESARROLLO:
+========================================
+
+DESARROLLO:
+npm start              # Iniciar servidor de desarrollo
+npm run watch         # Compilar en modo watch
+ng serve --open       # Iniciar servidor y abrir navegador automáticamente
+ng serve --port 4300  # Cambiar puerto si 4200 está ocupado
+
+CONSTRUCCIÓN:
+npm run build         # Compilar para producción
+ng build --prod       # Compilar optimizado para producción
+
+TESTING:
+npm run test          # Ejecutar pruebas unitarias
+npm test              # Ejecutar pruebas (alternativo)
+
+INFORMACIÓN:
+ng version            # Ver versiones de Angular y dependencias
+npm list              # Ver todas las dependencias instaladas
+
+========================================
+🛠️ TECNOLOGÍAS DEL PROYECTO:
+========================================
+- Angular: 20.2.1
+- Angular Material: 20.2.0
+- Node.js: 22.18.0
+- TypeScript: 5.8.3
+- SCSS/Sass para estilos
+- ApexCharts para gráficos
+- Angular Tabler Icons
+- RxJS: 7.8.2
+
+========================================
+📁 ESTRUCTURA DEL PROYECTO:
+========================================
+src/
+├── app/
+│   ├── components/     # Componentes reutilizables
+│   ├── layouts/        # Layouts de la aplicación
+│   ├── pages/          # Páginas de la aplicación
+│   ├── services/       # Servicios Angular
+│   └── pipe/           # Pipes personalizados
+├── assets/             # Recursos estáticos
+└── styles.scss         # Estilos globales
+
+========================================
+🔍 SOLUCIÓN DE PROBLEMAS COMUNES:
+========================================
+
+ERROR: "node: command not found"
+SOLUCIÓN: Instalar Node.js desde https://nodejs.org/
+
+ERROR: Puerto 4200 ocupado
+SOLUCIÓN: ng serve --port 4300
+
+ERROR: Dependencias desactualizadas
+SOLUCIÓN: npm update
+
+ERROR: Cache corrupto
+SOLUCIÓN: 
+- npm cache clean --force
+- Eliminar node_modules/
+- npm install
+
+========================================
+✅ ESTADO ACTUAL DEL PROYECTO:
+========================================
+- ✅ Dependencias instaladas correctamente
+- ✅ Vulnerabilidades de seguridad resueltas
+- ✅ Servidor funcionando en http://localhost:4200/
+- ✅ Modo watch activado
+- ✅ Proyecto listo para desarrollo
+
+========================================
+📞 NOTAS IMPORTANTES:
+========================================
+- Siempre ejecutar comandos desde la raíz del proyecto
+- El servidor debe mantenerse corriendo mientras desarrollas
+- Usar Ctrl+C para detener el servidor
+- Los cambios en archivos .ts, .html, .scss se reflejan automáticamente
+
+
