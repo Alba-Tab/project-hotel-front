@@ -1,0 +1,67 @@
+<mat-card class="cardWithShadow theme-card">
+  <mat-card-header>
+    <mat-card-title class="m-b-0">Introduzca los datos del Hotel</mat-card-title>
+  </mat-card-header>
+  <mat-card-content class="b-t-1">
+    <form>
+      <div class="row">
+        <div class="col-lg-6">
+          <!-- input -->
+          <mat-label class="f-w-600 m-b-8 d-block">Nombre</mat-label>
+          <mat-form-field appearance="outline" class="w-100" color="primary">
+            <input matInput placeholder="nombre del hotel " />
+          </mat-form-field>
+        </div>
+        <div class="col-lg-6">
+          <mat-label class="f-w-600 m-b-8 d-block">Direccion</mat-label>
+          <mat-form-field appearance="outline" class="w-100">
+            <input matInput />
+
+          </mat-form-field>
+        </div>
+        <div class="col-lg-6">
+          <!-- input -->
+          <mat-label class="f-w-600 m-b-8 d-block">Telefono</mat-label>
+          <mat-form-field appearance="outline" class="w-100" color="primary">
+            <input matInput type="number" />
+          </mat-form-field>
+        </div>
+        <div class="col-lg-6">
+          <mat-label class="f-w-600 m-b-8 d-block">Estado</mat-label>
+          <mat-form-field appearance="outline" class="w-100">
+            <mat-select [(value)]="selectedState">
+              @for(option of state; track option.value) {
+              <mat-option [value]="option.value">{{
+                option.viewValue
+                }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+        </div>
+        <!-- <div class="col-lg-6">
+          <mat-label class="f-w-600 m-b-8 d-block">Password</mat-label>
+          <mat-form-field appearance="outline" class="w-100" color="primary">
+            <input matInput type="password" placeholder="your password" />
+          </mat-form-field>
+        </div> -->
+        <!-- <div class="col-lg-6">
+          <mat-label class="f-w-600 m-b-8 d-block">City</mat-label>
+          <mat-form-field appearance="outline" class="w-100">
+            <mat-select [(value)]="selectedCity">
+              @for(option of city; track option.value) {
+              <mat-option [value]="option.value">{{
+                option.viewValue
+                }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+        </div> -->
+      </div>
+
+      <div class="m-t-12">
+        <button mat-flat-button color="primary" class="m-r-8">Submit</button>
+        <button mat-stroked-button color="warn">Cancel</button>
+      </div>
+    </form>
+  </mat-card-content>
+</mat-card>

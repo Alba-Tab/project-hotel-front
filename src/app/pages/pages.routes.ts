@@ -9,6 +9,7 @@ export const PagesRoutes: Routes = [
       title: 'Starter',
       urls: [
         { title: 'Dashboard', url: '/dashboard' },
+        // { title: 'Hoteles', url: '/hoteles' },
         { title: 'Starter' },
       ],
     },

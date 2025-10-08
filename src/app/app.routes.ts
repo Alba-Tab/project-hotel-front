@@ -25,6 +25,26 @@ export const routes: Routes = [
           ),
       },
       {
+        path: 'hoteles',
+        loadChildren: () =>
+          import('./pages/hoteles/hoteles.routes').then(
+            (m) => m.HotelesRoutes
+          ),
+      },
+      // {
+      //   path: '',
+      //   component: BlankComponent,
+      //   children: [
+      //     {
+      //       path: 'hoteles',
+      //       loadChildren: () =>
+      //         import('./pages/hoteles/hoteles.routes').then(
+      //           (m) => m.HotelesRoutes
+      //         ),
+      //     },
+      //   ],
+      // },
+      {
         path: 'extra',
         loadChildren: () =>
           import('./pages/extra/extra.routes').then((m) => m.ExtraRoutes),
