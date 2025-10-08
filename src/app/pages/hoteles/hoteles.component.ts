@@ -6,30 +6,12 @@ import { MaterialModule } from 'src/app/material.module';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatButtonModule } from '@angular/material/button';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
+
+import { HotelService } from '../../services/hotel.service';
+import { Hotel } from '../../interfaces/hotel.interface';
 
 
-
-// table 1
-export interface productsData {
-  id: number;
-  // imagePath: string;
-  uname: string;
-  address: string;
-  phone: string;
-}
-
-const PRODUCT_DATA: productsData[] = [
-  {
-    id: 1,
-    // imagePath: 'assets/images/products/product-1.png',
-    uname: 'hotel blabla',
-    address: "calle viva",
-    phone: '12345',
-  },
-
-
-];
 
 @Component({
   selector: 'app-hoteles',
@@ -47,7 +29,52 @@ const PRODUCT_DATA: productsData[] = [
   // changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HotelesComponent {
-  // table 1
+
   displayedColumns1: string[] = ['assigned', 'name', 'priority', 'budget'];
-  dataSource1 = PRODUCT_DATA;
+  dataSource1: Hotel[] = [];
+
+  constructor(
+    private hotelService: HotelService,
+    private router: Router
+  ) {}
+
+  ngOnInit() {
+    this.cargarHoteles();
+  }
+
+  cargarHoteles() {
+    this.hotelService.getHoteles().subscribe({
+      next: (hoteles) => {
+        this.dataSource1 = hoteles.map(hotel => ({
+          ...hotel,
+          nombre: hotel.nombre,
+          direccion: hotel.direccion,
+          telefono: hotel.telefono
+
+        }));
+      },
+      error: (error) => {
+        console.log('Error al cargar hoteles', error);
+      }
+    });
+  }
+
+  editarHotel(hotel: Hotel) {
+  }
+
+  eliminarHotel(hotel: Hotel) {
+    if (confirm('¿Estás seguro de eliminar este hotel?')) {
+      if (hotel.id) {
+        this.hotelService.deleteHotel(hotel.id).subscribe({
+          next: () => {
+            this.cargarHoteles(); // Recargar la lista
+          },
+          error: (error) => {
+            console.error('Error al eliminar hotel:', error);
+          }
+        });
+      }
+    }
+  }
+
 }
