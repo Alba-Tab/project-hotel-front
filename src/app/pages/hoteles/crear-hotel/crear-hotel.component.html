@@ -1,28 +1,28 @@
 <mat-card class="cardWithShadow theme-card">
+
+  <!-- header -->
   <mat-card-header>
     <mat-card-title class="m-b-0">Introduzca los datos del Hotel</mat-card-title>
   </mat-card-header>
+
+  <!-- body -->
   <mat-card-content class="b-t-1">
+
     <form [formGroup]="hotelForm" (ngSubmit)="onSubmit()">
 
       <div class="row">
-        <div class="col-lg-6">
 
-          <!-- nombre hotel -->
+        <div class="col-lg-6">
           <mat-form-field appearance="outline" class="w-100">
             <mat-label>Nombre del Hotel</mat-label>
             <input matInput formControlName="nombre" placeholder="Ej: Hotel El Paraíso">
             <mat-error *ngIf="hotelForm.get('nombre')?.hasError('required')">
               El nombre es requerido
             </mat-error>
-            <mat-error *ngIf="hotelForm.get('nombre')?.hasError('minlength')">
-              El nombre debe tener al menos 3 caracteres
-            </mat-error>
           </mat-form-field>
         </div>
 
-        <div class="row">
-        <div class="col-12">
+        <div class="col-lg-6">
           <mat-form-field appearance="outline" class="w-100">
             <mat-label>Dirección</mat-label>
             <input matInput formControlName="direccion" placeholder="Ej: Av. Siempre Viva 742, La Paz">
@@ -31,8 +31,10 @@
             </mat-error>
           </mat-form-field>
         </div>
+
       </div>
 
+      <div class="row">
 
         <div class="col-12 col-md-6">
           <mat-form-field appearance="outline" class="w-100">
@@ -43,59 +45,62 @@
             </mat-error>
           </mat-form-field>
         </div>
-
-
-        <!-- <div class="col-lg-6">
-          <mat-label class="f-w-600 m-b-8 d-block">Estado</mat-label>
-          <mat-form-field appearance="outline" class="w-100">
-            <mat-select [(value)]="selectedState">
-              @for(option of state; track option.value) {
-              <mat-option [value]="option.value">{{
-                option.viewValue
-                }}</mat-option>
-              }
-            </mat-select>
-          </mat-form-field>
-        </div> -->
-
-        <div class="row">
         <div class="col-12 col-md-6">
           <mat-form-field appearance="outline" class="w-100">
-            <mat-label>Categoría</mat-label>
-            <mat-select formControlName="categoria">
-              <mat-option *ngFor="let cat of categorias" [value]="cat">
-                {{cat}} estrella{{cat > 1 ? 's' : ''}}
-              </mat-option>
-            </mat-select>
+            <mat-label>Ciudad</mat-label>
+            <input matInput formControlName="ciudad">
+            <mat-error *ngIf="hotelForm.get('ciudad')?.hasError('required')">
+              La ciudad es requerida
+            </mat-error>
           </mat-form-field>
         </div>
 
+      </div>
 
-        <!-- <div class="col-lg-6">
-          <mat-label class="f-w-600 m-b-8 d-block">Password</mat-label>
-          <mat-form-field appearance="outline" class="w-100" color="primary">
-            <input matInput type="password" placeholder="your password" />
-          </mat-form-field>
-        </div> -->
-        <!-- <div class="col-lg-6">
-          <mat-label class="f-w-600 m-b-8 d-block">City</mat-label>
+      <div class="row">
+
+        <div class="col-12 col-md-6">
           <mat-form-field appearance="outline" class="w-100">
-            <mat-select [(value)]="selectedCity">
-              @for(option of city; track option.value) {
+            <mat-label>Pais</mat-label>
+            <input matInput formControlName="pais" >
+            <mat-error *ngIf="hotelForm.get('pais')?.hasError('required')">
+              El pais es requerido
+            </mat-error>
+          </mat-form-field>
+        </div>
+
+        <div class="col-lg-6">
+          <mat-label class="f-w-600 m-b-8 d-block">Estado</mat-label>
+          <mat-form-field appearance="outline" class="w-100">
+            <mat-select formControlName="estado">
+              @for(option of estados; track option.value) {
               <mat-option [value]="option.value">{{
                 option.viewValue
                 }}</mat-option>
               }
             </mat-select>
+          <mat-error *ngIf="hotelForm.get('estado')?.hasError('required')">
+            El estado es requerido
+          </mat-error>
           </mat-form-field>
-        </div> -->
+        </div>
+
       </div>
 
+      <div class="row">
       <div class="m-t-12">
-        <button mat-flat-button color="primary" class="m-r-8">Submit</button>
-        <button mat-stroked-button color="warn">Cancel</button>
+        <button type="submit" mat-flat-button color="primary" class="m-r-8" [disabled]="!hotelForm.valid">
+          Submit
+        </button>
+        <button type="button" mat-stroked-button color="warn" (click)="cancelar()">
+          Cancel
+        </button>
       </div>
+
      </div>
+
     </form>
+
+
   </mat-card-content>
 </mat-card>

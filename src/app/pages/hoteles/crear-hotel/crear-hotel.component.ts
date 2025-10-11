@@ -15,7 +15,7 @@ import { Router } from '@angular/router';
 import { Hotel } from 'src/app/interfaces/hotel.interface';
 
 interface Estado {
-  value: boolean;
+  value: string;
   viewValue: string;
 }
 
@@ -44,12 +44,18 @@ export class CrearHotelComponent {
 
   hotelForm: FormGroup;
 
+  // nombre
+  // telefono
+  // direccion
+  // ciudad
+  // pais
+  // estado
+
   estados: Estado[] = [
-    { value: true, viewValue: 'Activo' },
-    { value: false, viewValue: 'Inactivo' },
+    { value: 'Activo', viewValue: 'Activo' },
+    { value: 'Inactivo', viewValue: 'Inactivo' },
   ]
 
-  categorias = [1,2,3,4,5];
 
   constructor(
     private fb: FormBuilder,
@@ -58,10 +64,12 @@ export class CrearHotelComponent {
   ) {
     this.hotelForm = this.fb.group({
       nombre: ['', [Validators.required]],
-      direccion: ['', [Validators.required]],
       telefono: ['', [Validators.required]],
-      categoria: [4, [Validators.required, Validators.min(1), Validators.max(5)]],
-      estado: [true, [Validators.required]],
+      direccion: ['', [Validators.required]],
+      ciudad: ['', [Validators.required]],
+      pais: ['', [Validators.required]],
+
+      estado: ['Activo', [Validators.required]],
     })
   }
 
@@ -72,7 +80,7 @@ export class CrearHotelComponent {
       this.hotelService.createHotel(hotel).subscribe({
         next: (response) => {
           console.log('hotel creado');
-          this.router.navigate(['/hoteles']);
+          this.router.navigate(['/hoteles/hotel']);
         },
         error: (error) => {
           console.log('Error al crear hotel: ', error);
@@ -84,6 +92,6 @@ export class CrearHotelComponent {
   }
 
   cancelar() {
-    this.router.navigate(['/hoteles']);
+    this.router.navigate(['/hoteles/hotel']);
   }
 }

@@ -21,14 +21,14 @@ export class HotelService {
   }
 
   createHotel(hotel: Hotel): Observable<Hotel> {
-    return this.http.post<Hotel>(`${this.url}/hoteles`, hotel);
+    return this.http.post<Hotel>(`${this.url}/hoteles/`, hotel);
   }
 
   updateHotel(id: number, hotel: Partial<Hotel>): Observable<Hotel> {
-    return this.http.put<Hotel>(`${this.url}/hoteles/${id}`, hotel);
+    return this.http.put<Hotel>(`${this.url}/hoteles/${id}/`, hotel);
   }
 
   deleteHotel(id: number): Observable<void> {
-    return this.http.delete<void>(`${this.url}/hoteles/${id}`);
+    return this.http.delete<void>(`${this.url}/hoteles/${id}/`);
   }
 }
