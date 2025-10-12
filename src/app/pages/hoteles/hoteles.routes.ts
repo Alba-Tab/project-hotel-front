@@ -5,16 +5,16 @@ import { HotelesComponent } from './hoteles.component';
 
 export const HotelesRoutes: Routes = [
   {
-    path: '',
-    children: [
-      {
-        path: 'hotel',
-        component: HotelesComponent,
-      },
-      {
-        path: 'crearhotel',
-        component: CrearHotelComponent,
-      },
-    ],
+    // path: '',
+    // children: [
+    //   {
+    //     path: 'hotel',
+    //     component: HotelesComponent,
+    //   },
+    //   {
+    //     path: 'crearhotel',
+    //     component: CrearHotelComponent,
+    //   },
+    // ],
   },
 ];

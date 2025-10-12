@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, Inject } from '@angular/core';
 
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
@@ -13,6 +13,7 @@ import { Value } from 'sass';
 import { HotelService } from 'src/app/services/hotel.service';
 import { Router } from '@angular/router';
 import { Hotel } from 'src/app/interfaces/hotel.interface';
+import { MatDialogModule, MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 
 interface Estado {
   value: string;
@@ -23,7 +24,6 @@ interface Estado {
 @Component({
   selector: 'app-crear-hotel',
   imports: [
-
     CommonModule,
     FormsModule,
 
@@ -36,6 +36,7 @@ interface Estado {
     MatCardModule,
     MatInputModule,
     MatCheckboxModule,
+    MatDialogModule,
   ],
   templateUrl: './crear-hotel.component.html',
   // changeDetection: ChangeDetectionStrategy.OnPush,
@@ -43,13 +44,6 @@ interface Estado {
 export class CrearHotelComponent {
 
   hotelForm: FormGroup;
-
-  // nombre
-  // telefono
-  // direccion
-  // ciudad
-  // pais
-  // estado
 
   estados: Estado[] = [
     { value: 'Activo', viewValue: 'Activo' },
@@ -60,7 +54,9 @@ export class CrearHotelComponent {
   constructor(
     private fb: FormBuilder,
     private hotelService: HotelService,
-    private router: Router
+    private router: Router,
+    private dialogRef: MatDialogRef<CrearHotelComponent>,
+    @Inject(MAT_DIALOG_DATA) public data: any
   ) {
     this.hotelForm = this.fb.group({
       nombre: ['', [Validators.required]],
@@ -79,8 +75,9 @@ export class CrearHotelComponent {
 
       this.hotelService.createHotel(hotel).subscribe({
         next: (response) => {
-          console.log('hotel creado');
-          this.router.navigate(['/hoteles/hotel']);
+          console.log('hotel creado', response);
+          this.dialogRef.close(response);
+          // this.router.navigate(['/hoteles/hotel']);
         },
         error: (error) => {
           console.log('Error al crear hotel: ', error);
@@ -92,6 +89,7 @@ export class CrearHotelComponent {
   }
 
   cancelar() {
-    this.router.navigate(['/hoteles/hotel']);
+    this.dialogRef.close();
+    // this.router.navigate(['/hoteles/hotel']);
   }
 }

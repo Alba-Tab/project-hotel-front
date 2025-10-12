@@ -26,10 +26,24 @@ export const routes: Routes = [
       },
       {
         path: 'hoteles',
-        loadChildren: () =>
-          import('./pages/hoteles/hoteles.routes').then(
-            (m) => m.HotelesRoutes
+        loadComponent: () =>
+          import('./pages/hoteles/hoteles.component').then(
+            (m) => m.HotelesComponent
           ),
+      },
+      {
+        path: 'habitaciones',
+        loadComponent: () =>
+          import('./pages/habitaciones/habitaciones.component').then(
+            (m) => m.HabitacionesComponent
+          ),
+        // data: {
+        //   title: 'Habitaciones',
+        //   urls: [
+        //     { title: 'Dashboard', url: '/dashboard' },
+        //     { title: 'Habitaciones' },
+        //   ],
+        // },
       },
       // {
       //   path: '',

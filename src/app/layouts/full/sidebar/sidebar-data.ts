@@ -12,22 +12,13 @@ export const navItems: NavItem[] = [
   {
     displayName: 'Hoteles',
     iconName: 'solar:widget-add-line-duotone',
-    route: '/hoteles/hotel',
-    // children: [
-    //   {
-    //     displayName: 'Listar Hoteles',
-    //     iconName: 'solar:round-alt-arrow-right-line-duotone',
-    //     route: '/hoteles/hotel',
-    //     chipClass: 'bg-light-secondary text-secondary',
-    //   },
-    //   {
-    //     displayName: 'Crear Hotel',
-    //     iconName: 'solar:round-alt-arrow-right-line-duotone',
-    //     route: '/hoteles/crearhotel',
-    //     chipClass: 'bg-light-secondary text-secondary',
-    //   },
+    route: '/hoteles',
 
-    // ],
+  },
+  {
+    displayName: 'Habitaciones',
+    iconName: 'solar:lock-keyhole-minimalistic-line-duotone',
+    route: '/habitaciones',
   },
 
   // {

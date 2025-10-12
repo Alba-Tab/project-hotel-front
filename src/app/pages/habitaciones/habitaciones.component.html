@@ -1,0 +1,92 @@
+
+<mat-card class="cardWithShadow">
+  <mat-card-content>
+    <mat-card-title>Habitaciones</mat-card-title>
+
+    <div class="table-responsive">
+      <table mat-table [dataSource]="datos" class="w-100">
+        <!-- Position Column -->
+        <ng-container matColumnDef="numero">
+          <th mat-header-cell *matHeaderCellDef class="f-w-600 f-s-14 p-l-0"> Numero </th>
+          <td mat-cell *matCellDef="let element" class="p-l-0">
+            <div class="d-flex align-items-center">
+              <div class="m-l-16">
+                <h6 class="f-s-14 f-w-600"> {{ element.numero }} </h6>
+              </div>
+            </div>
+          </td>
+        </ng-container>
+
+        <!-- Name Column -->
+        <ng-container matColumnDef="descripcion">
+          <th mat-header-cell *matHeaderCellDef class="f-w-600 f-s-14"> Descripcion </th>
+          <td mat-cell *matCellDef="let element">
+            <span class="text-dark f-w-600">{{ element.descripcion }} </span>
+          </td>
+        </ng-container>
+
+        <!-- Weight Column -->
+        <ng-container matColumnDef="capacidad">
+          <th mat-header-cell *matHeaderCellDef class="f-w-600 f-s-14">
+            Capacidad
+          </th>
+          <td mat-cell *matCellDef="let element">
+            <span class="text-dark f-w-600">
+              {{ element.capacidad }}
+            </span>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="precio">
+          <th mat-header-cell *matHeaderCellDef class="f-w-600 f-s-14">
+            Precio noche
+          </th>
+          <td mat-cell *matCellDef="let element">
+            <span class="bg-light-error text-error rounded f-w-600 p-6 p-y-4 f-s-12">
+              {{ element.precio_noche | titlecase}}
+            </span>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="estado">
+          <th mat-header-cell *matHeaderCellDef class="f-w-600 f-s-14">
+            Estado
+          </th>
+          <td mat-cell *matCellDef="let element">
+            <span class="text-dark f-w-600">
+              {{ element.estado }}
+            </span>
+          </td>
+        </ng-container>
+
+        <!-- Symbol Column -->
+        <ng-container matColumnDef="budget">
+          <th mat-header-cell *matHeaderCellDef class="f-w-600 f-s-14"></th>
+          <td mat-cell *matCellDef="let element">
+            <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="Example icon-button with a menu">
+              <mat-icon>more_vert</mat-icon>
+            </button>
+            <mat-menu #menu="matMenu">
+              <button mat-menu-item>
+                <mat-icon>edit</mat-icon> <span>Edit</span>
+              </button>
+              <button mat-menu-item>
+                <mat-icon>delete</mat-icon> <span>Delete</span>
+              </button>
+            </mat-menu>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+
+      </table>
+
+      <button mat-raised-button color="primary" routerLink="/habitaciones/crear" >
+        <mat-icon>add</mat-icon>
+        <span>Crear Habitación</span>
+      </button>
+
+    </div>
+  </mat-card-content>
+</mat-card>

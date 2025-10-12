@@ -10,11 +10,14 @@ import { Router, RouterModule } from '@angular/router';
 
 import { HotelService } from '../../services/hotel.service';
 import { Hotel } from '../../interfaces/hotel.interface';
+import { MatDialogModule, MatDialog } from '@angular/material/dialog';
+import { CrearHotelComponent } from './crear-hotel/crear-hotel.component';
 
 
 
 @Component({
   selector: 'app-hoteles',
+  standalone: true,
   imports: [
     MatTableModule,
     CommonModule,
@@ -23,7 +26,9 @@ import { Hotel } from '../../interfaces/hotel.interface';
     MatIconModule,
     MatMenuModule,
     MatButtonModule,
-    RouterModule
+    RouterModule,
+
+    MatDialogModule,
   ],
   templateUrl: './hoteles.component.html',
   // changeDetection: ChangeDetectionStrategy.OnPush,
@@ -35,11 +40,29 @@ export class HotelesComponent {
 
   constructor(
     private hotelService: HotelService,
-    private router: Router
+    private router: Router,
+    private dialog: MatDialog,
   ) {}
 
   ngOnInit() {
     this.cargarHoteles();
+  }
+
+  abrirModal() {
+    const dialogRef = this.dialog.open(CrearHotelComponent, {
+      width: '600px',
+      height: 'auto',
+      disableClose: false,
+      data: {titulo: 'Crear Hotel'}
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        console.log('Hotel creado', result);
+        this.cargarHoteles();
+      }
+    })
+
   }
 
   cargarHoteles() {
@@ -60,6 +83,7 @@ export class HotelesComponent {
   }
 
   editarHotel(hotel: Hotel) {
+
   }
 
   eliminarHotel(hotel: Hotel) {
