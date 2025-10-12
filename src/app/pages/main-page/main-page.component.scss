@@ -1,0 +1,67 @@
+// Sección hero con gradiente
+.hero-section {
+  min-height: 60vh;
+  display: flex;
+  align-items: center;
+}
+
+// Efecto hover en cards
+.cardWithShadow {
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12);
+  }
+}
+
+// Plan destacado
+.highlighted-plan {
+  border: 2px solid var(--mat-sys-primary);
+  transform: scale(1.05);
+
+  @media (max-width: 991px) {
+    transform: scale(1);
+  }
+}
+
+// Ribbon para el plan más popular
+.ribbon {
+  position: absolute;
+  top: 20px;
+  right: -35px;
+  padding: 8px 40px;
+  transform: rotate(45deg);
+  z-index: 1;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+// Iconos
+.icon-20 {
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
+}
+
+.icon-32 {
+  font-size: 32px;
+  width: 32px;
+  height: 32px;
+}
+
+// Secciones con padding
+.about-section,
+.pricing-section,
+.cta-section {
+  position: relative;
+}
+
+// Footer oscuro
+.footer-section {
+  background-color: var(--mat-sys-surface-container-highest);
+}
+
+// Smooth scroll
+html {
+  scroll-behavior: smooth;
+}

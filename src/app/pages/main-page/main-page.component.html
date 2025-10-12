@@ -1,0 +1,247 @@
+<div class="blank-layout-container bg-light">
+  <div class="position-relative w-100">
+    <!-- Hero Section -->
+    <section class="hero-section bg-gredient">
+      <div class="container-fluid">
+        <div class="row justify-content-center">
+          <div class="col-lg-10 col-xl-8">
+            <div class="text-center p-y-48">
+              <img
+                src="./assets/images/logos/logo.svg"
+                class="align-middle m-b-32"
+                alt="logo"
+                width="200"
+              />
+              <h1 class="mat-headline-3 m-b-24">Sistema de Gestión Hotelera</h1>
+              <p
+                class="mat-body-1 text-muted m-b-32"
+                style="max-width: 600px; margin-left: auto; margin-right: auto"
+              >
+                Potencia tu negocio hotelero con nuestra plataforma integral.
+                Gestiona reservas, habitaciones y clientes de manera eficiente.
+              </p>
+              <div class="d-flex justify-content-center gap-16">
+                <button
+                  mat-flat-button
+                  color="primary"
+                  class="p-x-32 p-y-12"
+                  (click)="scrollToSection('planes')"
+                >
+                  Ver Planes
+                </button>
+                <button
+                  mat-stroked-button
+                  class="p-x-32 p-y-12"
+                  (click)="scrollToSection('about')"
+                >
+                  Conocer Más
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="about-section p-y-48">
+      <div class="container-fluid">
+        <div class="row justify-content-center">
+          <div class="col-lg-10 col-xl-8">
+            <div class="text-center m-b-48">
+              <h2 class="mat-headline-4 m-b-16">Sobre Nosotros</h2>
+              <p class="mat-body-1 text-muted">
+                Transformando la gestión hotelera con tecnología de vanguardia
+              </p>
+            </div>
+
+            <div class="row">
+              <div class="col-md-4 m-b-24">
+                <mat-card class="cardWithShadow h-100 text-center">
+                  <mat-card-content class="p-32">
+                    <div
+                      class="rounded-circle d-flex align-items-center justify-content-center m-x-auto m-b-16 bg-light-primary"
+                      style="width: 64px; height: 64px"
+                    >
+                      <mat-icon color="primary" class="icon-32">speed</mat-icon>
+                    </div>
+                    <h3 class="mat-subtitle-1 f-w-600 m-b-12">
+                      Rápido y Eficiente
+                    </h3>
+                    <p class="mat-body-2 text-muted m-0">
+                      Agiliza tus procesos y ahorra tiempo en la gestión diaria
+                      de tu hotel
+                    </p>
+                  </mat-card-content>
+                </mat-card>
+              </div>
+
+              <div class="col-md-4 m-b-24">
+                <mat-card class="cardWithShadow h-100 text-center">
+                  <mat-card-content class="p-32">
+                    <div
+                      class="rounded-circle d-flex align-items-center justify-content-center m-x-auto m-b-16 bg-light-accent"
+                      style="width: 64px; height: 64px"
+                    >
+                      <mat-icon color="accent" class="icon-32"
+                        >verified_user</mat-icon
+                      >
+                    </div>
+                    <h3 class="mat-subtitle-1 f-w-600 m-b-12">
+                      Seguro y Confiable
+                    </h3>
+                    <p class="mat-body-2 text-muted m-0">
+                      Tus datos protegidos con los más altos estándares de
+                      seguridad
+                    </p>
+                  </mat-card-content>
+                </mat-card>
+              </div>
+
+              <div class="col-md-4 m-b-24">
+                <mat-card class="cardWithShadow h-100 text-center">
+                  <mat-card-content class="p-32">
+                    <div
+                      class="rounded-circle d-flex align-items-center justify-content-center m-x-auto m-b-16 bg-light-success"
+                      style="width: 64px; height: 64px"
+                    >
+                      <mat-icon style="color: #00ceb6" class="icon-32"
+                        >support_agent</mat-icon
+                      >
+                    </div>
+                    <h3 class="mat-subtitle-1 f-w-600 m-b-12">Soporte 24/7</h3>
+                    <p class="mat-body-2 text-muted m-0">
+                      Nuestro equipo siempre disponible para ayudarte cuando lo
+                      necesites
+                    </p>
+                  </mat-card-content>
+                </mat-card>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Pricing Section -->
+    <section id="planes" class="pricing-section p-y-48 bg-light">
+      <div class="container-fluid">
+        <div class="row justify-content-center">
+          <div class="col-lg-10 col-xl-10">
+            <div class="text-center m-b-48">
+              <h2 class="mat-headline-4 m-b-16">Planes y Precios</h2>
+              <p class="mat-body-1 text-muted">
+                Elige el plan que mejor se adapte a las necesidades de tu
+                negocio
+              </p>
+            </div>
+
+            <div class="row justify-content-center">
+              @for(plan of plans; track plan.name) {
+              <div class="col-lg-4 col-md-6 m-b-24">
+                <mat-card
+                  class="cardWithShadow h-100 position-relative"
+                  [ngClass]="{ 'highlighted-plan': plan.highlighted }"
+                >
+                  @if(plan.highlighted) {
+                  <div class="ribbon bg-primary text-white">
+                    <span class="f-s-12 f-w-600">MÁS POPULAR</span>
+                  </div>
+                  }
+
+                  <mat-card-content class="p-32">
+                    <div class="text-center">
+                      <h3 class="mat-headline-6 m-b-16">{{ plan.name }}</h3>
+                      <div class="m-b-24">
+                        <span
+                          class="mat-headline-3 f-w-700"
+                          [style.color]="'var(--mat-sys-' + plan.color + ')'"
+                        >
+                          ${{ plan.price }}
+                        </span>
+                        <span class="mat-body-1 text-muted"
+                          >/ {{ plan.period }}</span
+                        >
+                      </div>
+                    </div>
+
+                    <div class="m-b-24">
+                      @for(feature of plan.features; track feature) {
+                      <div class="d-flex align-items-start m-b-12">
+                        <mat-icon
+                          [color]="plan.color"
+                          class="icon-20 m-r-8"
+                          style="margin-top: 2px"
+                        >
+                          check_circle
+                        </mat-icon>
+                        <span class="mat-body-2">{{ feature }}</span>
+                      </div>
+                      }
+                    </div>
+
+                    <button
+                      mat-flat-button
+                      [color]="plan.highlighted ? 'primary' : 'accent'"
+                      class="w-100"
+                      (click)="goToRegister()"
+                    >
+                      Suscribirse
+                    </button>
+                  </mat-card-content>
+                </mat-card>
+              </div>
+              }
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta-section p-y-48">
+      <div class="container-fluid">
+        <div class="row justify-content-center">
+          <div class="col-lg-8 col-xl-6">
+            <mat-card class="cardWithShadow bg-primary text-white">
+              <mat-card-content class="p-48 text-center">
+                <h2 class="mat-headline-5 m-b-16 text-white">
+                  ¿Listo para comenzar?
+                </h2>
+                <p class="mat-body-1 m-b-32 text-white" style="opacity: 0.9">
+                  Registra tu empresa ahora y comienza a disfrutar de todas las
+                  ventajas
+                </p>
+                <button
+                  mat-flat-button
+                  class="bg-white p-x-48 p-y-12"
+                  style="color: var(--mat-sys-primary)"
+                  (click)="goToRegister()"
+                >
+                  <mat-icon class="m-r-8">business</mat-icon>
+                  Registrar Empresa
+                </button>
+              </mat-card-content>
+            </mat-card>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer-section p-y-32 bg-dark">
+      <div class="container-fluid">
+        <div class="row justify-content-center">
+          <div class="col-lg-10">
+            <div class="text-center">
+              <p class="mat-body-2 m-0" style="color: rgba(255, 255, 255, 0.7)">
+                © 2025 Sistema de Gestión Hotelera. Todos los derechos
+                reservados.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </footer>
+  </div>
+</div>
