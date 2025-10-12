@@ -23,35 +23,35 @@ export class ApiService {
    * GET - Obtener un registro por ID
    */
   obtener<T>(endpoint: string, id: string | number): Observable<T> {
-    return this.http.get<T>(`${this.urlBase}/${endpoint}/${id}`);
+    return this.http.get<T>(`${this.urlBase}/${endpoint}/${id}/`);
   }
 
   /**
    * POST - Crear nuevo registro
    */
   crear<T>(endpoint: string, datos: any): Observable<T> {
-    return this.http.post<T>(`${this.urlBase}/${endpoint}`, datos);
+    return this.http.post<T>(`${this.urlBase}/${endpoint}/`, datos);
   }
 
   /**
    * PUT - Editar registro completo
    */
   editar<T>(endpoint: string, id: string | number, datos: any): Observable<T> {
-    return this.http.put<T>(`${this.urlBase}/${endpoint}/${id}`, datos);
+    return this.http.put<T>(`${this.urlBase}/${endpoint}/${id}/`, datos);
   }
 
   /**
    * PATCH - Actualizar parcialmente
    */
   actualizar<T>(endpoint: string, id: string | number, datos: any): Observable<T> {
-    return this.http.patch<T>(`${this.urlBase}/${endpoint}/${id}`, datos);
+    return this.http.patch<T>(`${this.urlBase}/${endpoint}/${id}/`, datos);
   }
 
   /**
    * DELETE - Eliminar registro
    */
   eliminar<T>(endpoint: string, id: string | number): Observable<T> {
-    return this.http.delete<T>(`${this.urlBase}/${endpoint}/${id}`);
+    return this.http.delete<T>(`${this.urlBase}/${endpoint}/${id}/`);
   }
 
   /**
@@ -67,7 +67,7 @@ export class ApiService {
       });
     }
 
-    return this.http.post<T>(`${this.urlBase}/${endpoint}`, formData);
+    return this.http.post<T>(`${this.urlBase}/${endpoint}/`, formData);
   }
 
   /**

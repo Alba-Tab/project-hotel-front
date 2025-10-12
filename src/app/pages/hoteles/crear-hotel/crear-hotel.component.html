@@ -2,7 +2,10 @@
 
   <!-- header -->
   <mat-card-header>
-    <mat-card-title class="m-b-0">Introduzca los datos del Hotel</mat-card-title>
+    <mat-card-title class="m-b-0">
+      {{isEditMode ? 'Editar Hotel' : 'Crear Nuevo Hotel'}}
+
+    </mat-card-title>
   </mat-card-header>
 
   <!-- body -->
@@ -89,11 +92,21 @@
 
       <div class="row">
       <div class="m-t-12">
-        <button type="submit" mat-flat-button color="primary" class="m-r-8" [disabled]="!hotelForm.valid">
-          Submit
+        <button
+          type="submit"
+          mat-flat-button
+          color="primary" class="m-r-8"
+          [disabled]="!hotelForm.valid"
+          (click)="onSubmit()"
+        >
+          {{ isEditMode ? 'Actualizar Hotel' : 'Crear Hotel' }}
         </button>
-        <button type="button" mat-stroked-button color="warn" (click)="cancelar()">
-          Cancel
+        <button
+          type="button"
+          mat-stroked-button color="warn"
+          (click)="cancelar()"
+        >
+          Cancelar
         </button>
       </div>
 

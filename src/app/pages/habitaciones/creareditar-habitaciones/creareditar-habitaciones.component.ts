@@ -1,5 +1,4 @@
 import { Component, Inject } from '@angular/core';
-
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatSelectModule } from '@angular/material/select';
@@ -9,18 +8,18 @@ import { MatInputModule } from '@angular/material/input';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatRadioModule } from '@angular/material/radio';
 import { CommonModule } from '@angular/common';
-import { HotelService } from 'src/app/services/hotel.service';
-import { Hotel } from 'src/app/interfaces/hotel.interface';
 import { MatDialogModule, MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { ApiService } from 'src/app/services/api.service';
+
+
 
 interface Estado {
   value: string;
   viewValue: string;
 }
 
-
 @Component({
-  selector: 'app-crear-hotel',
+  selector: 'app-creareditar-habitaciones',
   imports: [
     CommonModule,
     FormsModule,
@@ -36,52 +35,53 @@ interface Estado {
     MatCheckboxModule,
     MatDialogModule,
   ],
-  templateUrl: './crear-hotel.component.html',
-  // changeDetection: ChangeDetectionStrategy.OnPush,
+  templateUrl: './creareditar-habitaciones.component.html',
 })
-export class CrearHotelComponent {
+export class CreareditarHabitacionesComponent {
 
-  hotelForm: FormGroup;
+  habitacionForm: FormGroup;
   isEditMode = false;
-  hotelId?: number;
+  habitacionId?: number;
 
   estados: Estado[] = [
     { value: 'Activo', viewValue: 'Activo' },
     { value: 'Inactivo', viewValue: 'Inactivo' },
-  ]
+  ];
 
 
   constructor(
     private fb: FormBuilder,
-    private hotelService: HotelService,
-    private dialogRef: MatDialogRef<CrearHotelComponent>,
+    private apiService: ApiService,
+    private dialogRef: MatDialogRef<CreareditarHabitacionesComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any
   ) {
 
-    this.isEditMode = !!data?.hotel;
-    this.hotelId = data?.hotel?.id;
+    this.isEditMode = !!data?.habitacion;
+    this.habitacionId = data?.habitacion?.id;
 
-    this.hotelForm = this.fb.group({
-      nombre: [data?.hotel?.nombre || '', [Validators.required]],
-      telefono: [data?.hotel?.telefono ||'', [Validators.required]],
-      direccion: [data?.hotel?.direccion ||'', [Validators.required]],
-      ciudad: [data?.hotel?.ciudad ||'', [Validators.required]],
-      pais: [data?.hotel?.pais ||'', [Validators.required]],
-      estado: [data?.hotel?.estado ||'Activo', [Validators.required]],
+    this.habitacionForm = this.fb.group({
+      hotel: [data?.habitacion?.hotel || '', [Validators.required]],
+      numero: [data?.habitacion?.numero || '', [Validators.required]],
+      descripcion: [data?.habitacion?.descripcion ||'', [Validators.required]],
+      capacidad: [data?.habitacion?.capacidad ||'', [Validators.required]],
+      precio_noche: [data?.habitacion?.precio_noche ||'', [Validators.required]],
+      estado: [data?.habitacion?.estado ||'Activo', [Validators.required]],
+      tamanio: [data?.habitacion?.tamanio ||'', [Validators.required]],
+      tipo: [data?.habitacion?.tipo ||'', [Validators.required]],
     })
   }
 
   onSubmit() {
-    if (this.hotelForm.valid) {
-      const hotel: Hotel = this.hotelForm.value;
+    if (this.habitacionForm.valid) {
+      const habitacion = this.habitacionForm.value;
 
       const operation = this.isEditMode
-        ? this.hotelService.updateHotel(this.hotelId!, hotel)
-        : this.hotelService.createHotel(hotel);
+        ? this.apiService.actualizar('habitaciones', this.habitacionId!, habitacion)
+        : this.apiService.crear('habitaciones', habitacion);
 
       operation.subscribe({
         next: (response) => {
-          console.log(`Hotel ${this.isEditMode ? 'actualizado':'creado'}:`, response);
+          console.log(`Habitacion ${this.isEditMode ? 'actualizado':'creado'}:`, response);
           this.dialogRef.close(response);
         },
         error: (error) => {
@@ -89,16 +89,7 @@ export class CrearHotelComponent {
         }
       })
 
-      // this.hotelService.createHotel(hotel).subscribe({
-      //   next: (response) => {
-      //     console.log('hotel creado', response);
-      //     this.dialogRef.close(response);
-      //     // this.router.navigate(['/hoteles/hotel']);
-      //   },
-      //   error: (error) => {
-      //     console.log('Error al crear hotel: ', error);
-      //   }
-      // });
+
     } else {
       console.log('Formulario invalido');
     }
@@ -106,6 +97,7 @@ export class CrearHotelComponent {
 
   cancelar() {
     this.dialogRef.close();
-    // this.router.navigate(['/hoteles/hotel']);
+    // this.router.navigate(['/habitaciones/habitacion']);
   }
+
 }

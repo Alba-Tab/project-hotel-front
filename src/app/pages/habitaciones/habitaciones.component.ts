@@ -6,9 +6,11 @@ import { MaterialModule } from 'src/app/material.module';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatButtonModule } from '@angular/material/button';
-import { Router, RouterModule } from '@angular/router';
+import { RouterModule } from '@angular/router';
 
 import { ApiService } from '../../services/api.service'
+import { CreareditarHabitacionesComponent } from './creareditar-habitaciones/creareditar-habitaciones.component';
+import { MatDialogModule, MatDialog } from '@angular/material/dialog';
 
 
 @Component({
@@ -22,7 +24,9 @@ import { ApiService } from '../../services/api.service'
     MatIconModule,
     MatMenuModule,
     MatButtonModule,
-    RouterModule
+    RouterModule,
+
+    MatDialogModule,
   ],
   templateUrl: './habitaciones.component.html',
 })
@@ -34,7 +38,7 @@ export class HabitacionesComponent implements OnInit {
   private endpoint: string = 'habitaciones/';
   constructor(
       private apiService: ApiService,
-      private router: Router,
+      private dialog: MatDialog,
     ) {
       // console.log('HabitacionesComponent constructor');
     }
@@ -44,46 +48,74 @@ export class HabitacionesComponent implements OnInit {
       this.cargarHabitaciones();
     }
 
-    cargarHabitaciones() {
+   abrirModal() {
+       const dialogRef = this.dialog.open(CreareditarHabitacionesComponent, {
+         width: '600px',
+         height: 'auto',
+         disableClose: false,
+         data: {titulo: 'Crear Habitacion'}
+       });
 
-      this.apiService.listar( this.endpoint ).subscribe({
-        next: (habitaciones: any) => {
-          this.datos = habitaciones.map((habitacion: any) => ({
-            ...habitacion,
-            numero: habitacion.numero,
-            descripcion: habitacion.descripcion,
-            capacidad: habitacion.capacidad,
-            precio_noche: habitacion.precio_noche,
-            estado: habitacion.estado,
-            tamanio: habitacion.tamanio,
-            tipo: habitacion.tipo
-          }));
-          console.log('get funcionando')
-        },
-        error: (error) => {
-          console.log('Error al cargar habitaciones', error);
-        }
-      });
+       dialogRef.afterClosed().subscribe(result => {
+         if (result) {
+           console.log('Habitacion creado', result);
+           this.cargarHabitaciones();
+         }
+       })
 
-    }
+     }
 
-    // editarHabitacion(habitacion: Habitacion) {
+     cargarHabitaciones() {
+       this.apiService.listar('habitaciones/').subscribe({
+         next: (habitaciones: any) => {
+           this.datos = habitaciones.map((habitacion: any) => ({
+             ...habitacion,
+             numero: habitacion.numero,
+             descripcion: habitacion.descripcion,
+             capacidad: habitacion.capacidad,
+             precio_noche: habitacion.precio_noche,
+             tamanio: habitacion.tamanio,
+             tipo: habitacion.tipo,
+             estado: habitacion.estado,
+           }));
+         },
+         error: (error) => {
+           console.log('Error al cargar habitaciones', error);
+         }
+       });
+     }
 
-    // }
+     editarHabitacion(habitacion: any) {
+       const dialogRef = this.dialog.open(CreareditarHabitacionesComponent, {
+         width: '600px',
+         height: 'auto',
+         disableClose: false,
+         data: {
+           habitacion: habitacion,
+           titulo: 'Editar Habitacion'
+         }
+       });
 
-    // eliminarHabitacion(habitacion: Habitacion) {
-    //   if (confirm('¿Estás seguro de eliminar este habitacion?')) {
-    //     if (habitacion.id) {
-    //       this.apiService.deleteHabitacion(habitacion.id).subscribe({
-    //         next: () => {
-    //           this.cargarHabitaciones(); // Recargar la lista
-    //         },
-    //         error: (error) => {
-    //           console.error('Error al eliminar habitacion:', error);
-    //         }
-    //       });
-    //     }
-    //   }
-    // }
+       dialogRef.afterClosed().subscribe(result => {
+         if (result) {
+           this.cargarHabitaciones();
+         }
+       })
+     }
+
+     eliminarHabitacion(habitacion: any) {
+       if (confirm('¿Estás seguro de eliminar este habitacion?')) {
+         if (habitacion.id) {
+           this.apiService.eliminar( 'habitaciones', habitacion.id).subscribe({
+             next: () => {
+               this.cargarHabitaciones(); // Recargar la lista
+             },
+             error: (error) => {
+               console.error('Error al eliminar habitacion:', error);
+             }
+           });
+         }
+       }
+     }
 
 }

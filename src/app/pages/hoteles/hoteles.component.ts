@@ -83,7 +83,21 @@ export class HotelesComponent {
   }
 
   editarHotel(hotel: Hotel) {
+    const dialogRef = this.dialog.open(CrearHotelComponent, {
+      width: '600px',
+      height: 'auto',
+      disableClose: false,
+      data: {
+        hotel: hotel,
+        titulo: 'Editar Hotel'
+      }
+    });
 
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.cargarHoteles();
+      }
+    })
   }
 
   eliminarHotel(hotel: Hotel) {
