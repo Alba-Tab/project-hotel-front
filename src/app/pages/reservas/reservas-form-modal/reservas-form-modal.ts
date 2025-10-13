@@ -1,0 +1,168 @@
+import { Component, Inject, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import { MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatNativeDateModule } from '@angular/material/core';
+import { ApiService } from 'src/app/services/api.service';
+
+@Component({
+  selector: 'app-reservas-form-modal',
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    MatDialogModule,
+    MatButtonModule,
+    MatIconModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatSelectModule,
+    MatDatepickerModule,
+    MatNativeDateModule
+  ],
+  templateUrl: './reservas-form-modal.html',
+  styleUrl: './reservas-form-modal.scss'
+})
+export class ReservasFormModal {
+  reservaForm: FormGroup;
+  isEdit: boolean;
+  habitaciones: any[] = [];
+  cargandoHabitaciones = false;
+
+  constructor(
+    private fb: FormBuilder,
+    private apiService: ApiService,
+    public dialogRef: MatDialogRef<ReservasFormModal>,
+    @Inject(MAT_DIALOG_DATA) public data: any
+  ) {
+    this.isEdit = data?.isEdit || false;
+
+    // total deshabilitado y fijo en 0
+    this.reservaForm = this.fb.group({
+      fecha_entrada: ['', Validators.required],
+      fecha_salida: ['', Validators.required],
+      total: [{ value: 0, disabled: true }, [Validators.required, Validators.min(0)]],
+      estado: ['confirmada', Validators.required],
+      huesped: ['', Validators.required],
+      hotel: ['', Validators.required],
+      habitacion: ['', Validators.required]
+    });
+  }
+
+  ngOnInit(): void {
+    this.obtenerHabitaciones();
+
+    if (this.isEdit && this.data?.reserva) {
+      this.reservaForm.patchValue({
+        // si vienen como string YYYY-MM-DD, el datepicker también acepta string ISO
+        fecha_entrada: this.data.reserva.fecha_entrada,
+        fecha_salida: this.data.reserva.fecha_salida,
+        estado: this.data.reserva.estado ?? 'confirmada',
+        huesped: this.data.reserva.huesped,
+        hotel: this.data.reserva.hotel,
+        habitacion: this.data.reserva.habitacion
+      });
+    }
+
+    // aseguramos que total se muestre como 0 siempre
+    this.reservaForm.get('total')?.setValue(0);
+  }
+
+  /** Cargar habitaciones desde la API */
+  obtenerHabitaciones(): void {
+    this.cargandoHabitaciones = true;
+    this.apiService.listar<any[]>('habitaciones').subscribe({
+      next: (habitaciones) => {
+        this.habitaciones = habitaciones || [];
+        this.cargandoHabitaciones = false;
+      },
+      error: (error) => {
+        console.error('Error al cargar habitaciones:', error);
+        this.cargandoHabitaciones = false;
+      }
+    });
+  }
+
+  /** Enviar formulario (crear/actualizar) */
+  enviarFormulario(): void {
+    if (this.reservaForm.valid) {
+      // incluir controles deshabilitados (total)
+      const raw = this.reservaForm.getRawValue();
+
+      const payload = {
+        fecha_entrada: this.formatearFecha(raw.fecha_entrada),
+        fecha_salida: this.formatearFecha(raw.fecha_salida),
+        total: 0, // forzado a 0 siempre
+        estado: raw.estado,
+        huesped: Number(raw.huesped),
+        hotel: Number(raw.hotel),
+        habitacion: Number(raw.habitacion)
+      };
+
+      this.dialogRef.close(payload);
+    } else {
+      this.marcarCamposTocados();
+    }
+  }
+
+  /** Cancelar y cerrar modal */
+  cancelar(): void {
+    this.dialogRef.close();
+  }
+
+  /** Marcar todos los campos como tocados para mostrar errores */
+  private marcarCamposTocados(): void {
+    Object.keys(this.reservaForm.controls).forEach(key => {
+      this.reservaForm.get(key)?.markAsTouched();
+    });
+  }
+
+  /** Mensajes de error de validación */
+  obtenerMensajeError(nombreCampo: string): string {
+    const campo = this.reservaForm.get(nombreCampo);
+    if (campo?.hasError('required')) {
+      return `${this.obtenerEtiquetaCampo(nombreCampo)} es obligatorio`;
+    }
+    if (campo?.hasError('min')) {
+      return `${this.obtenerEtiquetaCampo(nombreCampo)} debe ser un número positivo`;
+    }
+    return '';
+  }
+
+  /** Etiquetas legibles por campo */
+  private obtenerEtiquetaCampo(nombreCampo: string): string {
+    const labels: Record<string, string> = {
+      fecha_entrada: 'La fecha de entrada',
+      fecha_salida: 'La fecha de salida',
+      total: 'El total',
+      estado: 'El estado',
+      huesped: 'El huésped',
+      hotel: 'El hotel',
+      habitacion: 'La habitación'
+    };
+    return labels[nombreCampo] || nombreCampo;
+  }
+
+  /** Asegura formato YYYY-MM-DD si el control tiene Date o string */
+  private formatearFecha(valor: any): string {
+    if (!valor) return '';
+    // Si es Date
+    if (Object.prototype.toString.call(valor) === '[object Date]') {
+      const d = valor as Date;
+      const yyyy = d.getFullYear();
+      const mm = String(d.getMonth() + 1).padStart(2, '0');
+      const dd = String(d.getDate()).padStart(2, '0');
+      return `${yyyy}-${mm}-${dd}`;
+    }
+    // Si ya viene como string (YYYY-MM-DD) lo normalizamos
+    if (typeof valor === 'string') {
+      return valor.substring(0, 10);
+    }
+    return '';
+  }
+}

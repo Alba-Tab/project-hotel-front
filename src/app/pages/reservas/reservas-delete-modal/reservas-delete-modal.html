@@ -1,0 +1,67 @@
+<div mat-dialog-title class="d-flex align-items-center pb-3">
+  <mat-icon class="text-danger me-2">warning</mat-icon>
+  <span>Confirmar Eliminación</span>
+</div>
+
+<div mat-dialog-content class="pt-4 pb-3">
+  <div class="text-center mb-3">
+    <mat-icon class="text-danger" style="font-size: 48px; height: 48px; width: 48px;">delete_forever</mat-icon>
+  </div>
+
+  <p class="text-center mb-3">
+    ¿Estás seguro de que deseas eliminar esta reserva?
+  </p>
+
+  <!-- Resumen de la reserva -->
+  <div class="alert alert-warning mb-3">
+    <div class="d-flex align-items-center mb-2">
+      <mat-icon class="text-primary me-2">event</mat-icon>
+      <strong>Reserva #{{ reserva?.id }}</strong>
+    </div>
+
+    <div class="d-flex align-items-center mb-1">
+      <mat-icon class="me-2">person</mat-icon>
+      <span>Huésped: <strong>{{ reserva?.nombre_huesped }}</strong></span>
+    </div>
+
+    <div class="d-flex align-items-center mb-1">
+      <mat-icon class="me-2">hotel</mat-icon>
+      <span>Habitación: <strong>{{ reserva?.nro_habitacion }}</strong></span>
+    </div>
+
+    <div class="d-flex align-items-center mb-1">
+      <mat-icon class="me-2">location_city</mat-icon>
+      <span>Hotel: <strong>{{ reserva?.nombre_hotel }}</strong></span>
+    </div>
+
+    <div class="d-flex align-items-center mb-1">
+      <mat-icon class="me-2">login</mat-icon>
+      <span>Entrada: <strong>{{ reserva?.fecha_entrada | date }}</strong></span>
+    </div>
+
+    <div class="d-flex align-items-center mb-1">
+      <mat-icon class="me-2">logout</mat-icon>
+      <span>Salida: <strong>{{ reserva?.fecha_salida | date }}</strong></span>
+    </div>
+
+    <div class="d-flex align-items-center">
+      <mat-icon class="me-2">info</mat-icon>
+      <span>Estado: <strong>{{ reserva?.estado | titlecase }}</strong></span>
+    </div>
+  </div>
+
+  <p class="text-danger text-center mb-0">
+    <small><strong>Esta acción no se puede deshacer.</strong></small>
+  </p>
+</div>
+
+<div mat-dialog-actions class="d-flex justify-content-end gap-2">
+  <button mat-button (click)="cancelar()" class="me-2">
+    <mat-icon class="me-1">close</mat-icon>
+    Cancelar
+  </button>
+  <button mat-raised-button color="warn" (click)="confirmarEliminacion()">
+    <mat-icon class="me-1">delete</mat-icon>
+    Eliminar Reserva
+  </button>
+</div>

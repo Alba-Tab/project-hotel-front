@@ -1,0 +1,138 @@
+<mat-card class="cardWithShadow theme-card">
+
+  <!-- header -->
+  <mat-card-header>
+    <mat-card-title class="m-b-0">
+      {{isEditMode ? 'Editar Habitacion' : 'Crear Nueva Habitacion'}}
+
+    </mat-card-title>
+  </mat-card-header>
+
+  <!-- body -->
+  <mat-card-content class="b-t-1">
+
+    <form [formGroup]="habitacionForm" (ngSubmit)="onSubmit()">
+
+      <div class="row">
+
+        <div class="col-lg-6">
+          <mat-form-field appearance="outline" class="w-100">
+            <mat-label>Hotel</mat-label>
+            <input matInput type="number" formControlName="hotel">
+            <mat-error *ngIf="habitacionForm.get('hotel')?.hasError('required')">
+              El hotel es requerido
+            </mat-error>
+          </mat-form-field>
+        </div>
+        <div class="col-lg-6">
+          <mat-form-field appearance="outline" class="w-100">
+            <mat-label>Numero de la Habitacion</mat-label>
+            <input matInput formControlName="numero">
+            <mat-error *ngIf="habitacionForm.get('numero')?.hasError('required')">
+              El numero es requerido
+            </mat-error>
+          </mat-form-field>
+        </div>
+
+        <div class="col-lg-6">
+          <mat-form-field appearance="outline" class="w-100">
+            <mat-label>Descripcion</mat-label>
+            <input matInput formControlName="descripcion" >
+            <mat-error *ngIf="habitacionForm.get('descripcion')?.hasError('required')">
+              La descripcion es requerida
+            </mat-error>
+          </mat-form-field>
+        </div>
+
+      </div>
+
+      <div class="row">
+
+        <div class="col-12 col-md-6">
+          <mat-form-field appearance="outline" class="w-100">
+            <mat-label>Capacidad</mat-label>
+            <input matInput formControlName="capacidad">
+            <mat-error *ngIf="habitacionForm.get('capacidad')?.hasError('required')">
+              El Capacidad es requerido
+            </mat-error>
+          </mat-form-field>
+        </div>
+        <div class="col-12 col-md-6">
+          <mat-form-field appearance="outline" class="w-100">
+            <mat-label>Precio por noche</mat-label>
+            <input matInput type="number" formControlName="precio_noche">
+            <mat-error *ngIf="habitacionForm.get('precio_noche')?.hasError('required')">
+              El precio es requerido
+            </mat-error>
+          </mat-form-field>
+        </div>
+
+      </div>
+
+      <div class="row">
+
+        <div class="col-12 col-md-6">
+          <mat-form-field appearance="outline" class="w-100">
+            <mat-label>Tamaño</mat-label>
+            <input matInput formControlName="tamanio" >
+            <mat-error *ngIf="habitacionForm.get('tamanio')?.hasError('required')">
+              El tamaño es requerido
+            </mat-error>
+          </mat-form-field>
+        </div>
+
+        <div class="col-12 col-md-6">
+          <mat-form-field appearance="outline" class="w-100">
+            <mat-label>Tipo</mat-label>
+            <input matInput formControlName="tipo" >
+            <mat-error *ngIf="habitacionForm.get('tipo')?.hasError('required')">
+              El tipo es requerido
+            </mat-error>
+          </mat-form-field>
+        </div>
+
+        <div class="col-lg-6">
+          <mat-label class="f-w-600 m-b-8 d-block">Estado</mat-label>
+          <mat-form-field appearance="outline" class="w-100">
+            <mat-select formControlName="estado">
+              @for(option of estados; track option.value) {
+              <mat-option [value]="option.value">{{
+                option.viewValue
+                }}</mat-option>
+              }
+            </mat-select>
+          <mat-error *ngIf="habitacionForm.get('estado')?.hasError('required')">
+            El estado es requerido
+          </mat-error>
+          </mat-form-field>
+        </div>
+
+      </div>
+
+      <div class="row">
+      <div class="m-t-12">
+        <button
+          type="submit"
+          mat-flat-button
+          color="primary" class="m-r-8"
+          [disabled]="!habitacionForm.valid"
+          (click)="onSubmit()"
+        >
+          {{ isEditMode ? 'Actualizar Habitacion' : 'Crear Habitacion' }}
+        </button>
+        <button
+          type="button"
+          mat-stroked-button color="warn"
+          (click)="cancelar()"
+        >
+          Cancelar
+        </button>
+      </div>
+
+     </div>
+
+    </form>
+
+
+  </mat-card-content>
+</mat-card>
