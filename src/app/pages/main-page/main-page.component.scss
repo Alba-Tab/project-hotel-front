@@ -1,0 +1,113 @@
+// Contenedor principal
+.main-page-container {
+  min-height: 100vh;
+  background-color: #f5f5f5;
+}
+
+// Header simple
+.simple-header {
+  background-color: white;
+  border-bottom: 1px solid #e0e0e0;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.header-logo {
+  border-radius: 8px;
+  object-fit: contain;
+
+  @media (max-width: 768px) {
+    width: 40px;
+    height: 40px;
+  }
+}
+
+.header-title {
+  font-size: 1.75rem;
+  font-weight: 600;
+  color: #333;
+
+  @media (max-width: 768px) {
+    font-size: 1.5rem;
+  }
+
+  @media (max-width: 480px) {
+    font-size: 1.25rem;
+  }
+}
+
+// Efecto hover en cards
+.cardWithShadow {
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12);
+  }
+}
+
+// Plan destacado
+.highlighted-plan {
+  border: 2px solid var(--mat-sys-primary);
+  transform: scale(1.05);
+
+  @media (max-width: 991px) {
+    transform: scale(1);
+  }
+}
+
+// Ribbon para el plan más popular
+.ribbon {
+  position: absolute;
+  top: 20px;
+  right: -35px;
+  padding: 8px 40px;
+  transform: rotate(45deg);
+  z-index: 1;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+// Iconos
+.icon-20 {
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
+}
+
+.icon-32 {
+  font-size: 32px;
+  width: 32px;
+  height: 32px;
+}
+
+// Secciones con padding
+.about-section,
+.pricing-section,
+.cta-section {
+  position: relative;
+}
+
+// Footer oscuro
+.footer-section {
+  background-color: var(--mat-sys-surface-container-highest);
+
+  color: rgba(255, 255, 255, 0.7);
+}
+section {
+  padding: 48px 16px; // Padding vertical y horizontal consistente
+  box-sizing: border-box; // Asegura que el padding no afecte el tamaño total
+}
+// Smooth scroll
+html {
+  scroll-behavior: smooth;
+}
+// Blog Section
+.blog-section {
+  background-color: #f9f9f9;
+  .mat-card {
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    &:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+    }
+  }
+}

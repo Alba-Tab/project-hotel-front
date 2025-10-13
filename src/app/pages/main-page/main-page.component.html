@@ -1,0 +1,155 @@
+<div class="main-page-container">
+  <!-- Header Simple -->
+  <header class="simple-header">
+    <div class="container-fluid p-y-24">
+      <div class="d-flex align-items-center justify-content-center">
+        <img
+          src="./assets/images/logos/logo-empresa.svg"
+          class="header-logo m-r-16"
+          alt="Sistema de Gestión Hotelera"
+          width="100"
+          height="100"
+        />
+        <h1 class="header-title m-0">Sistema de Gestión Hotelera</h1>
+      </div>
+    </div>
+  </header>
+
+  <!-- Blog Section -->
+  <section id="blog" class="blog-section p-y-48">
+    <div class="container-fluid">
+      <div class="row justify-content-center">
+        <div class="col-lg-10 col-xl-8">
+          <div class="text-center m-b-48">
+            <h2 class="mat-headline-4 m-b-16">¿Qué hacemos?</h2>
+            <p class="mat-body-1 text-muted">
+              Nuestro sistema está diseñado para facilitar la gestión hotelera y
+              mejorar la experiencia de tus clientes.
+            </p>
+          </div>
+
+          <div class="row">
+            <div class="col-md-6 m-b-24">
+              <mat-card class="cardWithShadow h-100">
+                <mat-card-content class="p-32">
+                  <h3 class="mat-subtitle-1 f-w-600 m-b-12">
+                    Obtén tu propio dominio
+                  </h3>
+                  <p class="mat-body-2 text-muted">
+                    Al suscribirte, recibirás un dominio personalizado para tu
+                    hotel, junto con un usuario y contraseña para acceder a tu
+                    sistema de administración.
+                  </p>
+                </mat-card-content>
+              </mat-card>
+            </div>
+
+            <div class="col-md-6 m-b-24">
+              <mat-card class="cardWithShadow h-100">
+                <mat-card-content class="p-32">
+                  <h3 class="mat-subtitle-1 f-w-600 m-b-12">
+                    Sistema para tus clientes
+                  </h3>
+                  <p class="mat-body-2 text-muted">
+                    Tus clientes podrán registrarse y realizar reservas
+                    directamente en tu sistema, mejorando su experiencia y
+                    facilitando la gestión.
+                  </p>
+                </mat-card-content>
+              </mat-card>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Pricing Section -->
+  <section id="planes" class="pricing-section p-y-48 bg-light">
+    <div class="container-fluid">
+      <div class="row justify-content-center">
+        <div class="col-lg-10 col-xl-10">
+          <div class="text-center m-b-48">
+            <h2 class="mat-headline-4 m-b-16">Planes y Precios</h2>
+            <p class="mat-body-1 text-muted">
+              Elige el plan que mejor se adapte a las necesidades de tu negocio
+            </p>
+          </div>
+
+          <div class="row justify-content-center">
+            @for(plan of plans; track plan.name) {
+            <div class="col-lg-4 col-md-6 m-b-24">
+              <mat-card
+                class="cardWithShadow h-100 position-relative"
+                [ngClass]="{ 'highlighted-plan': plan.highlighted }"
+              >
+                @if(plan.highlighted) {
+                <div class="ribbon bg-primary text-white">
+                  <span class="f-s-12 f-w-600">MÁS POPULAR</span>
+                </div>
+                }
+
+                <mat-card-content class="p-32">
+                  <div class="text-center">
+                    <h3 class="mat-headline-6 m-b-16">{{ plan.name }}</h3>
+                    <div class="m-b-24">
+                      <span
+                        class="mat-headline-3 f-w-700"
+                        [style.color]="'var(--mat-sys-' + plan.color + ')'"
+                      >
+                        ${{ plan.price }}
+                      </span>
+                      <span class="mat-body-1 text-muted"
+                        >/ {{ plan.period }}</span
+                      >
+                    </div>
+                  </div>
+
+                  <div class="m-b-24">
+                    @for(feature of plan.features; track feature) {
+                    <div class="d-flex align-items-start m-b-12">
+                      <mat-icon
+                        [color]="plan.color"
+                        class="icon-20 m-r-8"
+                        style="margin-top: 2px"
+                      >
+                        check_circle
+                      </mat-icon>
+                      <span class="mat-body-2">{{ feature }}</span>
+                    </div>
+                    }
+                  </div>
+
+                  <button
+                    mat-flat-button
+                    [color]="plan.highlighted ? 'primary' : 'accent'"
+                    class="w-100"
+                    (click)="goToRegister()"
+                  >
+                    Suscribirse
+                  </button>
+                </mat-card-content>
+              </mat-card>
+            </div>
+            }
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer-section p-y-32 bg-dark">
+    <div class="container-fluid">
+      <div class="row justify-content-center">
+        <div class="col-lg-10">
+          <div class="text-center">
+            <p class="mat-body-2 m-0" style="color: rgba(255, 255, 255, 0.7)">
+              © 2025 Sistema de Gestión Hotelera. Todos los derechos reservados.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </footer>
+</div>
