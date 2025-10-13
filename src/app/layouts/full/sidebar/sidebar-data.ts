@@ -64,6 +64,14 @@ export const navItems: NavItem[] = [
   },
 
   {
+  displayName: 'Servicios',
+  iconName: 'solar:bag-2-line-duotone', // puedes usar cualquier icono solar
+  route: '/servicios',
+  chip: false,
+  external: false
+},
+
+  {
     divider: true,
     navCap: 'Apps',
   },
@@ -94,7 +102,6 @@ export const navItems: NavItem[] = [
         chipClass: 'bg-light-secondary text-secondary',
         chipContent: 'PRO',
       },
-
     ],
   },
 
@@ -144,7 +151,6 @@ export const navItems: NavItem[] = [
     divider: true,
     navCap: 'Pages',
   },
-
 
   {
     navCap: 'Extra',

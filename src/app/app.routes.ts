@@ -1,6 +1,7 @@
 import { Routes } from '@angular/router';
 import { BlankComponent } from './layouts/blank/blank.component';
 import { FullComponent } from './layouts/full/full.component';
+import { ServiciosComponent } from './pages/servicios/servicios.component';
 import { authGuard } from './guards/auth.guard';
 
 import { TenantRegisterComponent } from './pages/tenant-register/tenant-register.component';
@@ -109,4 +110,13 @@ export const routes: Routes = [
     path: '**',
     redirectTo: 'authentication/error',
   },
+
+
+
+  {
+  path: 'servicios',
+  loadComponent: () =>
+    import('./pages/servicios/servicios.component').then((m) => m.ServiciosComponent),
+},
+
 ];
