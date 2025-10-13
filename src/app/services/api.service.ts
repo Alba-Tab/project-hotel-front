@@ -23,7 +23,7 @@ export class ApiService {
    * GET - Obtener un registro por ID
    */
   obtener<T>(endpoint: string, id: string | number): Observable<T> {
-    return this.http.get<T>(`${this.urlBase}/${endpoint}/${id}`);
+    return this.http.get<T>(`${this.urlBase}/${endpoint}/${id}/`);
   }
 
   /**
@@ -67,7 +67,7 @@ export class ApiService {
       });
     }
 
-    return this.http.post<T>(`${this.urlBase}/${endpoint}`, formData);
+    return this.http.post<T>(`${this.urlBase}/${endpoint}/`, formData);
   }
 
   /**

@@ -51,6 +51,40 @@ export const routes: Routes = [
           ),
       },
       {
+        path: 'hoteles',
+        loadComponent: () =>
+          import('./pages/hoteles/hoteles.component').then(
+            (m) => m.HotelesComponent
+          ),
+      },
+      {
+        path: 'habitaciones',
+        loadComponent: () =>
+          import('./pages/habitaciones/habitaciones.component').then(
+            (m) => m.HabitacionesComponent
+          ),
+        // data: {
+        //   title: 'Habitaciones',
+        //   urls: [
+        //     { title: 'Dashboard', url: '/dashboard' },
+        //     { title: 'Habitaciones' },
+        //   ],
+        // },
+      },
+      // {
+      //   path: '',
+      //   component: BlankComponent,
+      //   children: [
+      //     {
+      //       path: 'hoteles',
+      //       loadChildren: () =>
+      //         import('./pages/hoteles/hoteles.routes').then(
+      //           (m) => m.HotelesRoutes
+      //         ),
+      //     },
+      //   ],
+      // },
+      {
         path: 'extra',
         loadChildren: () =>
           import('./pages/extra/extra.routes').then((m) => m.ExtraRoutes),

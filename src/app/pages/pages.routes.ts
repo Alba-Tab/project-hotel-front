@@ -3,6 +3,9 @@ import { StarterComponent } from './starter/starter.component';
 import { Usuarios } from './usuarios/usuarios';
 import { RolesPermisos } from './roles-permisos/roles-permisos';
 
+import { CrearHotelComponent } from './hoteles/crear-hotel/crear-hotel.component';
+import { HotelesComponent } from './hoteles/hoteles.component';
+
 export const PagesRoutes: Routes = [
   {
     path: '',
@@ -30,8 +33,21 @@ export const PagesRoutes: Routes = [
       title: 'Roles y Permisos',
       urls: [
         { title: 'Dashboard', url: '/dashboard' },
+        // { title: 'Hoteles', url: '/hoteles' },
+        { title: 'Starter' },
         { title: 'Roles y Permisos' },
       ],
     },
+    // children: [
+    //       {
+    //         path: 'hotel',
+    //         component: HotelesComponent,
+    //       },
+    //       {
+    //         path: 'crearhotel',
+    //         component: CrearHotelComponent,
+    //       },
+    //     ],
   },
+
 ];
