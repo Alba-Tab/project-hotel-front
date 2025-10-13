@@ -1,0 +1,116 @@
+<h2 mat-dialog-title>
+  <mat-icon>{{ isEditMode() ? 'edit' : 'person_add' }}</mat-icon>
+  {{ getTitle() }}
+</h2>
+
+<mat-dialog-content>
+  <form [formGroup]="usuarioForm" class="usuario-form">
+
+    <!-- Username Field -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Username</mat-label>
+      <input matInput
+             formControlName="username"
+             placeholder="Ingrese el username"
+             [readonly]="isEditMode()">
+      <mat-icon matSuffix>account_circle</mat-icon>
+      @if (hasError('username')) {
+        <mat-error>{{ getErrorMessage('username') }}</mat-error>
+      }
+    </mat-form-field>
+
+    <!-- First Name Field -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Nombre</mat-label>
+      <input matInput
+             formControlName="first_name"
+             placeholder="Ingrese el nombre">
+      <mat-icon matSuffix>person</mat-icon>
+      @if (hasError('first_name')) {
+        <mat-error>{{ getErrorMessage('first_name') }}</mat-error>
+      }
+    </mat-form-field>
+
+    <!-- Last Name Field -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Apellido</mat-label>
+      <input matInput
+             formControlName="last_name"
+             placeholder="Ingrese el apellido">
+      <mat-icon matSuffix>person_outline</mat-icon>
+      @if (hasError('last_name')) {
+        <mat-error>{{ getErrorMessage('last_name') }}</mat-error>
+      }
+    </mat-form-field>
+
+    <!-- Email Field -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Email</mat-label>
+      <input matInput
+             type="email"
+             formControlName="email"
+             placeholder="Ingrese el email">
+      <mat-icon matSuffix>email</mat-icon>
+      @if (hasError('email')) {
+        <mat-error>{{ getErrorMessage('email') }}</mat-error>
+      }
+    </mat-form-field>
+
+    <!-- Rol Field -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Rol</mat-label>
+      @if (loadingRoles()) {
+        <mat-select formControlName="groups" [disabled]="true">
+          <mat-option value="">Cargando roles...</mat-option>
+        </mat-select>
+      } @else {
+        <mat-select formControlName="groups" placeholder="Seleccione un rol">
+          <mat-option value="">-- Seleccionar Rol --</mat-option>
+          @for (rol of rolesDisponibles(); track rol.id) {
+            <mat-option [value]="rol.id">
+              {{ rol.name }}
+            </mat-option>
+          }
+        </mat-select>
+      }
+      <mat-icon matSuffix>security</mat-icon>
+      @if (hasError('groups')) {
+        <mat-error>{{ getErrorMessage('groups') }}</mat-error>
+      }
+    </mat-form-field>
+
+    <!-- Password Field -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>{{ isEditMode() ? 'Nueva Contraseña (opcional)' : 'Contraseña' }}</mat-label>
+      <input matInput
+             type="password"
+             formControlName="password"
+             [placeholder]="isEditMode() ? 'Dejar vacío para mantener actual' : 'Ingrese la contraseña'">
+      <mat-icon matSuffix>lock</mat-icon>
+      @if (hasError('password')) {
+        <mat-error>{{ getErrorMessage('password') }}</mat-error>
+      }
+    </mat-form-field>
+
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button
+          (click)="onCancel()"
+          [disabled]="loading()">
+    Cancelar
+  </button>
+
+  <button mat-raised-button
+          color="primary"
+          (click)="onSubmit()"
+          [disabled]="loading() || usuarioForm.invalid">
+    @if (loading()) {
+      <mat-progress-spinner diameter="20" class="inline-spinner"></mat-progress-spinner>
+    } @else {
+      <mat-icon>{{ isEditMode() ? 'save' : 'add' }}</mat-icon>
+    }
+    {{ getButtonText() }}
+  </button>
+</mat-dialog-actions>

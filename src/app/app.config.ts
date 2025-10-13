@@ -5,7 +5,7 @@ import {
 } from '@angular/core';
 import {
   provideHttpClient,
-  withInterceptorsFromDi,
+  withInterceptors,
 } from '@angular/common/http';
 import { routes } from './app.routes';
 import {
@@ -15,6 +15,9 @@ import {
 } from '@angular/router';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { provideClientHydration } from '@angular/platform-browser';
+
+// Interceptor
+import { authInterceptor } from './interceptors/auth.interceptor';
 
 // icons
 import { TablerIconsModule } from 'angular-tabler-icons';
@@ -38,7 +41,7 @@ export const appConfig: ApplicationConfig = {
       }),
       withComponentInputBinding()
     ),
-    provideHttpClient(withInterceptorsFromDi()),
+    provideHttpClient(withInterceptors([authInterceptor])),
     provideClientHydration(),
     provideAnimationsAsync(),
     importProvidersFrom(
