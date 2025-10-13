@@ -1,6 +1,6 @@
-import { Injectable, inject } from '@angular/core';
+import { Injectable, inject, signal } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, firstValueFrom } from 'rxjs';
 import { environment } from '../../environments/environment';
 
 @Injectable({
@@ -30,28 +30,28 @@ export class ApiService {
    * POST - Crear nuevo registro
    */
   crear<T>(endpoint: string, datos: any): Observable<T> {
-    return this.http.post<T>(`${this.urlBase}/${endpoint}`, datos);
+    return this.http.post<T>(`${this.urlBase}/${endpoint}/`, datos);
   }
 
   /**
    * PUT - Editar registro completo
    */
   editar<T>(endpoint: string, id: string | number, datos: any): Observable<T> {
-    return this.http.put<T>(`${this.urlBase}/${endpoint}/${id}`, datos);
+    return this.http.put<T>(`${this.urlBase}/${endpoint}/${id}/`, datos);
   }
 
   /**
    * PATCH - Actualizar parcialmente
    */
   actualizar<T>(endpoint: string, id: string | number, datos: any): Observable<T> {
-    return this.http.patch<T>(`${this.urlBase}/${endpoint}/${id}`, datos);
+    return this.http.patch<T>(`${this.urlBase}/${endpoint}/${id}/`, datos);
   }
 
   /**
    * DELETE - Eliminar registro
    */
   eliminar<T>(endpoint: string, id: string | number): Observable<T> {
-    return this.http.delete<T>(`${this.urlBase}/${endpoint}/${id}`);
+    return this.http.delete<T>(`${this.urlBase}/${endpoint}/${id}/`);
   }
 
   /**

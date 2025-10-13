@@ -1,0 +1,116 @@
+<h2 mat-dialog-title>
+  <mat-icon>{{ isEditMode() ? 'edit' : 'security' }}</mat-icon>
+  {{ getTitle() }}
+</h2>
+
+<mat-dialog-content>
+  <form [formGroup]="rolForm" class="rol-form">
+
+    <!-- Nombre del Rol -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Nombre del Rol</mat-label>
+      <input matInput
+             formControlName="name"
+             placeholder="Ej: Administrador, Recepcionista, etc.">
+      <mat-icon matSuffix>badge</mat-icon>
+      @if (hasError('name')) {
+        <mat-error>{{ getErrorMessage('name') }}</mat-error>
+      }
+    </mat-form-field>
+
+    <mat-divider class="m-y-16"></mat-divider>
+
+    <!-- Sección de Permisos -->
+    <div class="permisos-section">
+      <h3 class="permisos-title">
+        <mat-icon>security</mat-icon>
+        Permisos del Rol
+      </h3>
+
+      @if (loadingPermisos()) {
+        <div class="loading-permisos">
+          <mat-progress-spinner diameter="30"></mat-progress-spinner>
+          <span class="m-l-8">Cargando permisos...</span>
+        </div>
+      } @else {
+
+        <!-- Seleccionar todos -->
+        <div class="select-all-section">
+          <mat-checkbox
+            [checked]="areAllPermisosSelected()"
+            [indeterminate]="areSomePermisosSelected()"
+            (change)="toggleAllPermisos($event.checked)"
+            color="primary">
+            <strong>Seleccionar todos los permisos</strong>
+          </mat-checkbox>
+        </div>
+
+        <mat-divider class="m-y-8"></mat-divider>
+
+        <!-- Lista de permisos disponibles (sin agrupación) -->
+        <div class="permisos-list">
+          <mat-card class="permisos-card">
+            <mat-card-header>
+              <mat-card-title class="permisos-section-title">
+                <mat-icon>list</mat-icon>
+                Permisos del Sistema
+              </mat-card-title>
+            </mat-card-header>
+            <mat-card-content>
+              <div class="permisos-scroll">
+                @for (permiso of permisosDisponibles(); track permiso.id) {
+                  <div class="permiso-item">
+                    <mat-checkbox
+                      [checked]="isPermisoSelected(permiso.id)"
+                      (change)="onPermisoChange(permiso.id, $event.checked)"
+                      color="primary">
+                      <div class="permiso-content">
+                        <span class="permiso-name">{{ permiso.name }}</span>
+                        <small class="permiso-codename">{{ permiso.codename }}</small>
+                      </div>
+                    </mat-checkbox>
+                  </div>
+                }
+              </div>
+            </mat-card-content>
+          </mat-card>
+        </div>        <!-- Resumen de permisos seleccionados -->
+        <div class="permisos-summary">
+          <mat-card class="summary-card">
+            <mat-card-content>
+              <div class="summary-content">
+                <mat-icon color="primary">info</mat-icon>
+                <span>
+                  <strong>{{ permisosSeleccionados().length }}</strong> de
+                  <strong>{{ permisosDisponibles().length }}</strong> permisos seleccionados
+                </span>
+              </div>
+            </mat-card-content>
+          </mat-card>
+        </div>
+
+      }
+    </div>
+
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button
+          (click)="onCancel()"
+          [disabled]="loading()">
+    Cancelar
+  </button>
+
+  <button mat-raised-button
+          color="primary"
+          (click)="onSubmit()"
+          [disabled]="loading() || rolForm.invalid || loadingPermisos()">
+    @if (loading()) {
+      <mat-progress-spinner diameter="20" class="inline-spinner"></mat-progress-spinner>
+    } @else {
+      <mat-icon>{{ isEditMode() ? 'save' : 'add' }}</mat-icon>
+    }
+    {{ getButtonText() }}
+  </button>
+</mat-dialog-actions>
