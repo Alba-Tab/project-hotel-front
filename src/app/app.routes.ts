@@ -5,31 +5,12 @@ import { authGuard } from './guards/auth.guard';
 
 import { TenantRegisterComponent } from './pages/tenant-register/tenant-register.component';
 import { MainPageComponent } from './pages/main-page/main-page.component';
+import { Usuarios } from './pages/usuarios/usuarios';
+import { RolesPermisos } from './pages/roles-permisos/roles-permisos';
 export const routes: Routes = [
+
   {
     path: '',
-    component: BlankComponent,
-    children: [
-      {
-        path: '',
-        component: MainPageComponent, // ✅ Página principal como inicio
-        pathMatch: 'full',
-      },
-      {
-        path: 'authentication',
-        loadChildren: () =>
-          import('./pages/authentication/authentication.routes').then(
-            (m) => m.AuthenticationRoutes
-          ),
-      },
-      {
-        path: 'registrar-empresa',
-        component: TenantRegisterComponent,
-      },
-    ],
-  },
-  {
-    path: 'dashboard',
     component: FullComponent,
     canActivate: [authGuard], // ← Agregar esto
     children: [
@@ -54,6 +35,38 @@ export const routes: Routes = [
         path: 'extra',
         loadChildren: () =>
           import('./pages/extra/extra.routes').then((m) => m.ExtraRoutes),
+      },
+      {
+        path: 'usuarios',
+        component: Usuarios,
+
+      },
+      {
+        path: 'roles-permisos',
+        component: RolesPermisos,
+      }
+    ],
+  },
+
+  {
+    path: '',
+    component: BlankComponent,
+    children: [
+      {
+        path: 'inicio',
+        component: MainPageComponent, // ✅ Página principal como inicio
+        pathMatch: 'full',
+      },
+      {
+        path: 'authentication',
+        loadChildren: () =>
+          import('./pages/authentication/authentication.routes').then(
+            (m) => m.AuthenticationRoutes
+          ),
+      },
+      {
+        path: 'registrar-empresa',
+        component: TenantRegisterComponent,
       },
     ],
   },
