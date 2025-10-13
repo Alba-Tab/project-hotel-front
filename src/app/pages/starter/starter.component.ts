@@ -7,6 +7,10 @@ import { AppTotalIncomeComponent } from 'src/app/components/total-income/total-i
 import { AppPopularProductsComponent } from 'src/app/components/popular-products/popular-products.component';
 import { AppEarningReportsComponent } from 'src/app/components/earning-reports/earning-reports.component';
 
+
+// import { CrearHotelComponent } from 'src/app/pages/hoteles/crear-hotel/crear-hotel.component';
+
+
 @Component({
   selector: 'app-starter',
   imports: [
@@ -16,7 +20,8 @@ import { AppEarningReportsComponent } from 'src/app/components/earning-reports/e
     AppTotalFollowersComponent,
     AppTotalIncomeComponent,
     AppPopularProductsComponent,
-    AppEarningReportsComponent
+    AppEarningReportsComponent,
+    // CrearHotelComponent,
   ],
   templateUrl: './starter.component.html',
   encapsulation: ViewEncapsulation.None,

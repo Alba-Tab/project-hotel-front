@@ -36,14 +36,32 @@ export class AppNavItemComponent implements OnChanges {
   ngOnChanges() {
     const url = this.navService.currentUrl();
     if (this.item.route && url) {
-      this.expanded = url.indexOf(`/${this.item.route}`) === 0;
+      // Normalize route (remove leading slash for comparison)
+      const normalizedRoute = this.item.route.startsWith('/')
+        ? this.item.route.slice(1)
+        : this.item.route;
+      // url from router starts with '/', so compare against `/${normalizedRoute}`
+      this.expanded = normalizedRoute
+        ? url.indexOf(`/${normalizedRoute}`) === 0
+        : false;
       this.ariaExpanded = this.expanded;
     }
   }
 
   onItemSelected(item: NavItem) {
     if (!item.children || !item.children.length) {
-      this.router.navigate([item.route]);
+      // Use navigateByUrl when route is an absolute path string like '/hoteles/crearhotel'
+      const route = item.route || '';
+      if (typeof route === 'string') {
+        // If route already contains leading '/', navigateByUrl handles it correctly
+        if (route.startsWith('/')) {
+          this.router.navigateByUrl(route);
+        } else {
+          this.router.navigate([route]);
+        }
+      } else {
+        this.router.navigate([route]);
+      }
     }
     if (item.children && item.children.length) {
       this.expanded = !this.expanded;
@@ -67,6 +85,9 @@ export class AppNavItemComponent implements OnChanges {
     }
   }
 
+
+
+  //
   onSubItemSelected(item: NavItem) {
     if (!item.children || !item.children.length) {
       if (this.expanded && window.innerWidth < 1024) {
@@ -74,4 +95,5 @@ export class AppNavItemComponent implements OnChanges {
       }
     }
   }
+
 }
