@@ -38,6 +38,14 @@ export const navItems: NavItem[] = [
   },
 
   {
+  displayName: 'Servicios',
+  iconName: 'solar:bag-2-line-duotone', // puedes usar cualquier icono solar
+  route: '/servicios',
+  chip: false,
+  external: false
+},
+
+  {
     divider: true,
     navCap: 'Apps',
   },
@@ -145,7 +153,7 @@ export const navItems: NavItem[] = [
     iconName: 'solar:bill-list-line-duotone',
     route: '',
     chip: true,
-    
+
     children: [
       {
         displayName: 'List',
@@ -190,7 +198,7 @@ export const navItems: NavItem[] = [
     iconName: 'solar:widget-4-line-duotone',
     route: 'apps/blog',
     chip: true,
-    
+
     children: [
       {
         displayName: 'Post',
@@ -435,7 +443,7 @@ export const navItems: NavItem[] = [
     iconName: 'solar:widget-2-line-duotone',
     route: 'widgets',
     chip: true,
-    
+
     children: [
       {
         displayName: 'Cards',
@@ -494,7 +502,7 @@ export const navItems: NavItem[] = [
     iconName: 'solar:password-minimalistic-input-line-duotone',
     route: 'forms/forms-elements',
     chip: true,
-    
+
     children: [
       {
         displayName: 'Autocomplete',
@@ -603,7 +611,7 @@ export const navItems: NavItem[] = [
     iconName: 'solar:tablet-line-duotone',
     route: 'tables',
     chip: true,
-    
+
     children: [
       {
         displayName: 'Basic Table',
@@ -880,7 +888,7 @@ export const navItems: NavItem[] = [
     iconName: 'solar:password-outline',
     route: '/authentication',
     chip: true,
-    
+
     children: [
       {
         displayName: 'Side Forgot Pwd',
@@ -909,7 +917,7 @@ export const navItems: NavItem[] = [
     iconName: 'solar:siderbar-line-duotone',
     route: '/authentication',
     chip: true,
-    
+
     children: [
       {
         displayName: 'Side Two Steps',
@@ -951,5 +959,5 @@ export const navItems: NavItem[] = [
     chipClass: 'bg-light-secondary text-secondary',
     chipContent: 'PRO',
   },
-  
+
 ];

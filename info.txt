@@ -15,7 +15,7 @@ Proyecto: MaterialM - Hotel Frontend
 1️⃣ VERIFICAR INSTALACIONES:
    Verificar versión de Node.js:
    node --version
-   
+
    Verificar versión de npm:
    npm --version
 
@@ -25,7 +25,7 @@ Proyecto: MaterialM - Hotel Frontend
 3️⃣ INSTALAR DEPENDENCIAS:
    Instalar todas las dependencias del proyecto:
    npm install
-   
+
    Resolver vulnerabilidades de seguridad:
    npm audit fix
 
@@ -36,7 +36,7 @@ Proyecto: MaterialM - Hotel Frontend
 5️⃣ INICIAR EL SERVIDOR DE DESARROLLO:
    Ejecutar el proyecto en modo desarrollo:
    npm start
-   
+
    O alternativamente:
    ng serve
 
@@ -112,7 +112,7 @@ ERROR: Dependencias desactualizadas
 SOLUCIÓN: npm update
 
 ERROR: Cache corrupto
-SOLUCIÓN: 
+SOLUCIÓN:
 - npm cache clean --force
 - Eliminar node_modules/
 - npm install
@@ -135,3 +135,9 @@ SOLUCIÓN:
 - Los cambios en archivos .ts, .html, .scss se reflejan automáticamente
 
 
+
+
+Que saltar al crear un componente en angular:
+	- externalTemplate
+	- skipStyle
+	... Enable, and set as defautl, etc

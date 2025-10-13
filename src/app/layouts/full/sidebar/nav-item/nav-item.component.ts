@@ -67,6 +67,9 @@ export class AppNavItemComponent implements OnChanges {
     }
   }
 
+
+
+  //
   onSubItemSelected(item: NavItem) {
     if (!item.children || !item.children.length) {
       if (this.expanded && window.innerWidth < 1024) {
@@ -74,4 +77,5 @@ export class AppNavItemComponent implements OnChanges {
       }
     }
   }
+
 }
