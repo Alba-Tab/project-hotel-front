@@ -1,0 +1,52 @@
+.servicio-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 400px;
+  padding: 16px 0;
+}
+
+.full-width {
+  width: 100%;
+}
+
+.inline-spinner {
+  display: inline-block;
+  margin-right: 8px;
+  vertical-align: middle;
+}
+
+mat-dialog-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 0;
+}
+
+mat-dialog-content {
+  max-height: 70vh;
+  overflow-y: auto;
+}
+
+mat-dialog-actions {
+  padding: 16px 0 0 0;
+  gap: 8px;
+}
+
+// Estilos específicos para textarea
+textarea {
+  min-height: 80px !important;
+  resize: vertical;
+}
+
+// Estilos para campos numéricos
+input[type="number"] {
+  text-align: right;
+}
+
+// Responsive
+@media (max-width: 600px) {
+  .servicio-form {
+    min-width: 300px;
+  }
+}
