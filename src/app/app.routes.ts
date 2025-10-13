@@ -35,7 +35,7 @@ export const routes: Routes = [
     children: [
       {
         path: '',
-        redirectTo: '/dashboard',
+        redirectTo: 'dashboard',  // ✅ Sin barra inicial - redirección relativa
         pathMatch: 'full',
       },
       {
@@ -63,13 +63,7 @@ export const routes: Routes = [
           import('./pages/habitaciones/habitaciones.component').then(
             (m) => m.HabitacionesComponent
           ),
-        // data: {
-        //   title: 'Habitaciones',
-        //   urls: [
-        //     { title: 'Dashboard', url: '/dashboard' },
-        //     { title: 'Habitaciones' },
-        //   ],
-        // },
+
       },
       // {
       //   path: '',
