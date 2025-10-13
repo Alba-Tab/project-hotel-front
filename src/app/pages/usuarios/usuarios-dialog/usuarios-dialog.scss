@@ -1,0 +1,47 @@
+.usuario-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 400px;
+  padding: 16px 0;
+}
+
+.full-width {
+  width: 100%;
+}
+
+.inline-spinner {
+  display: inline-block;
+  margin-right: 8px;
+  vertical-align: middle;
+}
+
+mat-dialog-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 0;
+}
+
+mat-dialog-content {
+  max-height: 70vh;
+  overflow-y: auto;
+}
+
+mat-dialog-actions {
+  padding: 16px 0 0 0;
+  gap: 8px;
+}
+
+// Estilos específicos para campos readonly
+mat-form-field input[readonly] {
+  background-color: #f5f5f5;
+  cursor: not-allowed;
+}
+
+// Responsive
+@media (max-width: 600px) {
+  .usuario-form {
+    min-width: 300px;
+  }
+}

@@ -1,0 +1,105 @@
+.table-responsive {
+  overflow-x: auto;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.p-4 {
+  padding: 1rem;
+}
+
+.m-t-16 {
+  margin-top: 16px;
+}
+
+.m-b-16 {
+  margin-bottom: 16px;
+}
+
+.m-l-8 {
+  margin-left: 8px;
+}
+
+.f-w-600 {
+  font-weight: 600;
+}
+
+.f-s-14 {
+  font-size: 14px;
+}
+
+.w-100 {
+  width: 100%;
+}
+
+table {
+  width: 100%;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+
+  &.m-b-16 {
+    justify-content: flex-end;
+    padding: 8px 0;
+  }
+}
+
+.error-message {
+  color: #f44336;
+  font-weight: 500;
+  margin-bottom: 16px;
+}
+
+.selected-user-card {
+  background-color: #f5f5f5;
+  border-left: 4px solid #2196f3;
+}
+
+.operation-loading {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: rgba(0, 0, 0, 0.8);
+  color: white;
+  padding: 12px 16px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  z-index: 1000;
+}
+
+// Estilos para badges de rol
+.rol-badge {
+  background-color: #e3f2fd;
+  color: #1976d2;
+  padding: 4px 12px;
+  border-radius: 16px;
+  font-size: 12px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.no-rol {
+  color: #999;
+  font-style: italic;
+  font-size: 12px;
+}
+
+// Estilos para snackbar
+:host ::ng-deep {
+  .success-snackbar {
+    background-color: #4caf50 !important;
+    color: white !important;
+  }
+
+  .error-snackbar {
+    background-color: #f44336 !important;
+    color: white !important;
+  }
+}

@@ -1,6 +1,8 @@
 import { Routes } from '@angular/router';
 import { BlankComponent } from './layouts/blank/blank.component';
 import { FullComponent } from './layouts/full/full.component';
+import { authGuard } from './guards/auth.guard';
+
 import { TenantRegisterComponent } from './pages/tenant-register/tenant-register.component';
 import { MainPageComponent } from './pages/main-page/main-page.component';
 export const routes: Routes = [
@@ -29,6 +31,7 @@ export const routes: Routes = [
   {
     path: 'dashboard',
     component: FullComponent,
+    canActivate: [authGuard], // ← Agregar esto
     children: [
       {
         path: '',
