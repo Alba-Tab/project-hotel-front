@@ -2,14 +2,15 @@ import { Injectable, inject, signal } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, firstValueFrom } from 'rxjs';
 import { environment } from '../../environments/environment';
+import { TenantDomainService } from './tenant-domain.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ApiService {
   private http = inject(HttpClient);
-  private urlBase = environment.apiUrl; // 'http://localhost:3000/api'
-
+  // private urlBase = environment.apiUrl; // 'http://localhost:3000/api'
+  private urlBase = inject(TenantDomainService).getTenantApiUrl();
 
   /**
    * GET - Listar todos los registros

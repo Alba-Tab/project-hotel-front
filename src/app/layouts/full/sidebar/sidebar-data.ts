@@ -9,6 +9,13 @@ export const navItems: NavItem[] = [
     iconName: 'solar:atom-line-duotone',
     route: '/dashboard',
   },
+
+  {
+    displayName: 'Usuarios',
+    iconName: 'solar:atom-line-duotone',
+    route: '/usuarios',
+  },
+
   {
     displayName: 'Hoteles',
     iconName: 'solar:widget-add-line-duotone',

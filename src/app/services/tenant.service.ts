@@ -14,6 +14,6 @@ export class TenantService {
    * @param datos Datos del formulario
    */
   registrarTenant(datos: TenantForm): Observable<TenantResponse> {
-    return this.apiService.crear<TenantResponse>('tenants-forms/', datos);
+    return this.apiService.crear<TenantResponse>('public/tenants-forms', datos);
   }
 }
