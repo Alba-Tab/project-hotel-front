@@ -85,6 +85,8 @@ npm list              # Ver todas las dependencias instaladas
 - Angular Tabler Icons
 - RxJS: 7.8.2
 
+//
+
 ========================================
 📁 ESTRUCTURA DEL PROYECTO:
 ========================================
