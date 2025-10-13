@@ -19,7 +19,7 @@ export const navItems: NavItem[] = [
   {
     displayName: 'Hoteles',
     iconName: 'solar:widget-add-line-duotone',
-    route: '/hoteles',
+    route: '/dashboard/hoteles',
 
   },
   {

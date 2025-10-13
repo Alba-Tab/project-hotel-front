@@ -45,13 +45,7 @@ export const routes: Routes = [
           import('./pages/habitaciones/habitaciones.component').then(
             (m) => m.HabitacionesComponent
           ),
-        // data: {
-        //   title: 'Habitaciones',
-        //   urls: [
-        //     { title: 'Dashboard', url: '/dashboard' },
-        //     { title: 'Habitaciones' },
-        //   ],
-        // },
+
       },
       // {
       //   path: '',

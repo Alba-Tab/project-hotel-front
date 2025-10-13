@@ -12,6 +12,7 @@ import { CommonModule } from '@angular/common';
 import { HotelService } from 'src/app/services/hotel.service';
 import { Hotel } from 'src/app/interfaces/hotel.interface';
 import { MatDialogModule, MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { ApiService } from 'src/app/services/api.service';
 
 interface Estado {
   value: string;
@@ -53,7 +54,8 @@ export class CrearHotelComponent {
 
   constructor(
     private fb: FormBuilder,
-    private hotelService: HotelService,
+    // private hotelService: HotelService,
+    private apiService: ApiService,
     private dialogRef: MatDialogRef<CrearHotelComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any
   ) {
@@ -76,8 +78,8 @@ export class CrearHotelComponent {
       const hotel: Hotel = this.hotelForm.value;
 
       const operation = this.isEditMode
-        ? this.hotelService.updateHotel(this.hotelId!, hotel)
-        : this.hotelService.createHotel(hotel);
+        ? this.apiService.actualizar('hoteles',this.hotelId!, hotel)
+        : this.apiService.crear('hoteles', hotel);
 
       operation.subscribe({
         next: (response) => {
