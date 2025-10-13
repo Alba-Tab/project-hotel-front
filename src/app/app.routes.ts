@@ -1,11 +1,37 @@
 import { Routes } from '@angular/router';
 import { BlankComponent } from './layouts/blank/blank.component';
 import { FullComponent } from './layouts/full/full.component';
+import { authGuard } from './guards/auth.guard';
 
+import { TenantRegisterComponent } from './pages/tenant-register/tenant-register.component';
+import { MainPageComponent } from './pages/main-page/main-page.component';
 export const routes: Routes = [
   {
     path: '',
+    component: BlankComponent,
+    children: [
+      {
+        path: '',
+        component: MainPageComponent, // ✅ Página principal como inicio
+        pathMatch: 'full',
+      },
+      {
+        path: 'authentication',
+        loadChildren: () =>
+          import('./pages/authentication/authentication.routes').then(
+            (m) => m.AuthenticationRoutes
+          ),
+      },
+      {
+        path: 'registrar-empresa',
+        component: TenantRegisterComponent,
+      },
+    ],
+  },
+  {
+    path: 'dashboard',
     component: FullComponent,
+    canActivate: [authGuard], // ← Agregar esto
     children: [
       {
         path: '',
@@ -65,19 +91,7 @@ export const routes: Routes = [
       },
     ],
   },
-  {
-    path: '',
-    component: BlankComponent,
-    children: [
-      {
-        path: 'authentication',
-        loadChildren: () =>
-          import('./pages/authentication/authentication.routes').then(
-            (m) => m.AuthenticationRoutes
-          ),
-      },
-    ],
-  },
+
   {
     path: '**',
     redirectTo: 'authentication/error',

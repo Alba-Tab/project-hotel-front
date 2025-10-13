@@ -1,0 +1,95 @@
+.register-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: calc(100vh - 80px);
+  padding: 2rem;
+}
+
+.register-card {
+  max-width: 700px;
+  width: 100%;
+
+  mat-card-header {
+    margin-bottom: 2rem;
+
+    mat-card-title {
+      font-size: 1.75rem;
+      font-weight: 600;
+      color: #1976d2;
+    }
+
+    mat-card-subtitle {
+      margin-top: 0.5rem;
+      font-size: 0.95rem;
+    }
+  }
+}
+
+.form-row {
+  display: flex;
+  gap: 1rem;
+
+  @media (max-width: 600px) {
+    flex-direction: column;
+  }
+
+  .form-field {
+    flex: 1;
+  }
+}
+
+.full-width {
+  width: 100%;
+}
+
+mat-form-field {
+  margin-bottom: 1rem;
+}
+
+.form-actions {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1.5rem;
+
+  @media (max-width: 600px) {
+    flex-direction: column;
+  }
+
+  .submit-button {
+    flex: 1;
+    padding: 0.75rem;
+    font-size: 1rem;
+  }
+
+  button {
+    min-height: 48px;
+  }
+}
+
+// Animación del spinner
+.spinner {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+// Estilos para snackbar (añadir en styles.scss global si no existe)
+::ng-deep {
+  .snackbar-success {
+    background-color: #4caf50 !important;
+    color: white !important;
+  }
+
+  .snackbar-error {
+    background-color: #f44336 !important;
+    color: white !important;
+  }
+}
