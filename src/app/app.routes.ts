@@ -14,11 +14,11 @@ export const routes: Routes = [
     component: FullComponent,
     canActivate: [authGuard], // ← Agregar esto
     children: [
-      {
-        path: '',
-        redirectTo: '/dashboard',
-        pathMatch: 'full',
-      },
+      // {
+      //   path: '',
+      //   redirectTo: '/dashboard',
+      //   pathMatch: 'full',
+      // },
       {
         path: 'dashboard',
         loadChildren: () =>
