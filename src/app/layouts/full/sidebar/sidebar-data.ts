@@ -28,6 +28,12 @@ export const navItems: NavItem[] = [
     route: '/habitaciones',
   },
 
+  {
+    displayName: 'ServicioReserva',
+    iconName: 'solar:lock-keyhole-minimalistic-line-duotone',
+    route: '/servicioreserva',
+  },
+
   // {
   //   displayName: 'Login',
   //   iconName: 'solar:lock-keyhole-minimalistic-line-duotone',
