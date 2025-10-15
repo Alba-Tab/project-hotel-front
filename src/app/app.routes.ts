@@ -12,7 +12,7 @@ export const routes: Routes = [
     component: BlankComponent,
     children: [
       {
-        path: '',
+        path: 'principal',
         component: MainPageComponent, // ✅ Página principal como inicio
         pathMatch: 'full',
       },
@@ -30,13 +30,13 @@ export const routes: Routes = [
     ],
   },
   {
-    path: 'dashboard',
+    path: '',
     component: FullComponent,
     // canActivate: [authGuard], // ← Agregar esto
     children: [
       {
         path: '',
-        redirectTo: 'dashboard',  // ✅ Sin barra inicial - redirección relativa
+        redirectTo: 'dashboard', // ✅ Sin barra inicial - redirección relativa
         pathMatch: 'full',
       },
       {
@@ -50,6 +50,11 @@ export const routes: Routes = [
           import('./pages/ui-components/ui-components.routes').then(
             (m) => m.UiComponentsRoutes
           ),
+      },
+      {
+        path: 'usuarios',
+        loadComponent: () =>
+          import('./pages/usuarios/usuarios').then((m) => m.Usuarios),
       },
       {
         path: 'hoteles',
@@ -66,10 +71,29 @@ export const routes: Routes = [
           ),
       },
       {
+        path: 'reservas',
+        loadComponent: () =>
+          import('./pages/reservas/reservas').then((m) => m.Reservas),
+      },
+      {
         path: 'servicioreserva',
         loadComponent: () =>
           import('./pages/servicioreserva/servicioreserva.component').then(
             (m) => m.ServicioreservaComponent
+          ),
+      },
+      {
+        path: 'fidelizacion',
+        loadComponent: () =>
+          import('./pages/fidelizacion/fidelizacion.component').then(
+            (m) => m.FidelizacionComponent
+          ),
+      },
+      {
+        path: 'roles-permisos',
+        loadComponent: () =>
+          import('./pages/roles-permisos/roles-permisos').then(
+            (m) => m.RolesPermisos
           ),
       },
       // {
@@ -90,6 +114,13 @@ export const routes: Routes = [
         loadChildren: () =>
           import('./pages/extra/extra.routes').then((m) => m.ExtraRoutes),
       },
+      {
+        path: 'servicios',
+        loadComponent: () =>
+          import('./pages/servicios/servicios.component').then(
+            (m) => m.ServiciosComponent
+          ),
+      },
     ],
   },
 
@@ -97,13 +128,4 @@ export const routes: Routes = [
     path: '**',
     redirectTo: 'authentication/error',
   },
-
-
-
-  {
-  path: 'servicios',
-  loadComponent: () =>
-    import('./pages/servicios/servicios.component').then((m) => m.ServiciosComponent),
-},
-
 ];

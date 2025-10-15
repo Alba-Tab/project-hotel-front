@@ -1,7 +1,17 @@
 import { Component, Inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { MatDialogRef, MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
+import {
+  FormBuilder,
+  FormGroup,
+  Validators,
+  FormsModule,
+  ReactiveFormsModule,
+} from '@angular/forms';
+import {
+  MatDialogRef,
+  MAT_DIALOG_DATA,
+  MatDialogModule,
+} from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { MatSelectModule } from '@angular/material/select';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -25,7 +35,7 @@ import { ApiService } from '../../../services/api.service';
     MatCardModule,
     MatInputModule,
     MatDatepickerModule,
-    MatNativeDateModule
+    MatNativeDateModule,
   ],
   templateUrl: './crear-servicioreserva.component.html',
 })
@@ -34,6 +44,10 @@ export class CrearServicioreservaComponent {
   isEditMode = false;
   servicioId?: number;
   enviando = false;
+
+  // Listas para los selectores
+  reservas: any[] = [];
+  servicios: any[] = [];
 
   estados = [
     { value: 'solicitado', viewValue: 'Solicitado' },
@@ -57,12 +71,52 @@ export class CrearServicioreservaComponent {
     this.servicioForm = this.fb.group({
       reserva: [data?.servicio?.reserva || '', [Validators.required]],
       servicio: [data?.servicio?.servicio || '', [Validators.required]],
-      folio_estancia: [data?.servicio?.folio_estancia || '', [Validators.required]],
-      cantidad: [data?.servicio?.cantidad || 1, [Validators.required, Validators.min(1)]],
-      precio_unitario: [data?.servicio?.precio_unitario || '', [Validators.required, Validators.min(0)]],
-      fecha_servicio: [data?.servicio?.fecha_servicio ? new Date(data.servicio.fecha_servicio) : new Date(), [Validators.required]],
+      folio_estancia: [
+        data?.servicio?.folio_estancia || '',
+        [Validators.required],
+      ],
+      cantidad: [
+        data?.servicio?.cantidad || 1,
+        [Validators.required, Validators.min(1)],
+      ],
+      precio_unitario: [
+        data?.servicio?.precio_unitario || '',
+        [Validators.required, Validators.min(0)],
+      ],
+      fecha_servicio: [
+        data?.servicio?.fecha_servicio
+          ? new Date(data.servicio.fecha_servicio)
+          : new Date(),
+        [Validators.required],
+      ],
       estado: [data?.servicio?.estado || 'solicitado', [Validators.required]],
-      observaciones: [data?.servicio?.observaciones || '']
+      observaciones: [data?.servicio?.observaciones || ''],
+    });
+
+    // Cargar datos para los selectores
+    this.cargarReservas();
+    this.cargarServicios();
+  }
+
+  cargarReservas() {
+    this.apiService.listar<any>('reservas').subscribe({
+      next: (data) => {
+        this.reservas = data;
+      },
+      error: (err) => {
+        console.error('Error al cargar reservas:', err);
+      },
+    });
+  }
+
+  cargarServicios() {
+    this.apiService.listar<any>('servicios').subscribe({
+      next: (data) => {
+        this.servicios = data;
+      },
+      error: (err) => {
+        console.error('Error al cargar servicios:', err);
+      },
     });
   }
 
@@ -72,16 +126,23 @@ export class CrearServicioreservaComponent {
     this.enviando = true;
     const servicioData = {
       ...this.servicioForm.value,
-      fecha_servicio: this.servicioForm.value.fecha_servicio.toISOString()
+      fecha_servicio: this.servicioForm.value.fecha_servicio.toISOString(),
     };
 
     const operation = this.isEditMode
-      ? this.apiService.actualizar(this.endpoint, this.servicioId!, servicioData)
+      ? this.apiService.actualizar(
+          this.endpoint,
+          this.servicioId!,
+          servicioData
+        )
       : this.apiService.crear(this.endpoint, servicioData);
 
     operation.subscribe({
       next: (response) => {
-        console.log(`Servicio ${this.isEditMode ? 'actualizado' : 'creado'}:`, response);
+        console.log(
+          `Servicio ${this.isEditMode ? 'actualizado' : 'creado'}:`,
+          response
+        );
         this.enviando = false;
         this.dialogRef.close(response);
       },
@@ -89,7 +150,7 @@ export class CrearServicioreservaComponent {
         console.error('Error:', error);
         this.enviando = false;
         alert('Error al procesar el servicio de reserva');
-      }
+      },
     });
   }
 

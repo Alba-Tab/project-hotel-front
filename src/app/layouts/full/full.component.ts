@@ -20,7 +20,6 @@ import { AppTopstripComponent } from './top-strip/topstrip.component';
 const MOBILE_VIEW = 'screen and (max-width: 768px)';
 const TABLET_VIEW = 'screen and (min-width: 769px) and (max-width: 1024px)';
 
-
 @Component({
   selector: 'app-full',
   imports: [
@@ -32,7 +31,7 @@ const TABLET_VIEW = 'screen and (min-width: 769px) and (max-width: 1024px)';
     NgScrollbarModule,
     TablerIconsModule,
     HeaderComponent,
-    AppTopstripComponent
+    AppTopstripComponent,
   ],
   templateUrl: './full.component.html',
   styleUrls: [],
@@ -61,7 +60,7 @@ export class FullComponent implements OnInit {
   constructor(
     private settings: CoreService,
     private router: Router,
-    private breakpointObserver: BreakpointObserver,
+    private breakpointObserver: BreakpointObserver
   ) {
     this.htmlElement = document.querySelector('html')!;
     this.layoutChangesSubscription = this.breakpointObserver
@@ -76,7 +75,6 @@ export class FullComponent implements OnInit {
       });
 
     // Initialize project theme with options
-
 
     // This is for scroll to top
     this.router.events

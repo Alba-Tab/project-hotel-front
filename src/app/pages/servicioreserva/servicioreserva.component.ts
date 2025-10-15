@@ -21,15 +21,22 @@ import { CrearServicioreservaComponent } from './crear-servicioreserva/crear-ser
     MatMenuModule,
     MatButtonModule,
     MatDialogModule,
-    RouterModule
+    RouterModule,
   ],
   templateUrl: './servicioreserva.component.html',
 })
 export class ServicioreservaComponent implements OnInit {
-
   datos: any[] = [];
-  displayedColumns: string[] = ['reserva', 'servicio', 'cantidad', 'precio', 'fecha', 'estado', 'acciones'];
-  private endpoint: string = 'servicioreserva/';
+  displayedColumns: string[] = [
+    'reserva',
+    'servicio',
+    'cantidad',
+    'precio',
+    'fecha',
+    'estado',
+    'acciones',
+  ];
+  private endpoint: string = 'servicioreservas/';
 
   constructor(
     private apiService: ApiService,
@@ -54,13 +61,13 @@ export class ServicioreservaComponent implements OnInit {
           precio_unitario: servicio.precio_unitario,
           fecha_servicio: servicio.fecha_servicio,
           estado: servicio.estado,
-          observaciones: servicio.observaciones
+          observaciones: servicio.observaciones,
         }));
         console.log('Servicios de reserva cargados');
       },
       error: (error) => {
         console.error('Error al cargar servicios de reserva:', error);
-      }
+      },
     });
   }
 
@@ -69,10 +76,10 @@ export class ServicioreservaComponent implements OnInit {
       width: '600px',
       height: 'auto',
       disableClose: false,
-      data: { titulo: 'Crear Nuevo Servicio de Reserva' }
+      data: { titulo: 'Crear Nuevo Servicio de Reserva' },
     });
 
-    dialogRef.afterClosed().subscribe(result => {
+    dialogRef.afterClosed().subscribe((result) => {
       if (result) {
         console.log('Servicio de reserva creado:', result);
         this.cargarServiciosReserva();
@@ -85,13 +92,13 @@ export class ServicioreservaComponent implements OnInit {
       width: '600px',
       height: 'auto',
       disableClose: false,
-      data: { 
+      data: {
         servicio: servicio,
-        titulo: 'Editar Servicio de Reserva' 
-      }
+        titulo: 'Editar Servicio de Reserva',
+      },
     });
 
-    dialogRef.afterClosed().subscribe(result => {
+    dialogRef.afterClosed().subscribe((result) => {
       if (result) {
         console.log('Servicio de reserva actualizado:', result);
         this.cargarServiciosReserva();
@@ -100,8 +107,10 @@ export class ServicioreservaComponent implements OnInit {
   }
 
   eliminarServicio(servicio: any) {
-    const confirmar = confirm(`¿Estás seguro de eliminar este servicio de reserva?`);
-    
+    const confirmar = confirm(
+      `¿Estás seguro de eliminar este servicio de reserva?`
+    );
+
     if (confirmar && servicio.id) {
       this.apiService.eliminar(this.endpoint, servicio.id).subscribe({
         next: () => {
@@ -111,7 +120,7 @@ export class ServicioreservaComponent implements OnInit {
         error: (error) => {
           console.error('Error al eliminar servicio de reserva:', error);
           alert('Error al eliminar el servicio de reserva');
-        }
+        },
       });
     }
   }

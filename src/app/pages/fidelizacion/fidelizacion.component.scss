@@ -1,0 +1,187 @@
+// Estilos de contenedor principal
+mat-card {
+  margin: 0;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+mat-card-content {
+  padding: 24px;
+}
+
+mat-card-title {
+  font-size: 24px;
+  font-weight: 600;
+  margin-bottom: 24px;
+  color: #1e293b;
+}
+
+// Estilos de pestañas
+::ng-deep .mat-mdc-tab-group {
+  .mat-mdc-tab-labels {
+    border-bottom: 1px solid #e2e8f0;
+  }
+
+  .mat-mdc-tab {
+    font-weight: 500;
+  }
+}
+
+.tab-content {
+  padding: 24px 0;
+}
+
+// Botones de acción
+.action-buttons {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 24px;
+
+  button {
+    margin: 0;
+  }
+}
+
+// Tabla
+.table-responsive {
+  overflow-x: auto;
+  margin-top: 16px;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+mat-table,
+table {
+  width: 100%;
+  background: white;
+}
+
+::ng-deep {
+  .mat-mdc-table {
+    background: transparent;
+  }
+
+  .mat-mdc-header-row {
+    background: #f8fafc;
+  }
+
+  .mat-mdc-header-cell {
+    font-weight: 600;
+    color: #475569;
+    font-size: 14px;
+    border-bottom: 2px solid #e2e8f0;
+  }
+
+  .mat-mdc-cell {
+    font-size: 14px;
+    color: #334155;
+    padding: 16px 12px;
+  }
+
+  .mat-mdc-row:hover {
+    background: #f8fafc;
+    transition: background 0.2s;
+  }
+}
+
+// Badges
+.badge-success {
+  background: #10b981;
+  color: white;
+  padding: 6px 12px;
+  border-radius: 16px;
+  font-size: 12px;
+  font-weight: 500;
+  display: inline-block;
+  text-align: center;
+}
+
+.badge-error {
+  background: #ef4444;
+  color: white;
+  padding: 6px 12px;
+  border-radius: 16px;
+  font-size: 12px;
+  font-weight: 500;
+  display: inline-block;
+  text-align: center;
+}
+
+.badge-info {
+  background: #3b82f6;
+  color: white;
+  padding: 6px 12px;
+  border-radius: 16px;
+  font-size: 12px;
+  font-weight: 500;
+  display: inline-block;
+  text-align: center;
+}
+
+// Texto
+.text-muted {
+  color: #94a3b8;
+  font-size: 13px;
+  margin-top: 4px;
+}
+
+// Utilidades
+.m-b-16 {
+  margin-bottom: 16px;
+}
+
+.m-t-16 {
+  margin-top: 16px;
+}
+
+.m-b-24 {
+  margin-bottom: 24px;
+}
+
+.w-100 {
+  width: 100%;
+}
+
+.f-w-600 {
+  font-weight: 600;
+}
+
+.f-w-500 {
+  font-weight: 500;
+}
+
+.f-s-14 {
+  font-size: 14px;
+}
+
+// Botones de icono en tabla
+::ng-deep {
+  .mat-mdc-icon-button {
+    width: 36px;
+    height: 36px;
+    padding: 6px;
+
+    &:hover {
+      background: rgba(0, 0, 0, 0.04);
+    }
+  }
+}
+
+// Responsive
+@media (max-width: 768px) {
+  mat-card-content {
+    padding: 16px;
+  }
+
+  .tab-content {
+    padding: 16px 0;
+  }
+
+  .action-buttons {
+    flex-direction: column;
+
+    button {
+      width: 100%;
+    }
+  }
+}

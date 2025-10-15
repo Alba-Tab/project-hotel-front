@@ -1,5 +1,9 @@
 <h2 mat-dialog-title>
-  {{ isEditMode ? 'Editar Servicio de Reserva' : 'Crear Nuevo Servicio de Reserva' }}
+  {{
+    isEditMode
+      ? "Editar Servicio de Reserva"
+      : "Crear Nuevo Servicio de Reserva"
+  }}
 </h2>
 
 <mat-dialog-content>
@@ -7,21 +11,35 @@
     <div class="row">
       <div class="col-12 col-md-6">
         <mat-form-field appearance="outline" class="w-100">
-          <mat-label>ID Reserva</mat-label>
-          <input matInput formControlName="reserva" type="number" placeholder="1">
-          <mat-error *ngIf="servicioForm.get('reserva')?.hasError('required')">
-            La reserva es requerida
-          </mat-error>
+          <mat-label>Reserva</mat-label>
+          <mat-select formControlName="reserva">
+            @for (reserva of reservas; track reserva.id) {
+            <mat-option [value]="reserva.id">
+              Folio: {{ reserva.folio }} - Cliente: {{ reserva.cliente_nombre }}
+            </mat-option>
+            }
+          </mat-select>
+          @if (servicioForm.get('reserva')?.hasError('required') &&
+          servicioForm.get('reserva')?.touched) {
+          <mat-error>La reserva es requerida</mat-error>
+          }
         </mat-form-field>
       </div>
 
       <div class="col-12 col-md-6">
         <mat-form-field appearance="outline" class="w-100">
-          <mat-label>ID Servicio</mat-label>
-          <input matInput formControlName="servicio" type="number" placeholder="2">
-          <mat-error *ngIf="servicioForm.get('servicio')?.hasError('required')">
-            El servicio es requerido
-          </mat-error>
+          <mat-label>Servicio</mat-label>
+          <mat-select formControlName="servicio">
+            @for (servicio of servicios; track servicio.id) {
+            <mat-option [value]="servicio.id">
+              {{ servicio.nombre }} - ${{ servicio.precio }}
+            </mat-option>
+            }
+          </mat-select>
+          @if (servicioForm.get('servicio')?.hasError('required') &&
+          servicioForm.get('servicio')?.touched) {
+          <mat-error>El servicio es requerido</mat-error>
+          }
         </mat-form-field>
       </div>
     </div>
@@ -30,8 +48,15 @@
       <div class="col-12 col-md-6">
         <mat-form-field appearance="outline" class="w-100">
           <mat-label>Folio Estancia</mat-label>
-          <input matInput formControlName="folio_estancia" type="number" placeholder="1">
-          <mat-error *ngIf="servicioForm.get('folio_estancia')?.hasError('required')">
+          <input
+            matInput
+            formControlName="folio_estancia"
+            type="number"
+            placeholder="1"
+          />
+          <mat-error
+            *ngIf="servicioForm.get('folio_estancia')?.hasError('required')"
+          >
             El folio de estancia es requerido
           </mat-error>
         </mat-form-field>
@@ -40,7 +65,13 @@
       <div class="col-12 col-md-6">
         <mat-form-field appearance="outline" class="w-100">
           <mat-label>Cantidad</mat-label>
-          <input matInput formControlName="cantidad" type="number" placeholder="1" min="1">
+          <input
+            matInput
+            formControlName="cantidad"
+            type="number"
+            placeholder="1"
+            min="1"
+          />
           <mat-error *ngIf="servicioForm.get('cantidad')?.hasError('required')">
             La cantidad es requerida
           </mat-error>
@@ -55,11 +86,21 @@
       <div class="col-12 col-md-6">
         <mat-form-field appearance="outline" class="w-100">
           <mat-label>Precio Unitario</mat-label>
-          <input matInput formControlName="precio_unitario" type="number" step="0.01" placeholder="25.50">
-          <mat-error *ngIf="servicioForm.get('precio_unitario')?.hasError('required')">
+          <input
+            matInput
+            formControlName="precio_unitario"
+            type="number"
+            step="0.01"
+            placeholder="25.50"
+          />
+          <mat-error
+            *ngIf="servicioForm.get('precio_unitario')?.hasError('required')"
+          >
             El precio unitario es requerido
           </mat-error>
-          <mat-error *ngIf="servicioForm.get('precio_unitario')?.hasError('min')">
+          <mat-error
+            *ngIf="servicioForm.get('precio_unitario')?.hasError('min')"
+          >
             El precio debe ser mayor o igual a 0
           </mat-error>
         </mat-form-field>
@@ -68,10 +109,19 @@
       <div class="col-12 col-md-6">
         <mat-form-field appearance="outline" class="w-100">
           <mat-label>Fecha del Servicio</mat-label>
-          <input matInput [matDatepicker]="picker" formControlName="fecha_servicio">
-          <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+          <input
+            matInput
+            [matDatepicker]="picker"
+            formControlName="fecha_servicio"
+          />
+          <mat-datepicker-toggle
+            matSuffix
+            [for]="picker"
+          ></mat-datepicker-toggle>
           <mat-datepicker #picker></mat-datepicker>
-          <mat-error *ngIf="servicioForm.get('fecha_servicio')?.hasError('required')">
+          <mat-error
+            *ngIf="servicioForm.get('fecha_servicio')?.hasError('required')"
+          >
             La fecha del servicio es requerida
           </mat-error>
         </mat-form-field>
@@ -98,7 +148,12 @@
       <div class="col-12">
         <mat-form-field appearance="outline" class="w-100">
           <mat-label>Observaciones</mat-label>
-          <textarea matInput formControlName="observaciones" rows="3" placeholder="Observaciones adicionales..."></textarea>
+          <textarea
+            matInput
+            formControlName="observaciones"
+            rows="3"
+            placeholder="Observaciones adicionales..."
+          ></textarea>
         </mat-form-field>
       </div>
     </div>
@@ -107,9 +162,7 @@
 
 <mat-dialog-actions align="end">
   <button type="button" mat-button (click)="cancelar()">Cancelar</button>
-  <button type="submit"
-          mat-raised-button color="primary"
-    >
-    {{ isEditMode ? 'Actualizar Servicio' : 'Crear Servicio' }}
+  <button type="submit" mat-raised-button color="primary">
+    {{ isEditMode ? "Actualizar Servicio" : "Crear Servicio" }}
   </button>
 </mat-dialog-actions>

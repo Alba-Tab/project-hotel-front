@@ -1,0 +1,68 @@
+<h1 mat-dialog-title>Canjear Puntos por Descuento</h1>
+<div mat-dialog-content>
+  <div class="info-section">
+    <p>
+      <strong>Cliente:</strong> {{ data.cuenta.cliente_info?.first_name }}
+      {{ data.cuenta.cliente_info?.last_name }}
+    </p>
+    <p><strong>Programa:</strong> {{ data.cuenta.programa_info?.nombre }}</p>
+    <p>
+      <strong>Puntos disponibles:</strong>
+      <span class="badge-success">{{ data.cuenta.puntos_acumulados }} pts</span>
+    </p>
+    <p>
+      <strong>Descuento disponible:</strong>
+      <span class="badge-success"
+        >${{ data.cuenta.descuento_disponible | number : "1.2-2" }}</span
+      >
+    </p>
+  </div>
+
+  <form [formGroup]="form">
+    <mat-form-field appearance="outline">
+      <mat-label>Total de la Cuenta ($)</mat-label>
+      <input
+        matInput
+        type="number"
+        formControlName="total_cuenta"
+        min="0.01"
+        step="0.01"
+      />
+      @if (form.get('total_cuenta')?.invalid &&
+      form.get('total_cuenta')?.touched) {
+      <mat-error>Ingrese el total de la cuenta</mat-error>
+      }
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Monto de Descuento a Aplicar ($)</mat-label>
+      <input
+        matInput
+        type="number"
+        formControlName="monto_descuento"
+        min="0.01"
+        step="0.01"
+      />
+      @if (form.get('monto_descuento')?.invalid &&
+      form.get('monto_descuento')?.touched) {
+      <mat-error>Ingrese el monto de descuento</mat-error>
+      }
+      <mat-hint
+        >Máximo disponible: ${{
+          data.cuenta.descuento_disponible | number : "1.2-2"
+        }}</mat-hint
+      >
+    </mat-form-field>
+  </form>
+</div>
+<div mat-dialog-actions align="end">
+  <button mat-button (click)="cancelar()">Cancelar</button>
+  <button
+    mat-raised-button
+    color="primary"
+    (click)="guardar()"
+    [disabled]="form.invalid"
+  >
+    Canjear Puntos
+  </button>
+</div>
