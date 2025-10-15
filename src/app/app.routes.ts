@@ -96,19 +96,6 @@ export const routes: Routes = [
             (m) => m.RolesPermisos
           ),
       },
-      // {
-      //   path: '',
-      //   component: BlankComponent,
-      //   children: [
-      //     {
-      //       path: 'hoteles',
-      //       loadChildren: () =>
-      //         import('./pages/hoteles/hoteles.routes').then(
-      //           (m) => m.HotelesRoutes
-      //         ),
-      //     },
-      //   ],
-      // },
       {
         path: 'extra',
         loadChildren: () =>
@@ -119,6 +106,13 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./pages/servicios/servicios.component').then(
             (m) => m.ServiciosComponent
+          ),
+      },
+      {
+        path: 'folio-estancia',
+        loadComponent: () =>
+          import('./pages/folio-estancia/folio-estancia').then(
+            (m) => m.FolioEstanciaComponent
           ),
       },
     ],

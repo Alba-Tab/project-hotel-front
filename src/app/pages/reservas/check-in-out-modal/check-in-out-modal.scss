@@ -1,0 +1,38 @@
+.check-in-out-modal {
+  max-width: 700px;
+
+  h2 {
+    color: #2c3e50;
+    font-weight: 600;
+    margin-bottom: 0;
+  }
+
+  .reserva-info {
+    border: 1px solid #dee2e6;
+
+    h6 {
+      color: #495057;
+      margin-bottom: 10px;
+    }
+
+    p {
+      font-size: 14px;
+      color: #6c757d;
+    }
+  }
+
+  mat-form-field {
+    margin-bottom: 5px;
+  }
+
+  mat-dialog-actions {
+    padding: 16px 24px;
+    margin: 0;
+  }
+}
+
+::ng-deep .mat-mdc-dialog-container {
+  .mdc-dialog__surface {
+    border-radius: 8px;
+  }
+}
