@@ -73,6 +73,10 @@ export const routes: Routes = [
       {
         path: 'roles-permisos',
         component: RolesPermisos,
+      },
+       {
+        path: 'servicios',
+        component: ServiciosComponent,
       }
     ],
   },
@@ -107,10 +111,10 @@ export const routes: Routes = [
 
 
 
-  {
-  path: 'servicios',
-  loadComponent: () =>
-    import('./pages/servicios/servicios.component').then((m) => m.ServiciosComponent),
-},
+//   {
+//   path: 'servicios',
+//   loadComponent: () =>
+//     import('./pages/servicios/servicios.component').then((m) => m.ServiciosComponent),
+// },
 
 ];
