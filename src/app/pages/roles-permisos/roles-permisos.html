@@ -3,17 +3,17 @@
     <mat-card-title>Gestión de Roles y Permisos</mat-card-title>
 
     @if (loading()) {
-      <div class="text-center p-4">
-        <mat-progress-spinner diameter="50"></mat-progress-spinner>
-        <p class="m-t-16">Cargando roles...</p>
-      </div>
+    <div class="text-center p-4">
+      <mat-progress-spinner diameter="50"></mat-progress-spinner>
+      <p class="m-t-16">Cargando roles...</p>
+    </div>
     } @else if (error()) {
-      <div class="text-center p-4">
-        <p class="error-message">{{ error() }}</p>
-        <button mat-raised-button color="primary" (click)="cargarRoles()">
-          Reintentar
-        </button>
-      </div>
+    <div class="text-center p-4">
+      <p class="error-message">{{ error() }}</p>
+      <button mat-raised-button color="primary" (click)="cargarRoles()">
+        Reintentar
+      </button>
+    </div>
     } @else {
       <!-- Botón para agregar nuevo rol -->
        <!-- @if (usuarioPermisos().includes('add_group')) { -->
@@ -108,52 +108,51 @@
           <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
           <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
 
-        </table>
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+      </table>
 
-        @if (roles().length === 0 && !loading()) {
-          <div class="text-center p-4">
-            <p>No hay roles para mostrar</p>
-            <button mat-raised-button color="primary" (click)="cargarRoles()">
-              Recargar
-            </button>
-          </div>
-        }
+      @if (roles().length === 0 && !loading()) {
+      <div class="text-center p-4">
+        <p>No hay roles para mostrar</p>
+        <button mat-raised-button color="primary" (click)="cargarRoles()">
+          Recargar
+        </button>
       </div>
-
-      <!-- Información del rol seleccionado -->
-      @if (selectedRol()) {
-        <mat-card class="selected-rol-card m-t-16">
-          <mat-card-header>
-            <mat-card-title>Rol Seleccionado</mat-card-title>
-          </mat-card-header>
-          <mat-card-content>
-            <p><strong>ID:</strong> {{ selectedRol()?.id }}</p>
-            <p><strong>Nombre:</strong> {{ selectedRol()?.name }}</p>
-            <p><strong>Permisos:</strong></p>
-            <div class="permisos-list">
-              @if (selectedRol()?.permisos && selectedRol()?.permisos.length > 0) {
-                @for (permiso of selectedRol()?.permisos; track permiso.id) {
-                  <span class="permiso-chip">{{ permiso.name }}</span>
-                }
-              } @else {
-                <span class="no-permisos">Sin permisos asignados</span>
-              }
-            </div>
-          </mat-card-content>
-          <mat-card-actions>
-            <button mat-button (click)="selectedRol.set(null)">Cerrar</button>
-          </mat-card-actions>
-        </mat-card>
       }
+    </div>
 
-      <!-- Indicador de operación en progreso -->
-      @if (operationLoading()) {
-        <div class="operation-loading">
-          <mat-progress-spinner diameter="30"></mat-progress-spinner>
-          <span class="m-l-8">Procesando...</span>
+    <!-- Información del rol seleccionado -->
+    @if (selectedRol()) {
+    <mat-card class="selected-rol-card m-t-16">
+      <mat-card-header>
+        <mat-card-title>Rol Seleccionado</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <p><strong>ID:</strong> {{ selectedRol()?.id }}</p>
+        <p><strong>Nombre:</strong> {{ selectedRol()?.name }}</p>
+        <p><strong>Permisos:</strong></p>
+        <div class="permisos-list">
+          @if (selectedRol()?.permisos && selectedRol()?.permisos.length > 0) {
+          @for (permiso of selectedRol()?.permisos; track permiso.id) {
+          <span class="permiso-chip">{{ permiso.name }}</span>
+          } } @else {
+          <span class="no-permisos">Sin permisos asignados</span>
+          }
         </div>
-      }
+      </mat-card-content>
+      <mat-card-actions>
+        <button mat-button (click)="selectedRol.set(null)">Cerrar</button>
+      </mat-card-actions>
+    </mat-card>
     }
 
+    <!-- Indicador de operación en progreso -->
+    @if (operationLoading()) {
+    <div class="operation-loading">
+      <mat-progress-spinner diameter="30"></mat-progress-spinner>
+      <span class="m-l-8">Procesando...</span>
+    </div>
+    } }
   </mat-card-content>
 </mat-card>

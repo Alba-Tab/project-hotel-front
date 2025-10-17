@@ -10,7 +10,8 @@
       mat-raised-button
       color="primary"
       (click)="abrirModalCrear()"
-      class="d-flex align-items-center gap-2">
+      class="d-flex align-items-center gap-2"
+    >
       <mat-icon>add</mat-icon>
       Agregar Reserva
     </button>
@@ -35,7 +36,9 @@
 
           <!-- Fecha Reserva -->
           <ng-container matColumnDef="fecha_reserva">
-            <th mat-header-cell *matHeaderCellDef class="f-w-600">Fecha Reserva</th>
+            <th mat-header-cell *matHeaderCellDef class="f-w-600">
+              Fecha Reserva
+            </th>
             <td mat-cell *matCellDef="let r">{{ r.fecha_reserva | date }}</td>
           </ng-container>
 
@@ -64,7 +67,9 @@
 
           <!-- Habitación -->
           <ng-container matColumnDef="nro_habitacion">
-            <th mat-header-cell *matHeaderCellDef class="f-w-600">Habitación</th>
+            <th mat-header-cell *matHeaderCellDef class="f-w-600">
+              Habitación
+            </th>
             <td mat-cell *matCellDef="let r">
               <mat-icon class="me-2">hotel</mat-icon>
               {{ r.nro_habitacion }}
@@ -89,18 +94,94 @@
           <!-- Estado -->
           <ng-container matColumnDef="estado">
             <th mat-header-cell *matHeaderCellDef class="f-w-600">Estado</th>
-            <td mat-cell *matCellDef="let r">{{ r.estado | titlecase }}</td>
+            <td mat-cell *matCellDef="let r">
+              <mat-chip [color]="getEstadoColor(r)">
+                {{ r.estado | titlecase }}
+              </mat-chip>
+            </td>
+          </ng-container>
+
+          <!-- Check-In/Check-Out -->
+          <ng-container matColumnDef="check_in_out">
+            <th mat-header-cell *matHeaderCellDef class="f-w-600 text-center">
+              Check-In/Out
+            </th>
+            <td mat-cell *matCellDef="let r" class="text-center">
+              <div class="d-flex flex-column align-items-center gap-1">
+                <!-- Estado actual -->
+                <mat-chip
+                  [color]="tieneCheckOut(r) ? 'accent' : (tieneCheckIn(r) ? 'primary' : '')"
+                  class="status-chip"
+                >
+                  {{ getEstadoCheckInOut(r) }}
+                </mat-chip>
+
+                <!-- Botones de acción -->
+                <div
+                  class="d-flex gap-1"
+                  *ngIf="r.estado?.toLowerCase() !== 'cancelada'"
+                >
+                  <button
+                    *ngIf="puedeHacerCheckIn(r)"
+                    mat-mini-fab
+                    color="primary"
+                    matTooltip="Realizar Check-In"
+                    (click)="abrirModalCheckIn(r)"
+                    class="action-btn"
+                  >
+                    <mat-icon>login</mat-icon>
+                  </button>
+
+                  <button
+                    *ngIf="puedeHacerCheckOut(r)"
+                    mat-mini-fab
+                    color="accent"
+                    matTooltip="Realizar Check-Out"
+                    (click)="abrirModalCheckOut(r)"
+                    class="action-btn"
+                  >
+                    <mat-icon>logout</mat-icon>
+                  </button>
+                </div>
+
+                <!-- Información de fechas si ya hay check-in/out -->
+                <div *ngIf="tieneCheckIn(r)" class="check-info">
+                  <small class="text-muted">
+                    <mat-icon class="small-icon">login</mat-icon>
+                    {{ r.checkinout.fecha_checkin | date:'short' }}
+                  </small>
+                </div>
+                <div *ngIf="tieneCheckOut(r)" class="check-info">
+                  <small class="text-muted">
+                    <mat-icon class="small-icon">logout</mat-icon>
+                    {{ r.checkinout.fecha_checkout | date:'short' }}
+                  </small>
+                </div>
+              </div>
+            </td>
           </ng-container>
 
           <!-- Acciones -->
           <ng-container matColumnDef="acciones">
-            <th mat-header-cell *matHeaderCellDef class="f-w-600 text-center">Acciones</th>
+            <th mat-header-cell *matHeaderCellDef class="f-w-600 text-center">
+              Acciones
+            </th>
             <td mat-cell *matCellDef="let r" class="text-center">
               <div class="d-flex justify-content-center gap-1">
-                <button mat-icon-button color="primary" matTooltip="Editar reserva" (click)="abrirModalEditar(r)">
+                <button
+                  mat-icon-button
+                  color="primary"
+                  matTooltip="Editar reserva"
+                  (click)="abrirModalEditar(r)"
+                >
                   <mat-icon>edit</mat-icon>
                 </button>
-                <button mat-icon-button color="warn" matTooltip="Eliminar reserva" (click)="abrirModalEliminar(r)">
+                <button
+                  mat-icon-button
+                  color="warn"
+                  matTooltip="Eliminar reserva"
+                  (click)="abrirModalEliminar(r)"
+                >
                   <mat-icon>delete</mat-icon>
                 </button>
               </div>
@@ -114,7 +195,11 @@
 
         <!-- Sin datos -->
         <div *ngIf="reservasFiltradas.length === 0" class="text-center p-5">
-          <mat-icon class="mb-2" style="font-size: 48px; height: 48px; width: 48px;">event_busy</mat-icon>
+          <mat-icon
+            class="mb-2"
+            style="font-size: 48px; height: 48px; width: 48px"
+            >event_busy</mat-icon
+          >
           <h5 class="mb-2">No hay reservas registradas</h5>
           <p class="mb-3">Comienza agregando tu primera reserva</p>
           <button mat-raised-button color="primary" (click)="abrirModalCrear()">

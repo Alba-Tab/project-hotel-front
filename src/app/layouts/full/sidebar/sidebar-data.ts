@@ -15,6 +15,11 @@ export const navItems: NavItem[] = [
     iconName: 'solar:atom-line-duotone',
     route: '/usuarios',
   },
+  {
+    displayName: 'Folios de Estancia',
+    iconName: 'receipt-long',
+    route: '/folio-estancia',
+  },
 
   {
     displayName: 'Hoteles',

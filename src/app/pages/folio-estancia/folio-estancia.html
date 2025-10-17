@@ -1,0 +1,67 @@
+<div class="container">
+  <div class="header">
+    <h1>Gestión de Folios de Estancia</h1>
+    <button mat-raised-button color="primary" (click)="abrirModalCrear()">
+      <mat-icon>add</mat-icon>
+      Nuevo Folio
+    </button>
+  </div>
+
+  <div class="table-container" *ngIf="!cargando">
+    <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
+      <ng-container matColumnDef="id">
+        <th mat-header-cell *matHeaderCellDef>ID</th>
+        <td mat-cell *matCellDef="let element">{{ element.id }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="estado">
+        <th mat-header-cell *matHeaderCellDef>Estado</th>
+        <td mat-cell *matCellDef="let element">{{ element.estado }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="total_pagado">
+        <th mat-header-cell *matHeaderCellDef>Total Pagado</th>
+        <td mat-cell *matCellDef="let element">${{ element.total_pagado }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="huesped_nombre">
+        <th mat-header-cell *matHeaderCellDef>Huésped</th>
+        <td mat-cell *matCellDef="let element">
+          {{ element.huesped_nombre || 'N/A' }}
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="reserva_id">
+        <th mat-header-cell *matHeaderCellDef>Reserva</th>
+        <td mat-cell *matCellDef="let element">#{{ element.reserva }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="acciones">
+        <th mat-header-cell *matHeaderCellDef>Acciones</th>
+        <td mat-cell *matCellDef="let element">
+          <button
+            mat-icon-button
+            color="primary"
+            (click)="abrirModalEditar(element)"
+          >
+            <mat-icon>edit</mat-icon>
+          </button>
+          <button
+            mat-icon-button
+            color="warn"
+            (click)="eliminarFolio(element.id)"
+          >
+            <mat-icon>delete</mat-icon>
+          </button>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+    </table>
+  </div>
+
+  <div *ngIf="cargando" class="loading">
+    <p>Cargando...</p>
+  </div>
+</div>
