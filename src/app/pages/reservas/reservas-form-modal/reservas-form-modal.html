@@ -6,8 +6,7 @@
 <div mat-dialog-content class="pt-4 pb-3">
   <form [formGroup]="reservaForm" (ngSubmit)="enviarFormulario()">
     <div class="row">
-      <!-- Fecha de entrada -->
-      <div class="col-12 col-md-6 mb-4" style="margin-top: 8px;">
+      <div class="col-12 col-md-6 mb-4" style="margin-top: 8px">
         <mat-form-field appearance="outline" class="w-100">
           <mat-label>Fecha de entrada</mat-label>
           <input
@@ -30,7 +29,7 @@
       </div>
 
       <!-- Fecha de salida -->
-      <div class="col-12 col-md-6 mb-4" style="margin-top: 8px;">
+      <div class="col-12 col-md-6 mb-4" style="margin-top: 8px">
         <mat-form-field appearance="outline" class="w-100">
           <mat-label>Fecha de salida</mat-label>
           <input
@@ -78,7 +77,8 @@
               >Cargando huéspedes...</mat-option
             >
             <mat-option *ngFor="let huesped of huespedes" [value]="huesped.id">
-              {{ huesped.nombre }} {{ huesped.apellido }} - {{ huesped.email }}
+              {{ huesped.first_name }} {{ huesped.last_name }} - {{
+              huesped.email }}
             </mat-option>
           </mat-select>
           <mat-icon matSuffix>person</mat-icon>
