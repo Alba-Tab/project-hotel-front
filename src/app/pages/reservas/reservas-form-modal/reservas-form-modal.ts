@@ -23,6 +23,7 @@ import {
   DateAdapter,
   MAT_DATE_LOCALE,
   MAT_DATE_FORMATS,
+  MAT_NATIVE_DATE_FORMATS,
 } from '@angular/material/core';
 import { ApiService } from 'src/app/services/api.service';
 
@@ -43,6 +44,7 @@ import { ApiService } from 'src/app/services/api.service';
   providers: [
     { provide: DateAdapter, useClass: NativeDateAdapter },
     { provide: MAT_DATE_LOCALE, useValue: 'es-ES' },
+    { provide: MAT_DATE_FORMATS, useValue: MAT_NATIVE_DATE_FORMATS },
   ],
   templateUrl: './reservas-form-modal.html',
   styleUrl: './reservas-form-modal.scss',

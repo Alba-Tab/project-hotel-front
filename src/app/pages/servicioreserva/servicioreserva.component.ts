@@ -36,7 +36,7 @@ export class ServicioreservaComponent implements OnInit {
     'estado',
     'acciones',
   ];
-  private endpoint: string = 'servicioreservas/';
+  private endpoint: string = 'servicioreservas';
 
   constructor(
     private apiService: ApiService,
