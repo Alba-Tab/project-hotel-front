@@ -45,7 +45,7 @@ export class FolioEstanciaComponent implements OnInit {
 
   cargarFolios(): void {
     this.cargando = true;
-    this.apiService.listar<any[]>('folios-estancia').subscribe({
+    this.apiService.listar<any[]>('folioestancias').subscribe({
       next: (folios) => {
         this.dataSource = folios || [];
         this.cargando = false;
@@ -85,7 +85,7 @@ export class FolioEstanciaComponent implements OnInit {
   }
 
   crearFolio(datos: any): void {
-    this.apiService.crear('folios-estancia', datos).subscribe({
+    this.apiService.crear('folioestancias', datos).subscribe({
       next: () => {
         this.mostrarMensaje('Folio de estancia creado exitosamente');
         this.cargarFolios();
@@ -98,7 +98,7 @@ export class FolioEstanciaComponent implements OnInit {
   }
 
   actualizarFolio(id: number, datos: any): void {
-    this.apiService.actualizar('folios-estancia', id, datos).subscribe({
+    this.apiService.actualizar('folioestancias', id, datos).subscribe({
       next: () => {
         this.mostrarMensaje('Folio de estancia actualizado exitosamente');
         this.cargarFolios();
@@ -112,7 +112,7 @@ export class FolioEstanciaComponent implements OnInit {
 
   eliminarFolio(id: number): void {
     if (confirm('¿Estás seguro de eliminar este folio de estancia?')) {
-      this.apiService.eliminar('folios-estancia', id).subscribe({
+      this.apiService.eliminar('folioestancias', id).subscribe({
         next: () => {
           this.mostrarMensaje('Folio de estancia eliminado exitosamente');
           this.cargarFolios();

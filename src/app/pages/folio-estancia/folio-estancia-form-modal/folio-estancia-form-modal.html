@@ -31,7 +31,7 @@
       <mat-label>Huésped</mat-label>
       <mat-select formControlName="huesped" [disabled]="cargandoHuespedes">
         <mat-option *ngFor="let huesped of huespedes" [value]="huesped.id">
-          {{ huesped.nombre }} {{ huesped.apellido }}
+          {{ huesped.first_name }} {{ huesped.last_name }}
         </mat-option>
       </mat-select>
       <mat-error *ngIf="folioForm.get('huesped')?.invalid">
