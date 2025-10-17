@@ -83,6 +83,13 @@ export const routes: Routes = [
           ),
       },
       {
+        path: 'pagos',
+        loadComponent: () =>
+          import('./pages/pagos/pagos.component').then(
+            (m) => m.PagosComponent
+          ),
+      },
+      {
         path: 'fidelizacion',
         loadComponent: () =>
           import('./pages/fidelizacion/fidelizacion.component').then(

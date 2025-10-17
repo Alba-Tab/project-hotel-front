@@ -32,6 +32,11 @@ export const navItems: NavItem[] = [
     route: '/habitaciones',
   },
   {
+  displayName: 'Pagos',
+  iconName: 'solar:credit-card-line-duotone',
+  route: '/pagos',
+},
+  {
     displayName: 'Reservas',
     iconName: 'solar:calendar-mark-line-duotone',
     route: '/reservas',
