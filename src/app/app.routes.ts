@@ -6,20 +6,39 @@ import { authGuard } from './guards/auth.guard';
 
 import { TenantRegisterComponent } from './pages/tenant-register/tenant-register.component';
 import { MainPageComponent } from './pages/main-page/main-page.component';
-import { Usuarios } from './pages/usuarios/usuarios';
-import { RolesPermisos } from './pages/roles-permisos/roles-permisos';
 export const routes: Routes = [
-
+  {
+    path: '',
+    component: BlankComponent,
+    children: [
+      {
+        path: 'principal',
+        component: MainPageComponent, // ✅ Página principal como inicio
+        pathMatch: 'full',
+      },
+      {
+        path: 'authentication',
+        loadChildren: () =>
+          import('./pages/authentication/authentication.routes').then(
+            (m) => m.AuthenticationRoutes
+          ),
+      },
+      {
+        path: 'registrar-empresa',
+        component: TenantRegisterComponent,
+      },
+    ],
+  },
   {
     path: '',
     component: FullComponent,
-    canActivate: [authGuard], // ← Agregar esto
+    // canActivate: [authGuard], // ← Agregar esto
     children: [
-      // {
-      //   path: '',
-      //   redirectTo: '/dashboard',
-      //   pathMatch: 'full',
-      // },
+      {
+        path: '',
+        redirectTo: 'dashboard', // ✅ Sin barra inicial - redirección relativa
+        pathMatch: 'full',
+      },
       {
         path: 'dashboard',
         loadChildren: () =>
@@ -31,6 +50,11 @@ export const routes: Routes = [
           import('./pages/ui-components/ui-components.routes').then(
             (m) => m.UiComponentsRoutes
           ),
+      },
+      {
+        path: 'usuarios',
+        loadComponent: () =>
+          import('./pages/usuarios/usuarios').then((m) => m.Usuarios),
       },
       {
         path: 'hoteles',
@@ -45,7 +69,32 @@ export const routes: Routes = [
           import('./pages/habitaciones/habitaciones.component').then(
             (m) => m.HabitacionesComponent
           ),
-
+      },
+      {
+        path: 'reservas',
+        loadComponent: () =>
+          import('./pages/reservas/reservas').then((m) => m.Reservas),
+      },
+      {
+        path: 'servicioreserva',
+        loadComponent: () =>
+          import('./pages/servicioreserva/servicioreserva.component').then(
+            (m) => m.ServicioreservaComponent
+          ),
+      },
+      {
+        path: 'fidelizacion',
+        loadComponent: () =>
+          import('./pages/fidelizacion/fidelizacion.component').then(
+            (m) => m.FidelizacionComponent
+          ),
+      },
+      {
+        path: 'roles-permisos',
+        loadComponent: () =>
+          import('./pages/roles-permisos/roles-permisos').then(
+            (m) => m.RolesPermisos
+          ),
       },
       // {
       //   path: '',
@@ -66,40 +115,11 @@ export const routes: Routes = [
           import('./pages/extra/extra.routes').then((m) => m.ExtraRoutes),
       },
       {
-        path: 'usuarios',
-        component: Usuarios,
-
-      },
-      {
-        path: 'roles-permisos',
-        component: RolesPermisos,
-      },
-       {
         path: 'servicios',
-        component: ServiciosComponent,
-      }
-    ],
-  },
-
-  {
-    path: '',
-    component: BlankComponent,
-    children: [
-      {
-        path: 'inicio',
-        component: MainPageComponent, // ✅ Página principal como inicio
-        pathMatch: 'full',
-      },
-      {
-        path: 'authentication',
-        loadChildren: () =>
-          import('./pages/authentication/authentication.routes').then(
-            (m) => m.AuthenticationRoutes
+        loadComponent: () =>
+          import('./pages/servicios/servicios.component').then(
+            (m) => m.ServiciosComponent
           ),
-      },
-      {
-        path: 'registrar-empresa',
-        component: TenantRegisterComponent,
       },
     ],
   },
@@ -109,12 +129,5 @@ export const routes: Routes = [
     redirectTo: 'authentication/error',
   },
 
-
-
-//   {
-//   path: 'servicios',
-//   loadComponent: () =>
-//     import('./pages/servicios/servicios.component').then((m) => m.ServiciosComponent),
-// },
 
 ];

@@ -1,14 +1,30 @@
 import { Component, Inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
-import { MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import {
+  FormBuilder,
+  FormGroup,
+  Validators,
+  ReactiveFormsModule,
+} from '@angular/forms';
+import {
+  MatDialogModule,
+  MatDialogRef,
+  MAT_DIALOG_DATA,
+} from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MatNativeDateModule } from '@angular/material/core';
+import {
+  MatNativeDateModule,
+  NativeDateAdapter,
+  DateAdapter,
+  MAT_DATE_LOCALE,
+  MAT_DATE_FORMATS,
+  MAT_NATIVE_DATE_FORMATS,
+} from '@angular/material/core';
 import { ApiService } from 'src/app/services/api.service';
 
 @Component({
@@ -23,16 +39,26 @@ import { ApiService } from 'src/app/services/api.service';
     MatInputModule,
     MatSelectModule,
     MatDatepickerModule,
-    MatNativeDateModule
+    MatNativeDateModule,
+  ],
+  providers: [
+    { provide: DateAdapter, useClass: NativeDateAdapter },
+    { provide: MAT_DATE_LOCALE, useValue: 'es-ES' },
+    { provide: MAT_DATE_FORMATS, useValue: MAT_NATIVE_DATE_FORMATS },
   ],
   templateUrl: './reservas-form-modal.html',
-  styleUrl: './reservas-form-modal.scss'
+  styleUrl: './reservas-form-modal.scss',
 })
 export class ReservasFormModal {
   reservaForm: FormGroup;
   isEdit: boolean;
   habitaciones: any[] = [];
+  habitacionesFiltradas: any[] = [];
+  huespedes: any[] = [];
+  hoteles: any[] = [];
   cargandoHabitaciones = false;
+  cargandoHuespedes = false;
+  cargandoHoteles = false;
 
   constructor(
     private fb: FormBuilder,
@@ -46,16 +72,28 @@ export class ReservasFormModal {
     this.reservaForm = this.fb.group({
       fecha_entrada: ['', Validators.required],
       fecha_salida: ['', Validators.required],
-      total: [{ value: 0, disabled: true }, [Validators.required, Validators.min(0)]],
+      total: [
+        { value: 0, disabled: true },
+        [Validators.required, Validators.min(0)],
+      ],
       estado: ['confirmada', Validators.required],
       huesped: ['', Validators.required],
       hotel: ['', Validators.required],
-      habitacion: ['', Validators.required]
+      habitacion: ['', Validators.required],
     });
   }
 
   ngOnInit(): void {
     this.obtenerHabitaciones();
+    this.obtenerHuespedes();
+    this.obtenerHoteles();
+
+    // Escuchar cambios en el hotel para filtrar habitaciones
+    this.reservaForm.get('hotel')?.valueChanges.subscribe((hotelId) => {
+      this.filtrarHabitacionesPorHotel(hotelId);
+      // Limpiar selección de habitación cuando cambia el hotel
+      this.reservaForm.get('habitacion')?.setValue('');
+    });
 
     if (this.isEdit && this.data?.reserva) {
       this.reservaForm.patchValue({
@@ -65,12 +103,23 @@ export class ReservasFormModal {
         estado: this.data.reserva.estado ?? 'confirmada',
         huesped: this.data.reserva.huesped,
         hotel: this.data.reserva.hotel,
-        habitacion: this.data.reserva.habitacion
+        habitacion: this.data.reserva.habitacion,
       });
     }
 
     // aseguramos que total se muestre como 0 siempre
     this.reservaForm.get('total')?.setValue(0);
+  }
+
+  /** Filtrar habitaciones por hotel seleccionado */
+  filtrarHabitacionesPorHotel(hotelId: number): void {
+    if (!hotelId) {
+      this.habitacionesFiltradas = [];
+      return;
+    }
+    this.habitacionesFiltradas = this.habitaciones.filter(
+      (hab) => hab.hotel === hotelId
+    );
   }
 
   /** Cargar habitaciones desde la API */
@@ -84,7 +133,37 @@ export class ReservasFormModal {
       error: (error) => {
         console.error('Error al cargar habitaciones:', error);
         this.cargandoHabitaciones = false;
-      }
+      },
+    });
+  }
+
+  /** Cargar huéspedes desde la API */
+  obtenerHuespedes(): void {
+    this.cargandoHuespedes = true;
+    this.apiService.listar<any[]>('usuarios').subscribe({
+      next: (huespedes) => {
+        this.huespedes = huespedes || [];
+        this.cargandoHuespedes = false;
+      },
+      error: (error) => {
+        console.error('Error al cargar huéspedes:', error);
+        this.cargandoHuespedes = false;
+      },
+    });
+  }
+
+  /** Cargar hoteles desde la API */
+  obtenerHoteles(): void {
+    this.cargandoHoteles = true;
+    this.apiService.listar<any[]>('hoteles').subscribe({
+      next: (hoteles) => {
+        this.hoteles = hoteles || [];
+        this.cargandoHoteles = false;
+      },
+      error: (error) => {
+        console.error('Error al cargar hoteles:', error);
+        this.cargandoHoteles = false;
+      },
     });
   }
 
@@ -101,7 +180,7 @@ export class ReservasFormModal {
         estado: raw.estado,
         huesped: Number(raw.huesped),
         hotel: Number(raw.hotel),
-        habitacion: Number(raw.habitacion)
+        habitacion: Number(raw.habitacion),
       };
 
       this.dialogRef.close(payload);
@@ -117,7 +196,7 @@ export class ReservasFormModal {
 
   /** Marcar todos los campos como tocados para mostrar errores */
   private marcarCamposTocados(): void {
-    Object.keys(this.reservaForm.controls).forEach(key => {
+    Object.keys(this.reservaForm.controls).forEach((key) => {
       this.reservaForm.get(key)?.markAsTouched();
     });
   }
@@ -129,7 +208,9 @@ export class ReservasFormModal {
       return `${this.obtenerEtiquetaCampo(nombreCampo)} es obligatorio`;
     }
     if (campo?.hasError('min')) {
-      return `${this.obtenerEtiquetaCampo(nombreCampo)} debe ser un número positivo`;
+      return `${this.obtenerEtiquetaCampo(
+        nombreCampo
+      )} debe ser un número positivo`;
     }
     return '';
   }
@@ -143,7 +224,7 @@ export class ReservasFormModal {
       estado: 'El estado',
       huesped: 'El huésped',
       hotel: 'El hotel',
-      habitacion: 'La habitación'
+      habitacion: 'La habitación',
     };
     return labels[nombreCampo] || nombreCampo;
   }

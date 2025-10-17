@@ -1,0 +1,44 @@
+<h1 mat-dialog-title>Crear Cuenta de Fidelización</h1>
+<div mat-dialog-content>
+  <form [formGroup]="form">
+    <mat-form-field appearance="outline">
+      <mat-label>Usuario</mat-label>
+      <mat-select formControlName="cliente">
+        @for (usuario of usuarios; track usuario.id) {
+        <mat-option [value]="usuario.id">
+          {{ usuario.first_name }} {{ usuario.last_name }} ({{ usuario.email }})
+        </mat-option>
+        }
+      </mat-select>
+      @if (form.get('cliente')?.invalid && form.get('cliente')?.touched) {
+      <mat-error>Seleccione un usuario</mat-error>
+      }
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Programa de Fidelización</mat-label>
+      <mat-select formControlName="fidelizacion">
+        @for (programa of data.programas; track programa.id) {
+        <mat-option [value]="programa.id">
+          {{ programa.nombre }} (Max: {{ programa.descuento_maximo }}%)
+        </mat-option>
+        }
+      </mat-select>
+      @if (form.get('fidelizacion')?.invalid &&
+      form.get('fidelizacion')?.touched) {
+      <mat-error>Seleccione un programa</mat-error>
+      }
+    </mat-form-field>
+  </form>
+</div>
+<div mat-dialog-actions align="end">
+  <button mat-button (click)="cancelar()">Cancelar</button>
+  <button
+    mat-raised-button
+    color="primary"
+    (click)="guardar()"
+    [disabled]="form.invalid"
+  >
+    Crear Cuenta
+  </button>
+</div>

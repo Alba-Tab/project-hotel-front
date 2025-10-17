@@ -1,0 +1,23 @@
+mat-dialog-content {
+  padding: 20px 24px;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+mat-form-field {
+  width: 100%;
+}
+
+mat-dialog-actions {
+  padding: 16px 24px;
+  margin: 0;
+}
+
+h1[mat-dialog-title] {
+  margin: 0;
+  padding: 20px 24px;
+}

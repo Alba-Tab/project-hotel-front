@@ -30,14 +30,14 @@
       </div>
     } @else {
       <!-- Botón para agregar nuevo usuario -->
-       @if (usuarioPermisos().includes('add_user')) {
+       <!-- @if (usuarioPermisos().includes('add_user')) { -->
         <div class="action-buttons m-b-16">
           <button mat-raised-button color="primary" [disabled]="operationLoading()" (click)="onCrearUsuario()">
             <mat-icon>add</mat-icon>
             Nuevo Usuario
           </button>
         </div>
-       }
+       <!-- } -->
 
 
       <div class="table-responsive">

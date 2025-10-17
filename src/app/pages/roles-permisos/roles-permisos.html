@@ -16,7 +16,7 @@
       </div>
     } @else {
       <!-- Botón para agregar nuevo rol -->
-       @if (usuarioPermisos().includes('add_group')) {
+       <!-- @if (usuarioPermisos().includes('add_group')) { -->
         <div class="action-buttons m-b-16">
           <button mat-raised-button color="primary" [disabled]="operationLoading()" (click)="onCrearRol()">
             <mat-icon>add</mat-icon>
@@ -24,7 +24,7 @@
           </button>
         </div>
 
-       }
+       <!-- } -->
 
       <div class="table-responsive">
         <table mat-table [dataSource]="roles()" class="w-100">
