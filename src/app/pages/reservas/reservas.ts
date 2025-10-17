@@ -223,7 +223,7 @@ export class Reservas implements OnInit {
 
   realizarCheckIn(datos: any): void {
     this.loading = true;
-    this.apiService.crear('check-in-out', datos).subscribe({
+    this.apiService.crear('checkinout', datos).subscribe({
       next: () => {
         this.snackBar.open('Check-In realizado correctamente', 'Cerrar', {
           duration: 3000,
