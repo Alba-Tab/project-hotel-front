@@ -100,7 +100,7 @@ export class CheckInOutModal implements OnInit {
       const formValue = this.form.getRawValue();
 
       const data: any = {
-        reserva: this.reserva.id,
+        reserva_id: this.reserva.id,
         fecha_checkin: this.formatDate(formValue.fecha_checkin),
         hora_checkin: formValue.hora_checkin,
         observaciones: formValue.observaciones || '',

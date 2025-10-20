@@ -222,16 +222,18 @@ export class Reservas implements OnInit {
   }
 
   realizarCheckIn(datos: any): void {
+    console.log('🔄 Realizando Check-In con datos:', datos);
     this.loading = true;
-    this.apiService.crear('checkinout', datos).subscribe({
+    this.apiService.crear('checkinout/checkin', datos).subscribe({
       next: () => {
+        console.log('✅ Check-In realizado correctamente');
         this.snackBar.open('Check-In realizado correctamente', 'Cerrar', {
           duration: 3000,
         });
         this.cargarDatos();
       },
       error: (error) => {
-        console.error('Error al realizar check-in:', error);
+        console.error('❌ Error al realizar check-in:', error);
         const mensaje = error?.error?.detail || 'Error al realizar el check-in';
         this.snackBar.open(mensaje, 'Cerrar', { duration: 3000 });
         this.loading = false;
@@ -240,16 +242,35 @@ export class Reservas implements OnInit {
   }
 
   realizarCheckOut(checkInOutId: number, datos: any): void {
+    console.log('🔄 Realizando Check-Out con datos:', datos);
     this.loading = true;
-    this.apiService.editar('check-in-out', checkInOutId, datos).subscribe({
+    
+    // Actualizar el check-out
+    this.apiService.editar('checkinout', checkInOutId, datos).subscribe({
       next: () => {
-        this.snackBar.open('Check-Out realizado correctamente', 'Cerrar', {
-          duration: 3000,
+        console.log('✅ Check-Out actualizado');
+        
+        // Cambiar el estado de la reserva a 'realizada' al completar el check-out
+        const updateData = { estado: 'realizada' };
+        this.apiService.editar('reservas', datos.reserva_id, updateData).subscribe({
+          next: () => {
+            console.log('✅ Estado de reserva actualizado a realizada');
+            this.snackBar.open('Check-Out realizado correctamente', 'Cerrar', {
+              duration: 3000,
+            });
+            this.cargarDatos();
+          },
+          error: (error) => {
+            console.error('❌ Error al actualizar estado de reserva:', error);
+            this.snackBar.open('Check-Out realizado, pero error al actualizar estado', 'Cerrar', {
+              duration: 3000,
+            });
+            this.cargarDatos();
+          }
         });
-        this.cargarDatos();
       },
       error: (error) => {
-        console.error('Error al realizar check-out:', error);
+        console.error('❌ Error al realizar check-out:', error);
         const mensaje =
           error?.error?.detail || 'Error al realizar el check-out';
         this.snackBar.open(mensaje, 'Cerrar', { duration: 3000 });
