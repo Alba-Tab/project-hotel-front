@@ -148,13 +148,13 @@
                 <div *ngIf="tieneCheckIn(r)" class="check-info">
                   <small class="text-muted">
                     <mat-icon class="small-icon">login</mat-icon>
-                    {{ r.checkinout.fecha_checkin | date:'short' }}
+                    {{ r.checkin.fecha_checkin | date:'short' }}
                   </small>
                 </div>
                 <div *ngIf="tieneCheckOut(r)" class="check-info">
                   <small class="text-muted">
                     <mat-icon class="small-icon">logout</mat-icon>
-                    {{ r.checkinout.fecha_checkout | date:'short' }}
+                    {{ r.checkout.fecha_checkout | date:'short' }}
                   </small>
                 </div>
               </div>

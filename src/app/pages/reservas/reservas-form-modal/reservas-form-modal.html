@@ -139,7 +139,7 @@
               *ngFor="let hab of habitacionesFiltradas"
               [value]="hab.id"
             >
-              Habitación {{ hab.nro_habitacion }} — {{ hab.precio_noche |
+              Habitación {{ hab.numero }} — {{ hab.precio_noche |
               currency:'USD' }}/noche ({{ hab.tipo | titlecase }})
             </mat-option>
           </mat-select>

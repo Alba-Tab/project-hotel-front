@@ -172,20 +172,21 @@ export class Reservas implements OnInit {
   // Métodos para Check-In/Check-Out
   puedeHacerCheckIn(reserva: any): boolean {
     return (
-      reserva.estado?.toLowerCase() === 'confirmada' && !reserva.checkinout
+      reserva.estado?.toLowerCase() === 'confirmada' && !reserva.checkin
     );
   }
 
   puedeHacerCheckOut(reserva: any): boolean {
-    return reserva.checkinout && !reserva.checkinout.fecha_checkout;
+    return reserva.checkin && reserva.checkin.fecha_checkin &&
+           (!reserva.checkout || !reserva.checkout.fecha_checkout);
   }
 
   tieneCheckIn(reserva: any): boolean {
-    return reserva.checkinout && reserva.checkinout.fecha_checkin;
+    return reserva.checkin && reserva.checkin.fecha_checkin;
   }
 
   tieneCheckOut(reserva: any): boolean {
-    return reserva.checkinout && reserva.checkinout.fecha_checkout;
+    return reserva.checkout && reserva.checkout.fecha_checkout;
   }
 
   abrirModalCheckIn(reserva: any): void {
@@ -212,12 +213,12 @@ export class Reservas implements OnInit {
       data: {
         reserva,
         isCheckOut: true,
-        checkInData: reserva.checkinout,
+        checkInData: reserva.ckeckin,
       },
     });
 
     dialogRef.afterClosed().subscribe((result) => {
-      if (result) this.realizarCheckOut(reserva.checkinout.id, result);
+      if (result) this.realizarCheckOut(reserva.id, result);
     });
   }
 
@@ -241,33 +242,35 @@ export class Reservas implements OnInit {
     });
   }
 
-  realizarCheckOut(checkInOutId: number, datos: any): void {
+  realizarCheckOut(reservaId: number, datos: any): void {
     console.log('🔄 Realizando Check-Out con datos:', datos);
+    console.log('🏨 ID de reserva:', reservaId);
     this.loading = true;
     
-    // Actualizar el check-out
-    this.apiService.editar('checkinout', checkInOutId, datos).subscribe({
+    // Realizar check-out usando el ID de la reserva
+    this.apiService.editar(`checkinout/checkout`, reservaId, datos).subscribe({
       next: () => {
         console.log('✅ Check-Out actualizado');
+        this.cargarDatos();
         
-        // Cambiar el estado de la reserva a 'realizada' al completar el check-out
-        const updateData = { estado: 'realizada' };
-        this.apiService.editar('reservas', datos.reserva_id, updateData).subscribe({
-          next: () => {
-            console.log('✅ Estado de reserva actualizado a realizada');
-            this.snackBar.open('Check-Out realizado correctamente', 'Cerrar', {
-              duration: 3000,
-            });
-            this.cargarDatos();
-          },
-          error: (error) => {
-            console.error('❌ Error al actualizar estado de reserva:', error);
-            this.snackBar.open('Check-Out realizado, pero error al actualizar estado', 'Cerrar', {
-              duration: 3000,
-            });
-            this.cargarDatos();
-          }
-        });
+        // // Cambiar el estado de la reserva a 'realizada' al completar el check-out
+        // const updateData = { estado: 'realizada' };
+        // this.apiService.editar('reservas', reservaId, updateData).subscribe({
+        //   next: () => {
+        //     console.log('✅ Estado de reserva actualizado a realizada');
+        //     this.snackBar.open('Check-Out realizado correctamente', 'Cerrar', {
+        //       duration: 3000,
+        //     });
+        //     this.cargarDatos();
+        //   },
+        //   error: (error) => {
+        //     console.error('❌ Error al actualizar estado de reserva:', error);
+        //     this.snackBar.open('Check-Out realizado, pero error al actualizar estado', 'Cerrar', {
+        //       duration: 3000,
+        //     });
+        //     this.cargarDatos();
+        //   }
+        // });
       },
       error: (error) => {
         console.error('❌ Error al realizar check-out:', error);
