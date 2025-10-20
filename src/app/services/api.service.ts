@@ -72,6 +72,13 @@ export class ApiService {
   }
 
   /**
+   * GET - Obtener detalle del folio por ID
+   */
+  obtenerDetalleFolio(id: number): Observable<any> {
+    return this.http.get<any>(`${this.urlBase}/folioestancias/${id}/detalle-folio/`);
+  }
+
+  /**
    * Construir parámetros HTTP
    */
   private construirParametros(parametros?: any): HttpParams {

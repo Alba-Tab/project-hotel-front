@@ -7,6 +7,7 @@ import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { ApiService } from 'src/app/services/api.service';
 import { FolioEstanciaFormModal } from './folio-estancia-form-modal/folio-estancia-form-modal';
+import { FolioVerModal } from './folio-ver-modal/folio-ver-modal';
 
 @Component({
   selector: 'app-folio-estancia',
@@ -58,71 +59,11 @@ export class FolioEstanciaComponent implements OnInit {
     });
   }
 
-  abrirModalCrear(): void {
-    const dialogRef = this.dialog.open(FolioEstanciaFormModal, {
-      width: '600px',
-      data: { isEdit: false },
-    });
-
-    dialogRef.afterClosed().subscribe((resultado) => {
-      if (resultado) {
-        this.crearFolio(resultado);
-      }
-    });
-  }
-
-  abrirModalEditar(folio: any): void {
-    const dialogRef = this.dialog.open(FolioEstanciaFormModal, {
-      width: '600px',
-      data: { isEdit: true, folio },
-    });
-
-    dialogRef.afterClosed().subscribe((resultado) => {
-      if (resultado) {
-        this.actualizarFolio(folio.id, resultado);
-      }
-    });
-  }
-
-  crearFolio(datos: any): void {
-    this.apiService.crear('folioestancias', datos).subscribe({
-      next: () => {
-        this.mostrarMensaje('Folio de estancia creado exitosamente');
-        this.cargarFolios();
-      },
-      error: (error) => {
-        console.error('Error al crear folio de estancia:', error);
-        this.mostrarMensaje('Error al crear folio de estancia');
-      },
-    });
-  }
-
-  actualizarFolio(id: number, datos: any): void {
-    this.apiService.actualizar('folioestancias', id, datos).subscribe({
-      next: () => {
-        this.mostrarMensaje('Folio de estancia actualizado exitosamente');
-        this.cargarFolios();
-      },
-      error: (error) => {
-        console.error('Error al actualizar folio de estancia:', error);
-        this.mostrarMensaje('Error al actualizar folio de estancia');
-      },
-    });
-  }
-
-  eliminarFolio(id: number): void {
-    if (confirm('¿Estás seguro de eliminar este folio de estancia?')) {
-      this.apiService.eliminar('folioestancias', id).subscribe({
-        next: () => {
-          this.mostrarMensaje('Folio de estancia eliminado exitosamente');
-          this.cargarFolios();
-        },
-        error: (error) => {
-          console.error('Error al eliminar folio de estancia:', error);
-          this.mostrarMensaje('Error al eliminar folio de estancia');
-        },
-      });
-    }
+  abrirModalVer(folio: any): void {
+   const dialogRef = this.dialog.open(FolioVerModal, {
+    width: '600px',
+    data: { folioId: folio.id }
+  });
   }
 
   private mostrarMensaje(mensaje: string): void {
