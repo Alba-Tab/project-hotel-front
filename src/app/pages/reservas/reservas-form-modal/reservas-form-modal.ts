@@ -108,7 +108,18 @@ export class ReservasFormModal {
     }
 
     // aseguramos que total se muestre como 0 siempre
-    this.reservaForm.get('total')?.setValue(0);
+    this.reservaForm.get('habitacion')?.valueChanges.subscribe(() => {
+      this.calcularTotal();
+    });
+
+    this.reservaForm.get('fecha_entrada')?.valueChanges.subscribe(() => {
+      this.calcularTotal();
+    });
+
+    this.reservaForm.get('fecha_salida')?.valueChanges.subscribe(() => {
+      this.calcularTotal();
+    });
+
   }
 
   /** Filtrar habitaciones por hotel seleccionado */
@@ -165,6 +176,34 @@ export class ReservasFormModal {
         this.cargandoHoteles = false;
       },
     });
+  }
+  /** Calcular total automáticamente al seleccionar habitación o fechas */
+  calcularTotal(): void {
+    const habitacion = this.reservaForm.get('habitacion')?.value;
+    const fechaEntrada = this.reservaForm.get('fecha_entrada')?.value;
+    const fechaSalida = this.reservaForm.get('fecha_salida')?.value;
+
+    if (!habitacion || !fechaEntrada || !fechaSalida) {
+      this.reservaForm.get('total')?.setValue(0);
+      return;
+    }
+
+    const fechaIn = new Date(fechaEntrada);
+    const fechaOut = new Date(fechaSalida);
+    const noches = Math.max(
+      1,
+      Math.ceil((fechaOut.getTime() - fechaIn.getTime()) / (1000 * 60 * 60 * 24))
+    );
+
+    // Busca el precio de la habitación seleccionada
+    const habSeleccionada = this.habitaciones.find(
+      (h) => h.id === Number(habitacion)
+    );
+
+    const precio = habSeleccionada?.precio || habSeleccionada?.precio_noche || 0;
+    const total = noches * precio;
+
+    this.reservaForm.get('total')?.setValue(total.toFixed(2));
   }
 
   /** Enviar formulario (crear/actualizar) */

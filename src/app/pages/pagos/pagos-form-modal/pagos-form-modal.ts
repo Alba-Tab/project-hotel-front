@@ -24,6 +24,7 @@ import { ApiService } from 'src/app/services/api.service';
 
 @Component({
   selector: 'app-pagos-form-modal',
+  standalone: true,
   imports: [
     CommonModule,
     ReactiveFormsModule,
@@ -39,11 +40,11 @@ import { ApiService } from 'src/app/services/api.service';
     MatChipsModule,
   ],
   templateUrl: './pagos-form-modal.html',
-  styleUrl: './pagos-form-modal.scss',
+  styleUrls: ['./pagos-form-modal.scss'],
 })
 export class PagosFormModal implements OnInit {
   pagoForm: FormGroup;
-  isEdit: boolean;
+  isEdit: boolean = false;
   usuarios: any[] = [];
   usuariosFiltrados: any[] = [];
   folios: any[] = [];
@@ -59,8 +60,6 @@ export class PagosFormModal implements OnInit {
     public dialogRef: MatDialogRef<PagosFormModal>,
     @Inject(MAT_DIALOG_DATA) public data: any
   ) {
-    this.isEdit = data?.isEdit || false;
-
     this.pagoForm = this.fb.group({
       monto: [0, [Validators.required, Validators.min(0.01)]],
       metodo: ['', Validators.required],
@@ -71,15 +70,6 @@ export class PagosFormModal implements OnInit {
 
   ngOnInit(): void {
     this.obtenerUsuarios();
-
-    if (this.isEdit && this.data?.pago) {
-      this.pagoForm.patchValue({
-        monto: this.data.pago.monto,
-        metodo: this.data.pago.metodo,
-        referencia: this.data.pago.referencia,
-        folio_id: this.data.pago.folio_id,
-      });
-    }
   }
 
   /** Cargar usuarios desde la API */
@@ -106,9 +96,7 @@ export class PagosFormModal implements OnInit {
     }
 
     const termino = this.busquedaUsuario.toLowerCase();
-    this.usuariosFiltrados = this.usuarios.filter(usuario => 
-      usuario.first_name?.toLowerCase().includes(termino) ||
-      usuario.last_name?.toLowerCase().includes(termino) ||
+    this.usuariosFiltrados = this.usuarios.filter((usuario) =>
       `${usuario.first_name} ${usuario.last_name}`.toLowerCase().includes(termino)
     );
   }
@@ -118,89 +106,51 @@ export class PagosFormModal implements OnInit {
     this.usuarioSeleccionado = usuario;
     this.busquedaUsuario = `${usuario.first_name} ${usuario.last_name}`;
     this.usuariosFiltrados = [];
+
     this.obtenerFoliosPorUsuario(usuario.id);
-    // Limpiar selección de folio
-    this.folioSeleccionado = null;
     this.pagoForm.get('folio_id')?.setValue('');
     this.pagoForm.get('monto')?.setValue('');
   }
 
   /** Cargar folios por usuario desde la API */
   obtenerFoliosPorUsuario(idUsuario: number): void {
-    this.cargandoFolios = true;
-    this.apiService.listar<any[]>('folioestancias/por-usuario', { id_usuario: idUsuario }).subscribe({
-      next: (folios) => {
-        this.folios = folios || [];
-        this.cargandoFolios = false;
-      },
-      error: (error) => {
-        console.error('Error al cargar folios:', error);
-        this.cargandoFolios = false;
-      },
-    });
-  }
+  this.cargandoFolios = true;
 
-  /** Seleccionar folio y calcular monto total */
-  seleccionarFolio(folio: any): void {
-    console.log('Folio seleccionado:', folio);
-    this.folioSeleccionado = folio;
-    this.pagoForm.get('folio_id')?.setValue(folio.id);
-    
-    // Obtener detalle del folio para calcular monto total
-    console.log('Llamando a obtenerDetalleFolio con ID:', folio.id);
-    this.apiService.obtenerDetalleFolio(folio.id).subscribe({
-      next: (detalle) => {
-        console.log('Detalle recibido del API:', detalle);
-        const montoTotal = this.calcularMontoTotal(detalle);
-        console.log('Monto total calculado:', montoTotal);
-        this.pagoForm.get('monto')?.setValue(montoTotal);
-        console.log('Valor en el formulario:', this.pagoForm.get('monto')?.value);
-      },
-      error: (error) => {
-        console.error('Error al obtener detalle del folio:', error);
-      }
-    });
-  }
+  // ✅ Endpoint actualizado según backend actual
+  this.apiService.listar<any[]>(`folioestancias/huesped/${idUsuario}/`).subscribe({
+    next: (folios) => {
+      // Solo folios que no estén pagados
+      this.folios = (folios || [])
+        .filter((f) => f.estado !== 'Pagado')
+        .map((f) => ({
+          ...f,
+          // ✅ Creamos el texto visible del folio
+          display: `Folio #${f.id} - ${f.hotel_nombre} - ${f.estado}`,
+        }));
+      this.cargandoFolios = false;
+    },
+    error: (error) => {
+      console.error('Error al cargar folios:', error);
+      this.cargandoFolios = false;
+    },
+  });
+}
 
-  /** Calcular monto total sumando servicios_reservas + total de la reserva */
-  calcularMontoTotal(detalleFolio: any): number {
-    console.log('Detalle del folio recibido:', detalleFolio);
-    
-    // Obtener el total de la reserva
-    const totalReserva = parseFloat(detalleFolio.reserva?.total || 0);
-    console.log('Total de la reserva:', totalReserva);
+  /** Seleccionar folio y establecer monto automáticamente */
+ /** Seleccionar folio y establecer monto automáticamente */
+seleccionarFolio(folio: any): void {
+  this.folioSeleccionado = folio;
+  this.pagoForm.get('folio_id')?.setValue(folio.id);
+  this.pagoForm.get('monto')?.setValue(Number(folio.reserva_total));
+}
 
-    // Sumar servicios_reservas
-    let totalServicios = 0;
-    if (detalleFolio.servicios_reservas && detalleFolio.servicios_reservas.length > 0) {
-      console.log('Servicios encontrados:', detalleFolio.servicios_reservas);
-      
-      totalServicios = detalleFolio.servicios_reservas.reduce((total: number, servicio: any) => {
-        const montoServicio = parseFloat(servicio.monto_total || 0);
-        console.log(`Servicio: ${servicio.nombre_servicio} - Monto: ${montoServicio}`);
-        return total + montoServicio;
-      }, 0);
-    } else {
-      console.log('No hay servicios_reservas');
-    }
 
-    console.log('Total servicios:', totalServicios);
-
-    // Total final = reserva + servicios
-    const totalFinal = totalReserva + totalServicios;
-    console.log('Total final calculado (reserva + servicios):', totalFinal);
-
-    return totalFinal;
-  }
-
-  /** Formatear texto del folio para mostrar en select */
+  /** Mostrar formato legible del folio en el select */
   formatearFolio(folio: any): string {
-    const formato = `Folio #${folio.id} - ${folio.estado} - Reserva #${folio.reserva_id}`;
-    console.log('Formato de folio:', formato);
-    return formato;
+    return `Folio #${folio.id} - ${folio.nombre_hotel} - ${folio.estado}`;
   }
 
-  /** Limpiar búsqueda de usuario */
+  /** Limpiar búsqueda y selección */
   limpiarBusqueda(): void {
     this.busquedaUsuario = '';
     this.usuarioSeleccionado = null;
@@ -211,53 +161,54 @@ export class PagosFormModal implements OnInit {
     this.pagoForm.get('monto')?.setValue('');
   }
 
+  /** Enviar formulario (crear pago) */
   /** Enviar formulario (crear/actualizar) */
-  enviarFormulario(): void {
-    if (this.pagoForm.valid) {
-      const raw = this.pagoForm.value; // Usar value en lugar de getRawValue
+enviarFormulario(): void {
+  if (this.pagoForm.valid) {
+    const raw = this.pagoForm.value;
 
-      const payload = {
-        monto: Number(raw.monto),
-        metodo: raw.metodo,
-        referencia: raw.referencia,
-        folio_id: Number(raw.folio_id),
-        // fecha_pago se asigna en el backend
-      };
+    const fechaActual = new Date();
+    const fechaISO = fechaActual.toISOString().split('T')[0]; // formato YYYY-MM-DD
 
-      console.log('Payload a enviar:', payload);
-      this.dialogRef.close(payload);
-    } else {
-      this.marcarCamposTocados();
-    }
+    const payload = {
+      folio_id: Number(raw.folio_id),
+      metodo: raw.metodo,
+      referencia: raw.referencia,
+      monto: Number(raw.monto),
+      fecha_pago: fechaISO, // ✅ Añadimos la fecha
+    };
+
+    console.log('📦 Payload enviado a backend:', payload);
+    this.dialogRef.close(payload);
+  } else {
+    this.marcarCamposTocados();
   }
+}
 
-  /** Cancelar y cerrar modal */
+
   cancelar(): void {
     this.dialogRef.close();
   }
 
-  /** Marcar todos los campos como tocados para mostrar errores */
+  /** Marcar todos los campos como tocados */
   private marcarCamposTocados(): void {
-    Object.keys(this.pagoForm.controls).forEach((key) => {
-      this.pagoForm.get(key)?.markAsTouched();
-    });
+    Object.keys(this.pagoForm.controls).forEach((key) =>
+      this.pagoForm.get(key)?.markAsTouched()
+    );
   }
 
-  /** Mensajes de error de validación */
+  /** Mensajes de error */
   obtenerMensajeError(nombreCampo: string): string {
     const campo = this.pagoForm.get(nombreCampo);
     if (campo?.hasError('required')) {
       return `${this.obtenerEtiquetaCampo(nombreCampo)} es obligatorio`;
     }
     if (campo?.hasError('min')) {
-      return `${this.obtenerEtiquetaCampo(
-        nombreCampo
-      )} debe ser mayor a 0`;
+      return `${this.obtenerEtiquetaCampo(nombreCampo)} debe ser mayor a 0`;
     }
     return '';
   }
 
-  /** Etiquetas legibles por campo */
   private obtenerEtiquetaCampo(nombreCampo: string): string {
     const labels: Record<string, string> = {
       monto: 'El monto',

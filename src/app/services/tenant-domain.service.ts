@@ -16,7 +16,7 @@ export class TenantDomainService {
 
     this.apiUrl = this.isTenant
       ? `http://${this.subdomain}.localhost:8000/api`
-      : `http://localhost:8000/api`;
+      : `http://hotelsol.localhost:8000/api`;
 
     this.logInfo();
   }
