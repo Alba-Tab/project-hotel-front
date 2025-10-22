@@ -22,8 +22,8 @@
           @if (servicioForm.get('folioestancia')?.hasError('required') &&
           servicioForm.get('folioestancia')?.touched) {
           <mat-error>El folio de estancia es requerido</mat-error>
-          }
-          @if (servicioForm.get('folioestancia')?.disabled && data?.huesped_nombre) {
+          } @if (servicioForm.get('folioestancia')?.disabled &&
+          data?.huesped_nombre) {
           <mat-hint>
             📋 Folio precargado para: <strong>{{ data.huesped_nombre }}</strong>
           </mat-hint>

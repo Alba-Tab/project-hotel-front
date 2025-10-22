@@ -104,8 +104,8 @@ export class FolioEstanciaComponent implements OnInit {
           huesped_id: folio.huesped_id,
           huesped_nombre: folio.huesped_nombre,
           total: folio.total_pagado, // ✅ Usar total_pagado del folio
-        }
-      }
+        },
+      },
     });
 
     dialogRef.afterClosed().subscribe((payload) => {
