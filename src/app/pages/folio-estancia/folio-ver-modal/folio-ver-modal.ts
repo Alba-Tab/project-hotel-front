@@ -51,6 +51,13 @@ export class FolioVerModal implements OnInit {
     return total;
   }
 
+  // Método para calcular el total general (reserva + servicios)
+  calcularTotalGeneral(): number {
+    const totalReserva = parseFloat(this.folio?.reserva?.total || '0');
+    const totalServicios = this.calcularTotalServicios();
+    return totalReserva + totalServicios;
+  }
+
   cancelar(): void {
     this.dialogRef.close();  // Cerrar el modal
   }

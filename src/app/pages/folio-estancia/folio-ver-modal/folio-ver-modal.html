@@ -5,88 +5,163 @@
 
 <div mat-dialog-content class="pt-4 pb-3">
   <div class="folio-details">
-    <div class="row mb-3">
-      <div class="col-6">
-        <strong>Folio ID:</strong> {{ folio.id }}
-      </div>
-      <div class="col-6">
-        <strong>Estado:</strong> {{ folio.estado }}
-      </div>
-    </div>
+    
+    <!-- Información del Hotel -->
+    <mat-card class="mb-3">
+      <mat-card-header>
+        <mat-card-title class="d-flex align-items-center">
+          <mat-icon class="text-primary me-2">hotel</mat-icon>
+            {{ folio.reserva.hotel.nombre }}
+        </mat-card-title>
+        <mat-card-subtitle>{{ folio.reserva.hotel.direccion }}, {{ folio.reserva.hotel.ciudad }}, {{ folio.reserva.hotel.pais }}</mat-card-subtitle>
+      </mat-card-header>
+    </mat-card>
 
-    <div class="row mb-3">
-      <div class="col-6">
-        <strong>Huésped:</strong> {{ folio.huesped.first_name }} {{ folio.huesped.last_name }}
-      </div>
-      <div class="col-6">
-        <strong>Reserva ID:</strong> #{{ folio.reserva.id }}
-      </div>
-    </div>
+    <mat-divider class="mb-3"></mat-divider>
 
-    <div class="row mb-3">
-      <div class="col-6">
-        <strong>Fecha Entrada:</strong> {{ folio.reserva.fecha_entrada | date: 'shortDate' }}
-      </div>
-      <div class="col-6">
-        <strong>Fecha Salida:</strong> {{ folio.reserva.fecha_salida | date: 'shortDate' }}
-      </div>
-    </div>
+    <!-- Información de la Habitación -->
+    <mat-card class="mb-3">
+      <mat-card-content>
+        <div class="d-flex align-items-center mb-2">
+          <mat-icon class="text-primary me-2">bed</mat-icon>
+          <h3 class="mb-0">Habitación N° {{ folio.reserva.habitacion.numero }}</h3>
+        </div>
+        <p class="text-muted mb-0">{{ folio.reserva.habitacion.descripcion }} - Capacidad: {{ folio.reserva.habitacion.capacidad }} personas</p>
+        <p class="text-muted mb-0">Precio por noche: ${{ folio.reserva.habitacion.precio_noche }}</p>
+      </mat-card-content>
+    </mat-card>
 
-    <div class="row mb-3">
-      <div class="col-12">
-        <strong>Total Pagado:</strong> ${{ folio.total_pagado }}
-      </div>
-    </div>
+    <mat-divider class="mb-3"></mat-divider>
 
-    <!-- Servicios de la reserva -->
-    <div *ngIf="folio.servicios_reservas?.length > 0" class="row">
-      <div class="col-12">
-        <strong>Descripción de Servicios:</strong>
-        <table mat-table [dataSource]="folio.servicios_reservas">
-          <!-- Columna para Descripción -->
-          <ng-container matColumnDef="descripcion">
-            <th mat-header-cell *matHeaderCellDef>Descripción</th>
-            <td mat-cell *matCellDef="let service">
-              {{ service.nombre_servicio }}
-            </td>
-          </ng-container>
-
-          <!-- Columna para Cantidad -->
-          <ng-container matColumnDef="cantidad">
-            <th mat-header-cell *matHeaderCellDef>Cantidad</th>
-            <td mat-cell *matCellDef="let service">
-              {{ service.cantidad }}
-            </td>
-          </ng-container>
-
-          <!-- Columna para Precio Unitario -->
-          <ng-container matColumnDef="precio_unitario">
-            <th mat-header-cell *matHeaderCellDef>Precio Unitario</th>
-            <td mat-cell *matCellDef="let service">
-              ${{ service.precio_unitario }}
-            </td>
-          </ng-container>
-
-          <!-- Columna para Total del Servicio -->
-          <ng-container matColumnDef="total">
-            <th mat-header-cell *matHeaderCellDef>Total</th>
-            <td mat-cell *matCellDef="let service">
-              ${{ service.monto_total }}
-            </td>
-          </ng-container>
-
-          <tr mat-header-row *matHeaderRowDef="['descripcion', 'cantidad', 'precio_unitario', 'total']"></tr>
-          <tr mat-row *matRowDef="let row; columns: ['descripcion', 'cantidad', 'precio_unitario', 'total']"></tr>
-        </table>
-
-        <!-- Mostrar el Total General de los Servicios -->
-        <div class="row mt-3">
-          <div class="col-12 text-right">
-            <strong>Total Servicios:</strong> ${{ calcularTotalServicios() }}
+    <!-- Información General del Folio -->
+    <mat-card class="mb-3">
+      <mat-card-header>
+        <mat-card-title class="d-flex align-items-center">
+          <mat-icon class="text-primary me-2">receipt</mat-icon>
+          Detalles del Folio
+        </mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="row">
+          <div class="col-md-6 mb-2">
+            <strong>Folio ID:</strong> #{{ folio.id }}
+          </div>
+          <div class="col-md-6 mb-2">
+            <mat-chip-set>
+              <mat-chip [color]="folio.estado === 'Pendiente' ? 'warn' : 'primary'" selected>
+                {{ folio.estado }}
+              </mat-chip>
+            </mat-chip-set>
+          </div>
+          <div class="col-md-6 mb-2">
+            <strong>Huésped:</strong> {{ folio.huesped.first_name }} {{ folio.huesped.last_name }}
+          </div>
+          <div class="col-md-6 mb-2">
+            <strong>Email:</strong> {{ folio.huesped.email }}
+          </div>
+          <div class="col-md-6 mb-2">
+            <strong>Fecha Entrada:</strong> {{ folio.reserva.fecha_entrada | date: 'shortDate' }}
+          </div>
+          <div class="col-md-6 mb-2">
+            <strong>Fecha Salida:</strong> {{ folio.reserva.fecha_salida | date: 'shortDate' }}
+          </div>
+          <div class="col-md-6 mb-2">
+            <strong>Total Reserva:</strong> ${{ folio.reserva.total }}
+          </div>
+          <div class="col-md-6 mb-2">
+            <strong>Total Pagado:</strong> ${{ folio.total_pagado }}
           </div>
         </div>
-      </div>
-    </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-divider class="mb-3"></mat-divider>
+
+    <!-- Servicios Adicionales -->
+    <mat-card *ngIf="folio.servicios_reservas?.length > 0">
+      <mat-card-header>
+        <mat-card-title class="d-flex align-items-center">
+          <mat-icon class="text-primary me-2">room_service</mat-icon>
+          Servicios Adicionales
+        </mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="table-responsive">
+          <table mat-table [dataSource]="folio.servicios_reservas" class="w-100">
+            <!-- Columna para Descripción -->
+            <ng-container matColumnDef="descripcion">
+              <th mat-header-cell *matHeaderCellDef>Servicio</th>
+              <td mat-cell *matCellDef="let service">
+                <div class="d-flex align-items-center">
+                  <mat-icon class="text-primary me-2 small">dining</mat-icon>
+                  {{ service.nombre_servicio }}
+                </div>
+              </td>
+            </ng-container>
+
+            <!-- Columna para Fecha -->
+            <ng-container matColumnDef="fecha">
+              <th mat-header-cell *matHeaderCellDef>Fecha</th>
+              <td mat-cell *matCellDef="let service">
+                {{ service.fecha_consumo | date: 'shortDate' }}
+              </td>
+            </ng-container>
+
+            <!-- Columna para Cantidad -->
+            <ng-container matColumnDef="cantidad">
+              <th mat-header-cell *matHeaderCellDef>Cantidad</th>
+              <td mat-cell *matCellDef="let service">
+                {{ service.cantidad }}
+              </td>
+            </ng-container>
+
+            <!-- Columna para Precio Unitario -->
+            <ng-container matColumnDef="precio_unitario">
+              <th mat-header-cell *matHeaderCellDef>Precio Unit.</th>
+              <td mat-cell *matCellDef="let service">
+                ${{ service.precio_unitario }}
+              </td>
+            </ng-container>
+
+            <!-- Columna para Total del Servicio -->
+            <ng-container matColumnDef="total">
+              <th mat-header-cell *matHeaderCellDef>Total</th>
+              <td mat-cell *matCellDef="let service">
+                <strong>${{ service.monto_total }}</strong>
+              </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="['descripcion', 'fecha', 'cantidad', 'precio_unitario', 'total']"></tr>
+            <tr mat-row *matRowDef="let row; columns: ['descripcion', 'fecha', 'cantidad', 'precio_unitario', 'total']"></tr>
+          </table>
+        </div>
+
+        <!-- Total de Servicios -->
+        <mat-divider class="my-3"></mat-divider>
+        <div class="d-flex justify-content-end">
+          <div class="text-end">
+            <p class="mb-1"><strong>Total Servicios:</strong> ${{ calcularTotalServicios() }}</p>
+            <p class="mb-0 h5 text-primary"><strong>Total General:</strong> ${{ calcularTotalGeneral() }}</p>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Mensaje cuando no hay servicios -->
+    <mat-card *ngIf="!folio.servicios_reservas?.length">
+      <mat-card-content class="text-center text-muted py-4">
+        <mat-icon class="mb-2" style="font-size: 48px; height: 48px; width: 48px;">info</mat-icon>
+        <p class="mb-3">No hay servicios adicionales registrados para esta estancia.</p>
+        
+        <!-- Total General cuando no hay servicios -->
+        <mat-divider class="my-3"></mat-divider>
+        <div class="d-flex justify-content-end">
+          <div class="text-end">
+            <p class="mb-0 h5 text-primary"><strong>Total General:</strong> ${{ calcularTotalGeneral() }}</p>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
   </div>
 </div>
 

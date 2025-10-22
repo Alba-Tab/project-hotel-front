@@ -3,6 +3,126 @@
     <h1>Folios de Estancia</h1>
   </div>
 
+  <!-- Pestañas para Folios Pendientes y Pagados -->
+  <mat-tab-group [(selectedIndex)]="tabSeleccionada" (selectedTabChange)="cambiarTab($event.index)">
+    
+    <!-- Pestaña de Folios Pendientes -->
+    <mat-tab label="Folios Pendientes">
+      <div style="padding-top: 16px;">
+        <!-- Buscador de Usuario -->
+        <mat-card style="margin-bottom: 16px;">
+          <mat-card-content>
+            <mat-form-field appearance="outline" style="width: 100%;">
+              <mat-label>Buscar Huésped</mat-label>
+              <input
+                matInput
+                type="text"
+                [(ngModel)]="busquedaUsuario"
+                (input)="filtrarUsuarios()"
+                placeholder="Buscar por nombre o apellido"
+              />
+              <mat-icon matSuffix>search</mat-icon>
+              <button 
+                mat-icon-button 
+                matSuffix 
+                *ngIf="usuarioSeleccionado"
+                (click)="limpiarBusqueda()"
+                type="button"
+              >
+                <mat-icon>clear</mat-icon>
+              </button>
+              <mat-hint>Busca y selecciona un huésped para ver sus folios pendientes</mat-hint>
+            </mat-form-field>
+
+            <!-- Lista de usuarios filtrados -->
+            <mat-card *ngIf="usuariosFiltrados.length > 0 && busquedaUsuario && !usuarioSeleccionado" style="margin-top: 8px;">
+              <mat-list>
+                <mat-list-item 
+                  *ngFor="let usuario of usuariosFiltrados"
+                  (click)="seleccionarUsuario(usuario)"
+                  style="cursor: pointer;"
+                >
+                  <mat-icon matListItemIcon>person</mat-icon>
+                  <div matListItemTitle>{{ usuario.first_name }} {{ usuario.last_name }}</div>
+                  <div matListItemLine>{{ usuario.email }}</div>
+                </mat-list-item>
+              </mat-list>
+            </mat-card>
+
+            <!-- Usuario seleccionado -->
+            <div *ngIf="usuarioSeleccionado" style="margin-top: 8px;">
+              <mat-chip-set>
+                <mat-chip>
+                  <mat-icon matChipAvatar>person</mat-icon>
+                  {{ usuarioSeleccionado.first_name }} {{ usuarioSeleccionado.last_name }}
+                </mat-chip>
+              </mat-chip-set>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      </div>
+    </mat-tab>
+    
+    <!-- Pestaña de Historial de Folios (Pagados) -->
+    <mat-tab label="Historial de Folios">
+      <div style="padding-top: 16px;">
+        <!-- Buscador de Usuario -->
+        <mat-card style="margin-bottom: 16px;">
+          <mat-card-content>
+            <mat-form-field appearance="outline" style="width: 100%;">
+              <mat-label>Buscar Huésped</mat-label>
+              <input
+                matInput
+                type="text"
+                [(ngModel)]="busquedaUsuario"
+                (input)="filtrarUsuarios()"
+                placeholder="Buscar por nombre o apellido"
+              />
+              <mat-icon matSuffix>search</mat-icon>
+              <button 
+                mat-icon-button 
+                matSuffix 
+                *ngIf="usuarioSeleccionado"
+                (click)="limpiarBusqueda()"
+                type="button"
+              >
+                <mat-icon>clear</mat-icon>
+              </button>
+              <mat-hint>Busca y selecciona un huésped para ver su historial de folios pagados</mat-hint>
+            </mat-form-field>
+
+            <!-- Lista de usuarios filtrados -->
+            <mat-card *ngIf="usuariosFiltrados.length > 0 && busquedaUsuario && !usuarioSeleccionado" style="margin-top: 8px;">
+              <mat-list>
+                <mat-list-item 
+                  *ngFor="let usuario of usuariosFiltrados"
+                  (click)="seleccionarUsuario(usuario)"
+                  style="cursor: pointer;"
+                >
+                  <mat-icon matListItemIcon>person</mat-icon>
+                  <div matListItemTitle>{{ usuario.first_name }} {{ usuario.last_name }}</div>
+                  <div matListItemLine>{{ usuario.email }}</div>
+                </mat-list-item>
+              </mat-list>
+            </mat-card>
+
+            <!-- Usuario seleccionado -->
+            <div *ngIf="usuarioSeleccionado" style="margin-top: 8px;">
+              <mat-chip-set>
+                <mat-chip>
+                  <mat-icon matChipAvatar>person</mat-icon>
+                  {{ usuarioSeleccionado.first_name }} {{ usuarioSeleccionado.last_name }}
+                </mat-chip>
+              </mat-chip-set>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      </div>
+    </mat-tab>
+    
+  </mat-tab-group>
+
+  <!-- Tabla de Folios (compartida entre ambas pestañas) -->
   <div class="table-container" *ngIf="!cargando">
     <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
       <ng-container matColumnDef="id">
@@ -36,7 +156,11 @@
       <ng-container matColumnDef="acciones">
         <th mat-header-cell *matHeaderCellDef>Acciones</th>
         <td mat-cell *matCellDef="let element">
-          <button mat-icon-button color="primary" (click)="abrirModalVer(element)">
+          <button
+            mat-icon-button
+            color="primary"
+            (click)="abrirModalVer(element)"
+          >
             <mat-icon>visibility</mat-icon> <!-- Icono de ver en lugar de editar -->
           </button>
         </td>

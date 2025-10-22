@@ -9,6 +9,11 @@ import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatChipsModule } from '@angular/material/chips';
+import { MatTabsModule } from '@angular/material/tabs';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatListModule } from '@angular/material/list';
+import { FormsModule } from '@angular/forms';
 import { BehaviorSubject } from 'rxjs';
 import { ApiService } from 'src/app/services/api.service';
 import { ReservasFormModal } from './reservas-form-modal/reservas-form-modal';
@@ -28,6 +33,11 @@ import { CheckInOutModal } from './check-in-out-modal/check-in-out-modal';
     MatSnackBarModule,
     MatProgressSpinnerModule,
     MatChipsModule,
+    MatTabsModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatListModule,
+    FormsModule,
   ],
   templateUrl: './reservas.html',
   styleUrl: './reservas.scss',
@@ -40,6 +50,13 @@ export class Reservas implements OnInit {
   reservas$ = new BehaviorSubject<any[]>([]);
   reservasFiltradas: any[] = [];
   loading = false;
+
+  // Propiedades para tabs y búsqueda
+  tabSeleccionada = 0;
+  usuarios: any[] = [];
+  usuarioSeleccionado: any = null;
+  busquedaUsuario = '';
+  usuariosFiltrados: any[] = [];
 
   columnasTabla: string[] = [
     'id',
@@ -57,13 +74,30 @@ export class Reservas implements OnInit {
 
   ngOnInit(): void {
     this.cargarDatos();
+    this.cargarUsuarios();
   }
 
   cargarDatos(): void {
     this.loading = true;
-    this.apiService.listar<any[]>('reservas').subscribe({
+    
+    // Determinar el endpoint según el tab seleccionado
+    let endpoint = '';
+    if (this.tabSeleccionada === 0) {
+      // Tab de reservas confirmadas
+      endpoint = this.usuarioSeleccionado 
+        ? `reservas/reservas-confirmadas-por-usuario?id_usuario=${this.usuarioSeleccionado.id}`
+        : 'reservas/reservas-confirmadas';
+    } else {
+      // Tab de reservas realizadas
+      endpoint = this.usuarioSeleccionado 
+        ? `reservas/reservas-realizadas-por-usuario?id_usuario=${this.usuarioSeleccionado.id}`
+        : 'reservas/reservas-realizadas';
+    }
+
+    this.apiService.listar<any[]>(endpoint).subscribe({
       next: (reservas) => {
         this.reservas$.next(reservas);
+        console.log('Reservas cargadas:', reservas);
         this.reservasFiltradas = reservas;
         this.loading = false;
       },
@@ -75,6 +109,53 @@ export class Reservas implements OnInit {
         this.loading = false;
       },
     });
+  }
+
+  cargarUsuarios(): void {
+    this.apiService.listar<any[]>('usuarios').subscribe({
+      next: (usuarios) => {
+        this.usuarios = usuarios;
+        this.usuariosFiltrados = usuarios;
+      },
+      error: (error) => {
+        console.error('Error al cargar usuarios:', error);
+      },
+    });
+  }
+
+  cambiarTab(index: number): void {
+    this.tabSeleccionada = index;
+    this.usuarioSeleccionado = null;
+    this.busquedaUsuario = '';
+    this.usuariosFiltrados = this.usuarios;
+    this.cargarDatos();
+  }
+
+  filtrarUsuarios(): void {
+    if (!this.busquedaUsuario.trim()) {
+      this.usuariosFiltrados = this.usuarios;
+      return;
+    }
+
+    const termino = this.busquedaUsuario.toLowerCase();
+    this.usuariosFiltrados = this.usuarios.filter(usuario =>
+      usuario.first_name?.toLowerCase().includes(termino) ||
+      usuario.last_name?.toLowerCase().includes(termino)
+    );
+  }
+
+  seleccionarUsuario(usuario: any): void {
+    this.usuarioSeleccionado = usuario;
+    this.busquedaUsuario = `${usuario.first_name} ${usuario.last_name}`;
+    this.usuariosFiltrados = this.usuarios;
+    this.cargarDatos();
+  }
+
+  limpiarSeleccion(): void {
+    this.usuarioSeleccionado = null;
+    this.busquedaUsuario = '';
+    this.usuariosFiltrados = this.usuarios;
+    this.cargarDatos();
   }
 
   crearReserva(datos: any): void {
@@ -213,7 +294,7 @@ export class Reservas implements OnInit {
       data: {
         reserva,
         isCheckOut: true,
-        checkInData: reserva.ckeckin,
+        checkInData: reserva.checkin,
       },
     });
 
@@ -300,5 +381,32 @@ export class Reservas implements OnInit {
     if (this.tieneCheckIn(reserva)) return 'primary';
     if (estado === 'confirmada') return '';
     return '';
+  }
+
+  // Métodos para formatear fechas y horas de check-in/check-out
+  getCheckInDateTime(reserva: any): Date | null {
+    if (!reserva.checkin || !reserva.checkin.fecha_checkin || !reserva.checkin.hora_checkin) {
+      return null;
+    }
+    
+    const fechaStr = reserva.checkin.fecha_checkin;
+    const horaStr = reserva.checkin.hora_checkin;
+    
+    // Combinar fecha y hora en formato ISO
+    const dateTimeStr = `${fechaStr}T${horaStr}`;
+    return new Date(dateTimeStr);
+  }
+
+  getCheckOutDateTime(reserva: any): Date | null {
+    if (!reserva.checkout || !reserva.checkout.fecha_checkout || !reserva.checkout.hora_checkout) {
+      return null;
+    }
+    
+    const fechaStr = reserva.checkout.fecha_checkout;
+    const horaStr = reserva.checkout.hora_checkout;
+    
+    // Combinar fecha y hora en formato ISO
+    const dateTimeStr = `${fechaStr}T${horaStr}`;
+    return new Date(dateTimeStr);
   }
 }

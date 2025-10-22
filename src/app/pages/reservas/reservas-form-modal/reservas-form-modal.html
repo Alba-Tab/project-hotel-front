@@ -6,7 +6,8 @@
 <div mat-dialog-content class="pt-4 pb-3">
   <form [formGroup]="reservaForm" (ngSubmit)="enviarFormulario()">
     <div class="row">
-      <div class="col-12 col-md-6 mb-4" style="margin-top: 8px">
+      <!-- Fecha de entrada -->
+      <div class="col-12 col-md-6" style="margin-top: 8px; margin-bottom: 1rem;">
         <mat-form-field appearance="outline" class="w-100">
           <mat-label>Fecha de entrada</mat-label>
           <input
@@ -29,7 +30,7 @@
       </div>
 
       <!-- Fecha de salida -->
-      <div class="col-12 col-md-6 mb-4" style="margin-top: 8px">
+      <div class="col-12 col-md-6" style="margin-top: 8px; margin-bottom: 1rem;">
         <mat-form-field appearance="outline" class="w-100">
           <mat-label>Fecha de salida</mat-label>
           <input
@@ -52,7 +53,7 @@
       </div>
 
       <!-- Estado -->
-      <div class="col-12 col-md-6 mb-4">
+      <div class="col-12 col-md-6" style="margin-bottom: 1rem;">
         <mat-form-field appearance="outline" class="w-100">
           <mat-label>Estado</mat-label>
           <mat-select formControlName="estado">
@@ -69,30 +70,82 @@
         </mat-form-field>
       </div>
 
-      <!-- Huésped -->
-      <div class="col-12 col-md-6 mb-4">
-        <mat-form-field appearance="outline" class="w-100">
-          <mat-label>Huésped</mat-label>
-          <mat-select formControlName="huesped">
-            <mat-option *ngIf="cargandoHuespedes" disabled
-              >Cargando huéspedes...</mat-option
+      <!-- Búsqueda de huésped -->
+      <div class="col-12" style="margin-bottom: 1rem;">
+        <!-- Mostrar campo de búsqueda solo si no hay usuario seleccionado y NO está editando -->
+        <mat-form-field appearance="outline" class="w-100" *ngIf="!usuarioSeleccionado && !isEdit">
+          <mat-label>Buscar Huésped</mat-label>
+          <input
+            matInput
+            type="text"
+            [(ngModel)]="busquedaUsuario"
+            [ngModelOptions]="{standalone: true}"
+            (input)="filtrarUsuarios()"
+            placeholder="Buscar por nombre o apellido"
+          />
+          <mat-icon matSuffix>search</mat-icon>
+          <mat-hint>Escribe para buscar un huésped</mat-hint>
+        </mat-form-field>
+
+        <!-- Lista de usuarios filtrados (solo en creación) -->
+        <mat-card 
+          *ngIf="usuariosFiltrados.length > 0 && busquedaUsuario && !usuarioSeleccionado && !isEdit" 
+          elevation="3"
+        >
+          <mat-list>
+            <mat-list-item 
+              *ngFor="let usuario of usuariosFiltrados"
+              (click)="seleccionarUsuario(usuario)"
+              [style.cursor]="'pointer'"
             >
-            <mat-option *ngFor="let huesped of huespedes" [value]="huesped.id">
-              {{ huesped.first_name }} {{ huesped.last_name }} - {{
-              huesped.email }}
-            </mat-option>
-          </mat-select>
-          <mat-icon matSuffix>person</mat-icon>
-          <mat-error
-            *ngIf="reservaForm.get('huesped')?.touched && reservaForm.get('huesped')?.invalid"
+              <mat-icon matListItemIcon color="primary">person</mat-icon>
+              <div matListItemTitle>
+                {{ usuario.first_name }} {{ usuario.last_name }}
+              </div>
+              <div matListItemLine>
+                {{ usuario.email }}
+              </div>
+            </mat-list-item>
+          </mat-list>
+        </mat-card>
+
+        <!-- Usuario seleccionado (modo creación - puede cambiar) -->
+        <mat-form-field appearance="outline" class="w-100" *ngIf="usuarioSeleccionado && !isEdit">
+          <mat-label>Huésped Seleccionado</mat-label>
+          <input
+            matInput
+            readonly
+            [value]="usuarioSeleccionado.first_name + ' ' + usuarioSeleccionado.last_name + ' - ' + usuarioSeleccionado.email"
+          />
+          <mat-icon matPrefix color="primary">person</mat-icon>
+          <button 
+            mat-icon-button 
+            matSuffix 
+            (click)="limpiarSeleccion()"
+            type="button"
+            matTooltip="Cambiar huésped"
+            color="accent"
           >
-            {{ obtenerMensajeError('huesped') }}
-          </mat-error>
+            <mat-icon>close</mat-icon>
+          </button>
+          <mat-hint>Huésped asignado a esta reserva</mat-hint>
+        </mat-form-field>
+
+        <!-- Usuario en modo edición (no se puede cambiar) -->
+        <mat-form-field appearance="outline" class="w-100" *ngIf="isEdit && usuarioSeleccionado">
+          <mat-label>Huésped</mat-label>
+          <input
+            matInput
+            [value]="usuarioSeleccionado.first_name + ' ' + usuarioSeleccionado.last_name + ' - ' + usuarioSeleccionado.email"
+            disabled
+          />
+          <mat-icon matPrefix color="primary">person</mat-icon>
+          <mat-hint>El huésped no se puede cambiar en modo edición</mat-hint>
         </mat-form-field>
       </div>
 
       <!-- Hotel -->
-      <div class="col-12 col-md-6 mb-4">
+      <div class="col-12 col-md-6" style="margin-bottom: 1rem;">
         <mat-form-field appearance="outline" class="w-100">
           <mat-label>Hotel</mat-label>
           <mat-select formControlName="hotel">
@@ -113,7 +166,7 @@
       </div>
 
       <!-- Habitación -->
-      <div class="col-12 mb-4">
+      <div class="col-12" style="margin-bottom: 1rem;">
         <mat-form-field appearance="outline" class="w-100">
           <mat-label>Selecciona una habitación</mat-label>
           <mat-select
@@ -139,8 +192,20 @@
               *ngFor="let hab of habitacionesFiltradas"
               [value]="hab.id"
             >
-              Habitación {{ hab.numero }} — {{ hab.precio_noche |
-              currency:'USD' }}/noche ({{ hab.tipo | titlecase }})
+              <div class="d-flex justify-content-between align-items-center w-100">
+                <span>
+                  Habitación {{ hab.numero }} — {{ hab.precio_noche |
+                  currency:'USD' }}/noche ({{ hab.tipo | titlecase }})
+                </span>
+                <mat-chip 
+                  *ngIf="isEdit && data?.reserva?.habitacion === hab.id"
+                  color="primary"
+                  class="ms-2"
+                  style="font-size: 10px; height: 20px;"
+                >
+                  Actual
+                </mat-chip>
+              </div>
             </mat-option>
           </mat-select>
           <mat-icon matSuffix>bed</mat-icon>
@@ -158,7 +223,7 @@
           <mat-label>Total (USD)</mat-label>
           <input matInput type="number" formControlName="total" readonly />
           <mat-icon matSuffix>attach_money</mat-icon>
-          <mat-hint>Este valor de las noches por el precio de la habitacion.</mat-hint>
+          <mat-hint>Calculado automáticamente: noches × precio de la habitación</mat-hint>
         </mat-form-field>
       </div>
     </div>
