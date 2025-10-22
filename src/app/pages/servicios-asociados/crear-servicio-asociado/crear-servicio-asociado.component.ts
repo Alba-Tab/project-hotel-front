@@ -72,8 +72,8 @@ export class CrearServicioAsociadoComponent implements OnInit {
       servicio: [servicio?.servicio || '', Validators.required],
       folioestancia: [
         {
-          value: servicio?.folio_estancia || data?.folioEstancia || '',
-          disabled: !!data?.folioEstancia,
+          value: servicio?.folio_estancia || data?.folioEstancia || data?.folioEstanciaId || '',
+          disabled: !!(data?.folioEstancia || data?.folioEstanciaId),
         },
         Validators.required,
       ],
@@ -110,8 +110,13 @@ export class CrearServicioAsociadoComponent implements OnInit {
     this.cargarServicios();
     this.cargarFoliosEstancia();
 
-    const folioInicial = this.servicioForm.getRawValue().folio_estancia;
+    // ✅ Obtener el folio precargado (puede venir como folioEstancia o folioEstanciaId)
+    const folioInicial = this.servicioForm.getRawValue().folioestancia || 
+                         this.data?.folioEstancia || 
+                         this.data?.folioEstanciaId;
+    
     if (folioInicial) {
+      // ✅ Cargar la reserva automáticamente cuando hay folio precargado
       setTimeout(() => this.obtenerReservaDelFolio(folioInicial), 500);
     }
   }

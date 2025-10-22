@@ -20,6 +20,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatCardModule } from '@angular/material/card';
 import { MatListModule } from '@angular/material/list';
 import { MatChipsModule } from '@angular/material/chips';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { ApiService } from 'src/app/services/api.service';
 
 @Component({
@@ -38,6 +39,7 @@ import { ApiService } from 'src/app/services/api.service';
     MatCardModule,
     MatListModule,
     MatChipsModule,
+    MatProgressSpinnerModule,
   ],
   templateUrl: './pagos-form-modal.html',
   styleUrls: ['./pagos-form-modal.scss'],
@@ -54,6 +56,15 @@ export class PagosFormModal implements OnInit {
   usuarioSeleccionado: any = null;
   folioSeleccionado: any = null;
 
+  // ✅ Variables para fidelización
+  cuentaFidelizacion: any = null;
+  descuentoDisponible: any = null;
+  cargandoDescuento = false;
+  aplicarDescuento = false;
+  montoOriginal = 0;
+  montoConDescuento = 0;
+  descuentoAplicado = 0;
+
   constructor(
     private fb: FormBuilder,
     private apiService: ApiService,
@@ -65,11 +76,50 @@ export class PagosFormModal implements OnInit {
       metodo: ['', Validators.required],
       referencia: ['', Validators.required],
       folio_id: ['', Validators.required],
+      monto_descuento: [0],
     });
   }
 
   ngOnInit(): void {
     this.obtenerUsuarios();
+
+    // ✅ Si viene con folio precargado desde folio-estancia
+    if (this.data?.folioPrecargado) {
+      const folioPrecargado = this.data.folioPrecargado;
+
+      // Simular usuario seleccionado
+      this.usuarioSeleccionado = {
+        id: folioPrecargado.huesped_id,
+        first_name: folioPrecargado.huesped_nombre.split(' ')[0] || '',
+        last_name:
+          folioPrecargado.huesped_nombre.split(' ').slice(1).join(' ') || '',
+      };
+      this.busquedaUsuario = folioPrecargado.huesped_nombre;
+
+      // Agregar folio precargado a la lista de folios
+      this.folioSeleccionado = {
+        id: folioPrecargado.id,
+        reserva_total: folioPrecargado.total,
+        display: `Folio #${folioPrecargado.id} - $${folioPrecargado.total}`,
+      };
+
+      // Agregar a la lista de folios para que aparezca en el select
+      this.folios = [this.folioSeleccionado];
+
+      // Establecer valores en el formulario
+      this.pagoForm.get('folio_id')?.setValue(folioPrecargado.id);
+      this.montoOriginal = Number(folioPrecargado.total);
+      this.pagoForm.get('monto')?.setValue(this.montoOriginal);
+
+      // Cargar puntos de fidelización
+      this.cargarPuntosFidelizacion(
+        folioPrecargado.huesped_id,
+        this.montoOriginal
+      );
+
+      // Cargar todos los folios del usuario (para permitir cambiar si es necesario)
+      this.obtenerFoliosPorUsuario(folioPrecargado.huesped_id);
+    }
   }
 
   /** Cargar usuarios desde la API */
@@ -97,7 +147,9 @@ export class PagosFormModal implements OnInit {
 
     const termino = this.busquedaUsuario.toLowerCase();
     this.usuariosFiltrados = this.usuarios.filter((usuario) =>
-      `${usuario.first_name} ${usuario.last_name}`.toLowerCase().includes(termino)
+      `${usuario.first_name} ${usuario.last_name}`
+        .toLowerCase()
+        .includes(termino)
     );
   }
 
@@ -114,36 +166,131 @@ export class PagosFormModal implements OnInit {
 
   /** Cargar folios por usuario desde la API */
   obtenerFoliosPorUsuario(idUsuario: number): void {
-  this.cargandoFolios = true;
+    this.cargandoFolios = true;
 
-  // ✅ Endpoint actualizado según backend actual
-  this.apiService.listar<any[]>(`folioestancias/huesped/${idUsuario}/`).subscribe({
-    next: (folios) => {
-      // Solo folios que no estén pagados
-      this.folios = (folios || [])
-        .filter((f) => f.estado !== 'Pagado')
-        .map((f) => ({
-          ...f,
-          // ✅ Creamos el texto visible del folio
-          display: `Folio #${f.id} - ${f.hotel_nombre} - ${f.estado}`,
-        }));
-      this.cargandoFolios = false;
-    },
-    error: (error) => {
-      console.error('Error al cargar folios:', error);
-      this.cargandoFolios = false;
-    },
-  });
-}
+    // ✅ Endpoint actualizado según backend actual
+    this.apiService
+      .listar<any[]>(`folioestancias/huesped/${idUsuario}/`)
+      .subscribe({
+        next: (folios) => {
+          // Solo folios que no estén pagados
+          this.folios = (folios || [])
+            .filter((f) => f.estado !== 'Pagado')
+            .map((f) => ({
+              ...f,
+              // ✅ Creamos el texto visible del folio
+              display: `Folio #${f.id} - ${f.hotel_nombre} - ${f.estado}`,
+            }));
+          this.cargandoFolios = false;
+        },
+        error: (error) => {
+          console.error('Error al cargar folios:', error);
+          this.cargandoFolios = false;
+        },
+      });
+  }
 
   /** Seleccionar folio y establecer monto automáticamente */
- /** Seleccionar folio y establecer monto automáticamente */
-seleccionarFolio(folio: any): void {
-  this.folioSeleccionado = folio;
-  this.pagoForm.get('folio_id')?.setValue(folio.id);
-  this.pagoForm.get('monto')?.setValue(Number(folio.reserva_total));
-}
+  seleccionarFolio(folio: any): void {
+    this.folioSeleccionado = folio;
+    this.pagoForm.get('folio_id')?.setValue(folio.id);
+    this.montoOriginal = Number(folio.reserva_total);
+    this.pagoForm.get('monto')?.setValue(this.montoOriginal);
 
+    // ✅ Resetear descuento al cambiar de folio
+    this.resetearDescuento();
+
+    // ✅ Cargar puntos de fidelización del cliente
+    if (this.usuarioSeleccionado?.id) {
+      this.cargarPuntosFidelizacion(
+        this.usuarioSeleccionado.id,
+        this.montoOriginal
+      );
+    }
+  }
+
+  /** Manejador del cambio de folio en el select */
+  onFolioChange(folioId: number): void {
+    const folio = this.folios.find((f) => f.id === folioId);
+    if (folio) {
+      this.seleccionarFolio(folio);
+    }
+  }
+
+  /** Cargar cuenta de fidelización del cliente */
+  cargarPuntosFidelizacion(clienteId: number, totalAPagar: number): void {
+    this.cargandoDescuento = true;
+    this.cuentaFidelizacion = null;
+    this.descuentoDisponible = null;
+
+    // Paso 1: Obtener cuenta de fidelización
+    this.apiService
+      .listar<any[]>(`fidelizacion/cuentas/?cliente=${clienteId}`)
+      .subscribe({
+        next: (cuentas) => {
+          if (cuentas && cuentas.length > 0) {
+            this.cuentaFidelizacion = cuentas[0];
+            console.log('✅ Cuenta fidelización:', this.cuentaFidelizacion);
+
+            // Paso 2: Calcular descuento disponible
+            this.calcularDescuentoDisponible(
+              this.cuentaFidelizacion.id,
+              totalAPagar
+            );
+          } else {
+            console.log('ℹ️ Cliente sin cuenta de fidelización');
+            this.cargandoDescuento = false;
+          }
+        },
+        error: (err) => {
+          console.error('Error al cargar puntos:', err);
+          this.cargandoDescuento = false;
+        },
+      });
+  }
+
+  /** Calcular descuento máximo disponible */
+  calcularDescuentoDisponible(cuentaId: number, totalCuenta: number): void {
+    this.apiService
+      .crear(`fidelizacion/cuentas/${cuentaId}/calcular_descuento`, {
+        total_cuenta: totalCuenta,
+      })
+      .subscribe({
+        next: (descuento) => {
+          this.descuentoDisponible = descuento;
+          console.log('✅ Descuento disponible:', descuento);
+          this.cargandoDescuento = false;
+        },
+        error: (err) => {
+          console.error('Error al calcular descuento:', err);
+          this.cargandoDescuento = false;
+        },
+      });
+  }
+
+  /** Toggle para aplicar/quitar descuento */
+  toggleDescuento(aplicar: boolean): void {
+    this.aplicarDescuento = aplicar;
+
+    if (aplicar && this.descuentoDisponible) {
+      // Aplicar descuento máximo disponible
+      this.descuentoAplicado =
+        this.descuentoDisponible.descuento_maximo_disponible;
+      this.montoConDescuento = this.montoOriginal - this.descuentoAplicado;
+      this.pagoForm.get('monto_descuento')?.setValue(this.descuentoAplicado);
+    } else {
+      // Quitar descuento
+      this.resetearDescuento();
+    }
+  }
+
+  /** Resetear valores de descuento */
+  resetearDescuento(): void {
+    this.aplicarDescuento = false;
+    this.descuentoAplicado = 0;
+    this.montoConDescuento = this.montoOriginal;
+    this.pagoForm.get('monto_descuento')?.setValue(0);
+  }
 
   /** Mostrar formato legible del folio en el select */
   formatearFolio(folio: any): string {
@@ -161,30 +308,34 @@ seleccionarFolio(folio: any): void {
     this.pagoForm.get('monto')?.setValue('');
   }
 
-  /** Enviar formulario (crear pago) */
-  /** Enviar formulario (crear/actualizar) */
-enviarFormulario(): void {
-  if (this.pagoForm.valid) {
-    const raw = this.pagoForm.value;
+  /** Enviar formulario (crear pago con descuento opcional) */
+  enviarFormulario(): void {
+    if (this.pagoForm.valid) {
+      const raw = this.pagoForm.value;
+      const fechaActual = new Date();
+      const fechaISO = fechaActual.toISOString().split('T')[0];
 
-    const fechaActual = new Date();
-    const fechaISO = fechaActual.toISOString().split('T')[0]; // formato YYYY-MM-DD
+      const payload: any = {
+        folio_id: Number(raw.folio_id),
+        metodo: raw.metodo,
+        referencia: raw.referencia,
+        monto: this.montoOriginal, // ✅ Siempre enviamos el monto original
+        fecha_pago: fechaISO,
+      };
 
-    const payload = {
-      folio_id: Number(raw.folio_id),
-      metodo: raw.metodo,
-      referencia: raw.referencia,
-      monto: Number(raw.monto),
-      fecha_pago: fechaISO, // ✅ Añadimos la fecha
-    };
+      // ✅ Si aplicó descuento, agregar campos de fidelización
+      if (this.aplicarDescuento && this.descuentoAplicado > 0) {
+        payload.canjear_puntos = true;
+        payload.monto_descuento = this.descuentoAplicado;
+        console.log(`🎁 Aplicando descuento de $${this.descuentoAplicado}`);
+      }
 
-    console.log('📦 Payload enviado a backend:', payload);
-    this.dialogRef.close(payload);
-  } else {
-    this.marcarCamposTocados();
+      console.log('📦 Payload enviado:', payload);
+      this.dialogRef.close(payload);
+    } else {
+      this.marcarCamposTocados();
+    }
   }
-}
-
 
   cancelar(): void {
     this.dialogRef.close();
