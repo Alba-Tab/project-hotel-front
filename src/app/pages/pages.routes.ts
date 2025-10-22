@@ -5,6 +5,7 @@ import { RolesPermisos } from './roles-permisos/roles-permisos';
 
 import { CrearHotelComponent } from './hoteles/crear-hotel/crear-hotel.component';
 import { HotelesComponent } from './hoteles/hoteles.component';
+import { ServiciosAsociadosComponent } from './servicios-asociados/servicios-asociados.component';
 
 export const PagesRoutes: Routes = [
   {
@@ -20,10 +21,7 @@ export const PagesRoutes: Routes = [
     component: Usuarios,
     data: {
       title: 'Gestión de Usuarios',
-      urls: [
-        { title: 'Dashboard', url: '/dashboard' },
-        { title: 'Usuarios' },
-      ],
+      urls: [{ title: 'Dashboard', url: '/dashboard' }, { title: 'Usuarios' }],
     },
   },
   {
@@ -49,5 +47,4 @@ export const PagesRoutes: Routes = [
     //       },
     //     ],
   },
-
 ];

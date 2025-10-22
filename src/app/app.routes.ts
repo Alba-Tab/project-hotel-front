@@ -76,18 +76,9 @@ export const routes: Routes = [
           import('./pages/reservas/reservas').then((m) => m.Reservas),
       },
       {
-        path: 'servicioreserva',
-        loadComponent: () =>
-          import('./pages/servicioreserva/servicioreserva.component').then(
-            (m) => m.ServicioreservaComponent
-          ),
-      },
-      {
         path: 'pagos',
         loadComponent: () =>
-          import('./pages/pagos/pagos.component').then(
-            (m) => m.PagosComponent
-          ),
+          import('./pages/pagos/pagos.component').then((m) => m.PagosComponent),
       },
       {
         path: 'fidelizacion',
@@ -116,6 +107,13 @@ export const routes: Routes = [
           ),
       },
       {
+        path: 'servicios-asociados',
+        loadComponent: () =>
+          import(
+            './pages/servicios-asociados/servicios-asociados.component'
+          ).then((m) => m.ServiciosAsociadosComponent),
+      },
+      {
         path: 'folio-estancia',
         loadComponent: () =>
           import('./pages/folio-estancia/folio-estancia').then(
@@ -129,6 +127,4 @@ export const routes: Routes = [
     path: '**',
     redirectTo: 'authentication/error',
   },
-
-
 ];

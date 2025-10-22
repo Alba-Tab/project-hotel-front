@@ -37,8 +37,15 @@
         <th mat-header-cell *matHeaderCellDef>Acciones</th>
         <td mat-cell *matCellDef="let element">
           <button mat-icon-button color="primary" (click)="abrirModalVer(element)">
-            <mat-icon>visibility</mat-icon> <!-- Icono de ver en lugar de editar -->
+            <mat-icon>visibility</mat-icon>
           </button>
+          <!-- Solo mostrar botón de servicio si el folio NO está pagado -->
+          @if (element.estado?.toLowerCase() !== 'pagado') {
+          <button mat-icon-button color="accent" (click)="abrirModalServicioAsociado(element)" 
+                  matTooltip="Agregar Servicio Asociado">
+            <mat-icon>add_shopping_cart</mat-icon>
+          </button>
+          }
         </td>
       </ng-container>
 

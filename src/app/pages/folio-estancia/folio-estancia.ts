@@ -5,9 +5,11 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { ApiService } from 'src/app/services/api.service';
 import { FolioEstanciaFormModal } from './folio-estancia-form-modal/folio-estancia-form-modal';
 import { FolioVerModal } from './folio-ver-modal/folio-ver-modal';
+import { CrearServicioAsociadoComponent } from '../servicios-asociados/crear-servicio-asociado/crear-servicio-asociado.component';
 
 @Component({
   selector: 'app-folio-estancia',
@@ -18,6 +20,7 @@ import { FolioVerModal } from './folio-ver-modal/folio-ver-modal';
     MatIconModule,
     MatDialogModule,
     MatSnackBarModule,
+    MatTooltipModule,
   ],
   templateUrl: './folio-estancia.html',
   styleUrls: ['./folio-estancia.scss'],
@@ -64,6 +67,26 @@ export class FolioEstanciaComponent implements OnInit {
     width: '600px',
     data: { folioId: folio.id }
   });
+  }
+
+  abrirModalServicioAsociado(folio: any): void {
+    const dialogRef = this.dialog.open(CrearServicioAsociadoComponent, {
+      width: '700px',
+      height: 'auto',
+      disableClose: false,
+      data: {
+        titulo: 'Crear Servicio Asociado',
+        folioEstanciaId: folio.id,
+      },
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        this.mostrarMensaje('Servicio asociado creado exitosamente');
+        // Opcionalmente recargar la tabla si es necesario
+        this.cargarFolios();
+      }
+    });
   }
 
   private mostrarMensaje(mensaje: string): void {
