@@ -4,10 +4,10 @@ import { Observable } from 'rxjs';
 import { Hotel } from '../interfaces/hotel.interface';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class HotelService {
-  private url = 'http://hotelsol.localhost:8000/api';
+  private url = 'http://localhost:8000/api';
 
   constructor(private http: HttpClient) {}
 

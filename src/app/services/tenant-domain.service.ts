@@ -11,18 +11,22 @@ export class TenantDomainService {
     const parts = host.split('.');
 
     // Detectamos si tiene subdominio (tipo jhoelasoc.localhost)
-    this.subdomain = parts.length === 2 && host.includes('localhost') ? parts[0] : null;
+    this.subdomain =
+      parts.length === 2 && host.includes('localhost') ? parts[0] : null;
     this.isTenant = !!this.subdomain;
 
     this.apiUrl = this.isTenant
       ? `http://${this.subdomain}.localhost:8000/api`
-      : `http://hotelsol.localhost:8000/api`;
+      : `http://localhost:8000/api`;
 
     this.logInfo();
   }
 
   private logInfo(): void {
-    console.log('%c🧠 TenantDomainService', 'color: orange; font-weight: bold;');
+    console.log(
+      '%c🧠 TenantDomainService',
+      'color: orange; font-weight: bold;'
+    );
     console.log(`🌐 Hostname: ${window.location.hostname}`);
     console.log(`📦 Subdominio detectado: ${this.subdomain ?? '(ninguno)'}`);
     console.log(`🔧 Modo tenant: ${this.isTenant}`);
