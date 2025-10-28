@@ -15,9 +15,9 @@ export const navItems: NavItem[] = [
     route: '/reservas',
   },
   {
-    displayName: 'ServicioReserva',
-    iconName: 'solar:bill-list-line-duotone',
-    route: '/servicioreserva',
+    displayName: 'Servicios Asociados',
+    iconName: 'solar:checklist-minimalistic-line-duotone',
+    route: '/servicios-asociados',
   },
   {
     displayName: 'Pagos',

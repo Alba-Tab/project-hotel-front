@@ -73,7 +73,7 @@ export class TenantRegisterComponent {
         this.enviando = false;
 
         setTimeout(() => {
-          this.router.navigate(['/']);
+          this.router.navigate(['/principal']);
         }, 2000);
       },
       error: (error) => {

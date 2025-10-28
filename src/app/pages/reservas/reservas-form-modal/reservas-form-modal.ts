@@ -105,6 +105,12 @@ export class ReservasFormModal {
         hotel: this.data.reserva.hotel,
         habitacion: this.data.reserva.habitacion,
       });
+
+      // ['habitacion', 'fecha_entrada', 'fecha_salida'].forEach((campo) => {
+      //   this.reservaForm
+      //     .get(campo)
+      //     ?.valueChanges.subscribe(() => this.calcularTotal());
+      // });
     }
 
     // aseguramos que total se muestre como 0 siempre
@@ -119,7 +125,6 @@ export class ReservasFormModal {
     this.reservaForm.get('fecha_salida')?.valueChanges.subscribe(() => {
       this.calcularTotal();
     });
-
   }
 
   /** Filtrar habitaciones por hotel seleccionado */
@@ -131,10 +136,21 @@ export class ReservasFormModal {
     this.habitacionesFiltradas = this.habitaciones.filter(
       (hab) => hab.hotel === hotelId
     );
+    this.habitacionesFiltradas = this.habitaciones.filter(
+      (hab) => hab.estado == 'disponible'
+    );
   }
 
   /** Cargar habitaciones desde la API */
   obtenerHabitaciones(): void {
+    //const inicio = this.formatearFecha(
+    //  this.reservaForm.get('fecha_entrada')?.value
+    //);
+    //const fin = this.formatearFecha(
+    //  this.reservaForm.get('fecha_salida')?.value
+    //);
+    //const params = { inicio, fin }; // query params
+    //console.log(params);
     this.cargandoHabitaciones = true;
     this.apiService.listar<any[]>('habitaciones').subscribe({
       next: (habitaciones) => {
@@ -192,7 +208,9 @@ export class ReservasFormModal {
     const fechaOut = new Date(fechaSalida);
     const noches = Math.max(
       1,
-      Math.ceil((fechaOut.getTime() - fechaIn.getTime()) / (1000 * 60 * 60 * 24))
+      Math.ceil(
+        (fechaOut.getTime() - fechaIn.getTime()) / (1000 * 60 * 60 * 24)
+      )
     );
 
     // Busca el precio de la habitación seleccionada
@@ -200,7 +218,8 @@ export class ReservasFormModal {
       (h) => h.id === Number(habitacion)
     );
 
-    const precio = habSeleccionada?.precio || habSeleccionada?.precio_noche || 0;
+    const precio =
+      habSeleccionada?.precio || habSeleccionada?.precio_noche || 0;
     const total = noches * precio;
 
     this.reservaForm.get('total')?.setValue(total.toFixed(2));
