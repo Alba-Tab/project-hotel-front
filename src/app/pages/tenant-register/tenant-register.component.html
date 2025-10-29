@@ -1,14 +1,16 @@
 <div class="register-container">
-  <mat-card class="register-card">
-    <mat-card-header>
-      <mat-card-title>Registro de Tenant</mat-card-title>
-      <mat-card-subtitle
-        >Complete el formulario para crear un nuevo tenant</mat-card-subtitle
-      >
-    </mat-card-header>
+  <div class="register-layout">
+    <!-- Formulario de Registro -->
+    <mat-card class="register-card">
+      <mat-card-header>
+        <mat-card-title>Registro de Tenant</mat-card-title>
+        <mat-card-subtitle>
+          Complete el formulario para crear un nuevo tenant
+        </mat-card-subtitle>
+      </mat-card-header>
 
-    <mat-card-content>
-      <form [formGroup]="formulario" (ngSubmit)="onSubmit()">
+      <mat-card-content>
+        <form [formGroup]="formulario" (ngSubmit)="onSubmit()">
         <!-- Fila 1: Nombre y Apellido -->
         <div class="form-row">
           <mat-form-field appearance="outline" class="form-field">
@@ -149,4 +151,96 @@
       </form>
     </mat-card-content>
   </mat-card>
+
+  <!-- Tarjeta del Plan Seleccionado -->
+  @if(planSeleccionado) {
+  <mat-card class="plan-card cardWithShadow">
+    <mat-card-header>
+      <mat-card-title class="d-flex align-items-center">
+        <mat-icon class="m-r-8" color="primary">shopping_cart</mat-icon>
+        Plan Seleccionado
+      </mat-card-title>
+    </mat-card-header>
+
+    <mat-card-content class="p-24">
+      <div class="plan-details">
+        <!-- Nombre del Plan -->
+        <div class="plan-header text-center m-b-24">
+          <h3 class="mat-headline-5 m-b-8">{{ planSeleccionado.planNombre }}</h3>
+          <!--<mat-chip [color]="'primary'" [highlighted]="true" class="price-chip">
+            ${{ planSeleccionado.precio }} / {{ planSeleccionado.tipo }}
+          </mat-chip>-->
+        </div>
+
+        <mat-divider class="m-b-24"></mat-divider>
+
+        <!-- Características -->
+        <div class="features-list">
+          <h4 class="mat-subtitle-2 m-b-16 text-muted">
+            Lo que obtendrás:
+          </h4>
+
+          <div class="feature-item">
+            <mat-icon color="primary" class="feature-icon">check_circle</mat-icon>
+            <div class="feature-content">
+              <span class="feature-label">Usuarios:</span>
+              <span class="feature-value">
+                Hasta {{ planSeleccionado.maxUsuarios }} usuarios
+              </span>
+            </div>
+          </div>
+
+          <div class="feature-item">
+            <mat-icon color="primary" class="feature-icon">check_circle</mat-icon>
+            <div class="feature-content">
+              <span class="feature-label">Hoteles:</span>
+              <span class="feature-value">
+                {{ planSeleccionado.maxHoteles }} hotel{{ planSeleccionado.maxHoteles > 1 ? 'es' : '' }}
+              </span>
+            </div>
+          </div>
+
+          <div class="feature-item">
+            <mat-icon color="primary" class="feature-icon">check_circle</mat-icon>
+            <div class="feature-content">
+              <span class="feature-label">Tipo:</span>
+              <span class="feature-value">
+                Suscripción {{ planSeleccionado.tipo }}
+              </span>
+            </div>
+          </div>
+
+          <div class="feature-item">
+            <mat-icon color="primary" class="feature-icon">check_circle</mat-icon>
+            <div class="feature-content">
+              <span class="feature-label">Panel:</span>
+              <span class="feature-value">Control completo</span>
+            </div>
+          </div>
+
+        <mat-divider class="m-y-24"></mat-divider>
+
+        <!-- Total -->
+        <div class="total-section text-center">
+          <p class="mat-body-2 text-muted m-b-8">Total a pagar</p>
+          <p class="mat-headline-4 m-0 text-primary">
+            ${{ planSeleccionado.precio }}
+          </p>
+          <p class="mat-caption text-muted">
+            Facturación {{ planSeleccionado.tipo.toLowerCase() }}
+          </p>
+        </div>
+
+        <!-- Info Adicional -->
+        <div class="info-box m-t-24">
+          <mat-icon class="info-icon">info</mat-icon>
+          <p class="mat-caption m-0">
+            Al completar el registro, tu suscripción será activada automáticamente
+          </p>
+        </div>
+      </div>
+    </mat-card-content>
+  </mat-card>
+  }
+  </div>
 </div>
