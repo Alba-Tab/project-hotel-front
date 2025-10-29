@@ -11,6 +11,7 @@ import { RouterModule } from '@angular/router';
 import { ApiService } from '../../services/api.service'
 import { CreareditarHabitacionesComponent } from './creareditar-habitaciones/creareditar-habitaciones.component';
 import { MatDialogModule, MatDialog } from '@angular/material/dialog';
+import { ReportesHabitaciones } from './reportes/reportes';
 
 
 @Component({
@@ -116,6 +117,21 @@ export class HabitacionesComponent implements OnInit {
            });
          }
        }
+     }
+
+     abrirModalReportes(): void {
+       const dialogRef = this.dialog.open(ReportesHabitaciones, {
+         width: '800px',
+         maxHeight: '90vh',
+         panelClass: 'custom-dialog-container',
+         disableClose: false
+       });
+
+       dialogRef.afterClosed().subscribe((result) => {
+         if (result) {
+           console.log('Reporte generado exitosamente');
+         }
+       });
      }
 
 }
