@@ -15,6 +15,8 @@ import { ReservasFormModal } from './reservas-form-modal/reservas-form-modal';
 import { ReservasDeleteModal } from './reservas-delete-modal/reservas-delete-modal';
 import { CheckInOutModal } from './check-in-out-modal/check-in-out-modal';
 
+import { Reportes } from './reportes/reportes';
+
 @Component({
   selector: 'app-reservas',
   imports: [
@@ -169,6 +171,21 @@ export class Reservas implements OnInit {
     });
   }
 
+  abrirModalReportes(): void {
+  const dialogRef = this.dialog.open(Reportes, {
+    width: '800px',
+    maxHeight: '90vh',
+    panelClass: 'custom-dialog-container',
+    disableClose: false
+  });
+
+  dialogRef.afterClosed().subscribe((result) => {
+    if (result) {
+      console.log('Reporte generado exitosamente');
+    }
+  });
+}
+
   // Métodos para Check-In/Check-Out
   puedeHacerCheckIn(reserva: any): boolean {
     return (
@@ -246,13 +263,13 @@ export class Reservas implements OnInit {
     console.log('🔄 Realizando Check-Out con datos:', datos);
     console.log('🏨 ID de reserva:', reservaId);
     this.loading = true;
-    
+
     // Realizar check-out usando el ID de la reserva
     this.apiService.editar(`checkinout/checkout`, reservaId, datos).subscribe({
       next: () => {
         console.log('✅ Check-Out actualizado');
         this.cargarDatos();
-        
+
         // // Cambiar el estado de la reserva a 'realizada' al completar el check-out
         // const updateData = { estado: 'realizada' };
         // this.apiService.editar('reservas', reservaId, updateData).subscribe({
