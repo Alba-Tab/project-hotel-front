@@ -60,7 +60,7 @@ export class ReportesPagos {
     enviarPorEmail: [false],
     emailDestinatario: [''],
     asuntoEmail: [''],
-    mensajeEmail: ['Adjunto el reporte solicitado de reservas.']
+    mensajeEmail: ['Adjunto el reporte solicitado de pagos.']
   });
 
   // Columnas disponibles para pagos
@@ -143,7 +143,7 @@ export class ReportesPagos {
       Object.assign(config, {
         recipient_email: formValue.emailDestinatario,
         subject: formValue.asuntoEmail,
-        message: formValue.mensajeEmail || 'Adjunto el reporte solicitado de reservas.'
+        message: formValue.mensajeEmail || 'Adjunto el reporte solicitado de pagos.'
       });
     }
 
@@ -285,7 +285,7 @@ export class ReportesPagos {
         year: 'numeric'
       });
       this.parametrosForm.patchValue({
-        asuntoEmail: `Reporte de Reservas - ${fechaActual}`
+        asuntoEmail: `Reporte de Pagos - ${fechaActual}`
       });
     } else {
       // Quitar validaciones
