@@ -8,6 +8,15 @@
     </div>
     <button
       mat-raised-button
+      color="accent"
+      (click)="abrirModalReportes()"
+      class="d-flex align-items-center gap-2"
+    >
+      <mat-icon>assessment</mat-icon>
+      Generar Reporte
+    </button>
+    <button
+      mat-raised-button
       color="primary"
       (click)="abrirModalCrear()"
       class="d-flex align-items-center gap-2"
