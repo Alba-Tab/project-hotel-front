@@ -58,7 +58,7 @@ export class TenantRegisterComponent implements OnInit {
       username: ['', [Validators.required, Validators.minLength(4)]],
       password: ['', [Validators.required, Validators.minLength(8)]],
       phone: ['', [Validators.required, Validators.pattern(/^[0-9]{8}$/)]],
-      plan_suscripcion: [''], // Campo oculto para el plan
+      plan_id: [null], // Sin validación por ahora, la agregaremos después
     });
   }
 
@@ -67,23 +67,78 @@ export class TenantRegisterComponent implements OnInit {
     const navigation = this.router.getCurrentNavigation();
     const state = navigation?.extras?.state || (history.state as any);
 
+    console.log('🔍 State recibido:', state);
+
     if (state && state.planSeleccionado) {
       this.planSeleccionado = state.planSeleccionado;
-      this.formulario.patchValue({
-        plan_suscripcion: this.planSeleccionado?.planId || null,
-      });
+      console.log('✅ Plan detectado:', this.planSeleccionado);
+
+      // Asegurarnos de que planId sea un número
+      const planId = Number(this.planSeleccionado?.planId);
+
+      console.log('🔢 Plan ID convertido a número:', planId);
+
+      if (planId && !isNaN(planId)) {
+        this.formulario.patchValue({
+          plan_id: planId,
+        });
+
+        // Agregar validación de requerido DESPUÉS de asignar el valor
+        this.formulario.get('plan_id')?.setValidators([Validators.required]);
+        this.formulario.get('plan_id')?.updateValueAndValidity();
+
+        console.log('✅ Plan ID asignado al formulario');
+      } else {
+        console.error('❌ Plan ID inválido:', this.planSeleccionado?.planId);
+      }
+
+      console.log(
+        '📝 Valor del formulario después de patchValue:',
+        this.formulario.value
+      );
+      console.log(
+        '🆔 Plan ID en formulario:',
+        this.formulario.get('plan_id')?.value
+      );
+    } else {
+      console.log('⚠️ No se encontró plan seleccionado en el state');
     }
   }
 
   onSubmit(): void {
+    console.log('🚀 Iniciando submit...');
+    console.log('📋 Estado del formulario:', {
+      valid: this.formulario.valid,
+      invalid: this.formulario.invalid,
+      errors: this.formulario.errors,
+      value: this.formulario.value,
+    });
+
     if (this.formulario.invalid) {
       this.formulario.markAllAsTouched();
-      this.mostrarError('Por favor complete todos los campos correctamente');
+
+      // Verificar específicamente el plan_id
+      const planIdControl = this.formulario.get('plan_id');
+      console.log('🆔 Estado de plan_id:', {
+        value: planIdControl?.value,
+        valid: planIdControl?.valid,
+        errors: planIdControl?.errors,
+      });
+
+      if (!planIdControl?.value) {
+        this.mostrarError('Debe seleccionar un plan de suscripción');
+      } else {
+        this.mostrarError('Por favor complete todos los campos correctamente');
+      }
       return;
     }
 
     this.enviando = true;
     const datos: TenantForm = this.formulario.value;
+
+    console.log('📦 Datos finales a enviar:', datos);
+    console.log('🆔 Plan ID específico:', datos.plan_id);
+    console.log('🔢 Tipo de plan_id:', typeof datos.plan_id);
 
     this.tenantService.registrarTenant(datos).subscribe({
       next: (response: any) => {
@@ -151,7 +206,7 @@ export class TenantRegisterComponent implements OnInit {
 
   private mostrarExito(mensaje: string): void {
     this.snackBar.open(mensaje, 'Cerrar', {
-      duration: 5000,
+      duration: 0, // No se cierra automáticamente - usuario debe cerrar manualmente
       horizontalPosition: 'end',
       verticalPosition: 'top',
       panelClass: ['snackbar-success'],
@@ -160,7 +215,7 @@ export class TenantRegisterComponent implements OnInit {
 
   private mostrarError(mensaje: string): void {
     this.snackBar.open(mensaje, 'Cerrar', {
-      duration: 5000,
+      duration: 0, // No se cierra automáticamente - usuario debe cerrar manualmente
       horizontalPosition: 'end',
       verticalPosition: 'top',
       panelClass: ['snackbar-error'],

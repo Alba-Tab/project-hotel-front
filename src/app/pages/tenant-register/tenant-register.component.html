@@ -11,236 +11,259 @@
 
       <mat-card-content>
         <form [formGroup]="formulario" (ngSubmit)="onSubmit()">
-        <!-- Fila 1: Nombre y Apellido -->
-        <div class="form-row">
-          <mat-form-field appearance="outline" class="form-field">
-            <mat-label>Nombre</mat-label>
+          <!-- Fila 1: Nombre y Apellido -->
+          <div class="form-row">
+            <mat-form-field appearance="outline" class="form-field">
+              <mat-label>Nombre</mat-label>
+              <input
+                matInput
+                formControlName="first_name"
+                placeholder="Ingrese su nombre"
+              />
+              <mat-icon matPrefix>person</mat-icon>
+              <mat-error *ngIf="formulario.get('first_name')?.invalid">
+                {{ obtenerError("first_name") }}
+              </mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="form-field">
+              <mat-label>Apellido</mat-label>
+              <input
+                matInput
+                formControlName="last_name"
+                placeholder="Ingrese su apellido"
+              />
+              <mat-icon matPrefix>person</mat-icon>
+              <mat-error *ngIf="formulario.get('last_name')?.invalid">
+                {{ obtenerError("last_name") }}
+              </mat-error>
+            </mat-form-field>
+          </div>
+
+          <!-- Fila 2: Email -->
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Email</mat-label>
             <input
               matInput
-              formControlName="first_name"
-              placeholder="Ingrese su nombre"
+              type="email"
+              formControlName="email"
+              placeholder="correo@ejemplo.com"
             />
-            <mat-icon matPrefix>person</mat-icon>
-            <mat-error *ngIf="formulario.get('first_name')?.invalid">
-              {{ obtenerError("first_name") }}
+            <mat-icon matPrefix>email</mat-icon>
+            <mat-error *ngIf="formulario.get('email')?.invalid">
+              {{ obtenerError("email") }}
             </mat-error>
           </mat-form-field>
 
-          <mat-form-field appearance="outline" class="form-field">
-            <mat-label>Apellido</mat-label>
+          <!-- Fila 3: Nombre Empresa -->
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Nombre de la Empresa</mat-label>
             <input
               matInput
-              formControlName="last_name"
-              placeholder="Ingrese su apellido"
+              formControlName="nombre_empresa"
+              placeholder="Ingrese el nombre de la empresa"
             />
-            <mat-icon matPrefix>person</mat-icon>
-            <mat-error *ngIf="formulario.get('last_name')?.invalid">
-              {{ obtenerError("last_name") }}
-            </mat-error>
-          </mat-form-field>
-        </div>
-
-        <!-- Fila 2: Email -->
-        <mat-form-field appearance="outline" class="full-width">
-          <mat-label>Email</mat-label>
-          <input
-            matInput
-            type="email"
-            formControlName="email"
-            placeholder="correo@ejemplo.com"
-          />
-          <mat-icon matPrefix>email</mat-icon>
-          <mat-error *ngIf="formulario.get('email')?.invalid">
-            {{ obtenerError("email") }}
-          </mat-error>
-        </mat-form-field>
-
-        <!-- Fila 3: Nombre Empresa -->
-        <mat-form-field appearance="outline" class="full-width">
-          <mat-label>Nombre de la Empresa</mat-label>
-          <input
-            matInput
-            formControlName="nombre_empresa"
-            placeholder="Ingrese el nombre de la empresa"
-          />
-          <mat-icon matPrefix>business</mat-icon>
-          <mat-error *ngIf="formulario.get('nombre_empresa')?.invalid">
-            {{ obtenerError("nombre_empresa") }}
-          </mat-error>
-        </mat-form-field>
-
-        <!-- Fila 4: Username y Teléfono -->
-        <div class="form-row">
-          <mat-form-field appearance="outline" class="form-field">
-            <mat-label>Usuario</mat-label>
-            <input
-              matInput
-              formControlName="username"
-              placeholder="Nombre de usuario"
-            />
-            <mat-icon matPrefix>account_circle</mat-icon>
-            <mat-error *ngIf="formulario.get('username')?.invalid">
-              {{ obtenerError("username") }}
+            <mat-icon matPrefix>business</mat-icon>
+            <mat-error *ngIf="formulario.get('nombre_empresa')?.invalid">
+              {{ obtenerError("nombre_empresa") }}
             </mat-error>
           </mat-form-field>
 
-          <mat-form-field appearance="outline" class="form-field">
-            <mat-label>Teléfono</mat-label>
+          <!-- Fila 4: Username y Teléfono -->
+          <div class="form-row">
+            <mat-form-field appearance="outline" class="form-field">
+              <mat-label>Usuario</mat-label>
+              <input
+                matInput
+                formControlName="username"
+                placeholder="Nombre de usuario"
+              />
+              <mat-icon matPrefix>account_circle</mat-icon>
+              <mat-error *ngIf="formulario.get('username')?.invalid">
+                {{ obtenerError("username") }}
+              </mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="form-field">
+              <mat-label>Teléfono</mat-label>
+              <input
+                matInput
+                formControlName="phone"
+                placeholder="72665897"
+                maxlength="8"
+              />
+              <mat-icon matPrefix>phone</mat-icon>
+              <mat-error *ngIf="formulario.get('phone')?.invalid">
+                {{ obtenerError("phone") }}
+              </mat-error>
+            </mat-form-field>
+          </div>
+
+          <!-- Fila 5: Password -->
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Contraseña</mat-label>
             <input
               matInput
-              formControlName="phone"
-              placeholder="72665897"
-              maxlength="8"
+              [type]="ocultarPassword ? 'password' : 'text'"
+              formControlName="password"
+              placeholder="Mínimo 8 caracteres"
             />
-            <mat-icon matPrefix>phone</mat-icon>
-            <mat-error *ngIf="formulario.get('phone')?.invalid">
-              {{ obtenerError("phone") }}
+            <mat-icon matPrefix>lock</mat-icon>
+            <button
+              mat-icon-button
+              matSuffix
+              type="button"
+              (click)="ocultarPassword = !ocultarPassword"
+            >
+              <mat-icon>{{
+                ocultarPassword ? "visibility_off" : "visibility"
+              }}</mat-icon>
+            </button>
+            <mat-error *ngIf="formulario.get('password')?.invalid">
+              {{ obtenerError("password") }}
             </mat-error>
           </mat-form-field>
-        </div>
 
-        <!-- Fila 5: Password -->
-        <mat-form-field appearance="outline" class="full-width">
-          <mat-label>Contraseña</mat-label>
-          <input
-            matInput
-            [type]="ocultarPassword ? 'password' : 'text'"
-            formControlName="password"
-            placeholder="Mínimo 8 caracteres"
-          />
-          <mat-icon matPrefix>lock</mat-icon>
-          <button
-            mat-icon-button
-            matSuffix
-            type="button"
-            (click)="ocultarPassword = !ocultarPassword"
-          >
-            <mat-icon>{{
-              ocultarPassword ? "visibility_off" : "visibility"
-            }}</mat-icon>
-          </button>
-          <mat-error *ngIf="formulario.get('password')?.invalid">
-            {{ obtenerError("password") }}
-          </mat-error>
-        </mat-form-field>
+          <!-- Botones -->
+          <div class="form-actions">
+            <!-- Alerta si no hay plan -->
+            @if(!planSeleccionado) {
+            <div class="alert-no-plan">
+              <mat-icon color="warn">warning</mat-icon>
+              <span
+                >No se ha seleccionado un plan. Por favor, seleccione un plan
+                desde la página principal.</span
+              >
+            </div>
+            }
 
-        <!-- Botones -->
-        <div class="form-actions">
-          <button
-            mat-raised-button
-            color="primary"
-            type="submit"
-            [disabled]="enviando"
-            class="submit-button"
-          >
-            <mat-icon *ngIf="!enviando">save</mat-icon>
-            <mat-icon *ngIf="enviando" class="spinner">refresh</mat-icon>
-            {{ enviando ? "Enviando..." : "Registrar Tenant" }}
-          </button>
+            <button
+              mat-raised-button
+              color="primary"
+              type="submit"
+              [disabled]="enviando || !planSeleccionado"
+              class="submit-button"
+            >
+              <mat-icon *ngIf="!enviando">save</mat-icon>
+              <mat-icon *ngIf="enviando" class="spinner">refresh</mat-icon>
+              {{ enviando ? "Enviando..." : "Registrar Tenant" }}
+            </button>
 
-          <button
-            mat-stroked-button
-            type="button"
-            (click)="limpiar()"
-            [disabled]="enviando"
-          >
-            <mat-icon>clear</mat-icon>
-            Limpiar
-          </button>
-        </div>
-      </form>
-    </mat-card-content>
-  </mat-card>
+            <button
+              mat-stroked-button
+              type="button"
+              (click)="limpiar()"
+              [disabled]="enviando"
+            >
+              <mat-icon>clear</mat-icon>
+              Limpiar
+            </button>
+          </div>
+        </form>
+      </mat-card-content>
+    </mat-card>
 
-  <!-- Tarjeta del Plan Seleccionado -->
-  @if(planSeleccionado) {
-  <mat-card class="plan-card cardWithShadow">
-    <mat-card-header>
-      <mat-card-title class="d-flex align-items-center">
-        <mat-icon class="m-r-8" color="primary">shopping_cart</mat-icon>
-        Plan Seleccionado
-      </mat-card-title>
-    </mat-card-header>
+    <!-- Tarjeta del Plan Seleccionado -->
+    @if(planSeleccionado) {
+    <mat-card class="plan-card cardWithShadow">
+      <mat-card-header>
+        <mat-card-title class="d-flex align-items-center">
+          <mat-icon class="m-r-8" color="primary">shopping_cart</mat-icon>
+          Plan Seleccionado
+        </mat-card-title>
+      </mat-card-header>
 
-    <mat-card-content class="p-24">
-      <div class="plan-details">
-        <!-- Nombre del Plan -->
-        <div class="plan-header text-center m-b-24">
-          <h3 class="mat-headline-5 m-b-8">{{ planSeleccionado.planNombre }}</h3>
-          <!--<mat-chip [color]="'primary'" [highlighted]="true" class="price-chip">
+      <mat-card-content class="p-24">
+        <div class="plan-details">
+          <!-- Nombre del Plan -->
+          <div class="plan-header text-center m-b-24">
+            <h3 class="mat-headline-5 m-b-8">
+              {{ planSeleccionado.planNombre }}
+            </h3>
+            <!--<mat-chip [color]="'primary'" [highlighted]="true" class="price-chip">
             ${{ planSeleccionado.precio }} / {{ planSeleccionado.tipo }}
           </mat-chip>-->
+          </div>
+
+          <mat-divider class="m-b-24"></mat-divider>
+
+          <!-- Características -->
+          <div class="features-list">
+            <h4 class="mat-subtitle-2 m-b-16 text-muted">Lo que obtendrás:</h4>
+
+            <div class="feature-item">
+              <mat-icon color="primary" class="feature-icon"
+                >check_circle</mat-icon
+              >
+              <div class="feature-content">
+                <span class="feature-label">Usuarios:</span>
+                <span class="feature-value">
+                  Hasta {{ planSeleccionado.maxUsuarios }} usuarios
+                </span>
+              </div>
+            </div>
+
+            <div class="feature-item">
+              <mat-icon color="primary" class="feature-icon"
+                >check_circle</mat-icon
+              >
+              <div class="feature-content">
+                <span class="feature-label">Hoteles:</span>
+                <span class="feature-value">
+                  {{ planSeleccionado.maxHoteles }} hotel{{
+                    planSeleccionado.maxHoteles > 1 ? "es" : ""
+                  }}
+                </span>
+              </div>
+            </div>
+
+            <div class="feature-item">
+              <mat-icon color="primary" class="feature-icon"
+                >check_circle</mat-icon
+              >
+              <div class="feature-content">
+                <span class="feature-label">Tipo:</span>
+                <span class="feature-value">
+                  Suscripción {{ planSeleccionado.tipo }}
+                </span>
+              </div>
+            </div>
+
+            <div class="feature-item">
+              <mat-icon color="primary" class="feature-icon"
+                >check_circle</mat-icon
+              >
+              <div class="feature-content">
+                <span class="feature-label">Panel:</span>
+                <span class="feature-value">Control completo</span>
+              </div>
+            </div>
+          </div>
+
+          <mat-divider class="m-y-24"></mat-divider>
+
+          <!-- Total -->
+          <div class="total-section text-center">
+            <p class="mat-body-2 text-muted m-b-8">Total a pagar</p>
+            <p class="mat-headline-4 m-0 text-primary">
+              ${{ planSeleccionado.precio }}
+            </p>
+            <p class="mat-caption text-muted">
+              Facturación {{ planSeleccionado.tipo.toLowerCase() }}
+            </p>
+          </div>
+
+          <!-- Info Adicional -->
+          <div class="info-box m-t-24">
+            <mat-icon class="info-icon">info</mat-icon>
+            <p class="mat-caption m-0">
+              Al completar el registro, tu suscripción será activada
+              automáticamente
+            </p>
+          </div>
         </div>
-
-        <mat-divider class="m-b-24"></mat-divider>
-
-        <!-- Características -->
-        <div class="features-list">
-          <h4 class="mat-subtitle-2 m-b-16 text-muted">
-            Lo que obtendrás:
-          </h4>
-
-          <div class="feature-item">
-            <mat-icon color="primary" class="feature-icon">check_circle</mat-icon>
-            <div class="feature-content">
-              <span class="feature-label">Usuarios:</span>
-              <span class="feature-value">
-                Hasta {{ planSeleccionado.maxUsuarios }} usuarios
-              </span>
-            </div>
-          </div>
-
-          <div class="feature-item">
-            <mat-icon color="primary" class="feature-icon">check_circle</mat-icon>
-            <div class="feature-content">
-              <span class="feature-label">Hoteles:</span>
-              <span class="feature-value">
-                {{ planSeleccionado.maxHoteles }} hotel{{ planSeleccionado.maxHoteles > 1 ? 'es' : '' }}
-              </span>
-            </div>
-          </div>
-
-          <div class="feature-item">
-            <mat-icon color="primary" class="feature-icon">check_circle</mat-icon>
-            <div class="feature-content">
-              <span class="feature-label">Tipo:</span>
-              <span class="feature-value">
-                Suscripción {{ planSeleccionado.tipo }}
-              </span>
-            </div>
-          </div>
-
-          <div class="feature-item">
-            <mat-icon color="primary" class="feature-icon">check_circle</mat-icon>
-            <div class="feature-content">
-              <span class="feature-label">Panel:</span>
-              <span class="feature-value">Control completo</span>
-            </div>
-          </div>
-
-        <mat-divider class="m-y-24"></mat-divider>
-
-        <!-- Total -->
-        <div class="total-section text-center">
-          <p class="mat-body-2 text-muted m-b-8">Total a pagar</p>
-          <p class="mat-headline-4 m-0 text-primary">
-            ${{ planSeleccionado.precio }}
-          </p>
-          <p class="mat-caption text-muted">
-            Facturación {{ planSeleccionado.tipo.toLowerCase() }}
-          </p>
-        </div>
-
-        <!-- Info Adicional -->
-        <div class="info-box m-t-24">
-          <mat-icon class="info-icon">info</mat-icon>
-          <p class="mat-caption m-0">
-            Al completar el registro, tu suscripción será activada automáticamente
-          </p>
-        </div>
-      </div>
-    </mat-card-content>
-  </mat-card>
-  }
+      </mat-card-content>
+    </mat-card>
+    }
   </div>
 </div>

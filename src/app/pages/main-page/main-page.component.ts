@@ -71,17 +71,24 @@ export class MainPageComponent implements OnInit {
     plan: PlanAgrupado;
     variante: PlanVariante;
   }): void {
+    console.log('🎯 Variante seleccionada:', data.variante);
+    console.log('🆔 Plan ID a enviar:', data.variante.id);
+    
+    const planData = {
+      planId: data.variante.id,
+      planNombre: data.plan.nombre,
+      precio: data.variante.precio,
+      tipo: data.variante.tipo_display,
+      maxUsuarios: data.plan.max_usuarios,
+      maxHoteles: data.plan.max_hoteles,
+    };
+    
+    console.log('📦 Datos del plan a navegar:', planData);
+    
     // Navegar a registro con los datos del plan seleccionado
     this.router.navigate(['/registrar-empresa'], {
       state: {
-        planSeleccionado: {
-          planId: data.variante.id,
-          planNombre: data.plan.nombre,
-          precio: data.variante.precio,
-          tipo: data.variante.tipo_display,
-          maxUsuarios: data.plan.max_usuarios,
-          maxHoteles: data.plan.max_hoteles,
-        },
+        planSeleccionado: planData,
       },
     });
   }

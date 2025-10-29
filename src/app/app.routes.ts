@@ -120,6 +120,13 @@ export const routes: Routes = [
             (m) => m.FolioEstanciaComponent
           ),
       },
+      {
+        path: 'suscripcion',
+        loadComponent: () =>
+          import('./pages/suscripcion/suscripcion.component').then(
+            (m) => m.SuscripcionComponent
+          ),
+      },
     ],
   },
 

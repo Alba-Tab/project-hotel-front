@@ -29,7 +29,7 @@ export interface TenantRegistroPayload {
   username: string;
   password: string;
   phone: string;
-  plan_suscripcion?: number;
+  plan?: number;
 }
 
 export interface TenantRegistroResponse {
