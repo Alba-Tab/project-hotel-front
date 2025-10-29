@@ -55,7 +55,12 @@ export class ReportesPagos {
     metodo: [''],
     montoMinimo: [''],
     montoMaximo: [''],
-    formato: ['pdf', Validators.required]
+    formato: ['pdf', Validators.required],
+
+    enviarPorEmail: [false],
+    emailDestinatario: [''],
+    asuntoEmail: [''],
+    mensajeEmail: ['Adjunto el reporte solicitado de reservas.']
   });
 
   // Columnas disponibles para pagos
@@ -101,6 +106,20 @@ export class ReportesPagos {
       return;
     }
 
+    const formValue = this.parametrosForm.value;
+
+    // Validar email si está marcado envío por email
+    if (formValue.enviarPorEmail) {
+      if (!formValue.emailDestinatario) {
+        this.snackBar.open('Ingrese el email de destino', 'Cerrar', { duration: 3000 });
+        return;
+      }
+      if (!formValue.asuntoEmail) {
+        this.snackBar.open('Ingrese el asunto del email', 'Cerrar', { duration: 3000 });
+        return;
+      }
+    }
+
     const columnasSeleccionadas = this.columnasDisponibles
       .filter(col => col.selected)
       .map(col => col.key);
@@ -116,25 +135,51 @@ export class ReportesPagos {
       columns: columnasSeleccionadas,
       filters: this.construirFiltros(),
       ordering: ['-id'],
-      format: this.parametrosForm.get('formato')?.value
+      format: formValue.formato
     };
+
+    // Si es envío por email, agregar campos adicionales
+    if (formValue.enviarPorEmail) {
+      Object.assign(config, {
+        recipient_email: formValue.emailDestinatario,
+        subject: formValue.asuntoEmail,
+        message: formValue.mensajeEmail || 'Adjunto el reporte solicitado de reservas.'
+      });
+    }
 
     console.log('Enviando configuración de pagos:', config);
 
-    this.apiService.generarReporte('pagos/reportes/pagos_base/export', config).subscribe({
+    // Determinar endpoint según si es email o descarga
+    const endpoint = formValue.enviarPorEmail ?
+    'pagos/reportes/pagos_base/email' :
+    'pagos/reportes/pagos_base/export';
+
+    this.apiService.generarReporte(endpoint, config).subscribe({
       next: (blob: Blob) => {
-        console.log('Blob recibido - Tipo:', blob.type, 'Tamaño:', blob.size);
-        this.descargarArchivo(blob, config.format || 'pdf');
+        // console.log('Blob recibido - Tipo:', blob.type, 'Tamaño:', blob.size);
+
+        // this.descargarArchivo(blob, config.format || 'pdf');
         this.generando = false;
-        this.snackBar.open('Reporte generado exitosamente', 'Cerrar', { duration: 3000 });
+
+        if (formValue.enviarPorEmail) {
+          // Para email, el servidor responde con un mensaje de éxito
+          this.snackBar.open('Reporte enviado por email exitosamente', 'Cerrar', { duration: 3000 });
+        } else {
+          // Para descarga, procesar el blob
+          console.log('Blob recibido - Tipo:', blob.type, 'Tamaño:', blob.size);
+          this.descargarArchivo(blob, config.format || 'pdf');
+          this.snackBar.open('Reporte generado exitosamente', 'Cerrar', { duration: 3000 });
+        }
+
         this.dialogRef.close(true);
+
       },
       error: (error) => {
         console.error('Error completo:', error);
         this.generando = false;
-        const mensaje = error.status === 406 ?
-          'Error 406: El servidor no puede generar el formato solicitado' :
-          'Error al generar reporte de pagos';
+        const mensaje = formValue.enviarPorEmail ?
+        'Error al enviar reporte por email' :
+        'Error al generar reporte';
         this.snackBar.open(mensaje, 'Cerrar', { duration: 3000 });
       }
     });
@@ -224,6 +269,32 @@ export class ReportesPagos {
 
   cancelar() {
     this.dialogRef.close(false);
+  }
+
+  onEnviarEmailChange() {
+    const enviarPorEmail = this.parametrosForm.get('enviarPorEmail')?.value;
+
+    if (enviarPorEmail) {
+      // Hacer campos de email obligatorios
+      this.parametrosForm.get('emailDestinatario')?.setValidators([Validators.required, Validators.email]);
+      this.parametrosForm.get('asuntoEmail')?.setValidators([Validators.required]);
+
+      // Generar asunto por defecto
+      const fechaActual = new Date().toLocaleDateString('es-ES', {
+        month: 'long',
+        year: 'numeric'
+      });
+      this.parametrosForm.patchValue({
+        asuntoEmail: `Reporte de Reservas - ${fechaActual}`
+      });
+    } else {
+      // Quitar validaciones
+      this.parametrosForm.get('emailDestinatario')?.clearValidators();
+      this.parametrosForm.get('asuntoEmail')?.clearValidators();
+    }
+
+    this.parametrosForm.get('emailDestinatario')?.updateValueAndValidity();
+    this.parametrosForm.get('asuntoEmail')?.updateValueAndValidity();
   }
 
 }

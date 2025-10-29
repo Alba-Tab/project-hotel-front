@@ -72,7 +72,43 @@
             </mat-option>
           </mat-select>
         </mat-form-field>
-      </div>
+
+                <!-- Envío por Email -->
+        <div class="email-section">
+          <mat-checkbox
+            formControlName="enviarPorEmail"
+            (change)="onEnviarEmailChange()"
+            class="email-checkbox">
+            <strong>Enviar por Email</strong>
+          </mat-checkbox>
+
+          <div *ngIf="parametrosForm.get('enviarPorEmail')?.value" class="email-fields">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Email Destinatario</mat-label>
+              <input matInput type="email" formControlName="emailDestinatario" required>
+              <mat-icon matIconPrefix>email</mat-icon>
+              <mat-error>Ingrese un email válido</mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Asunto</mat-label>
+              <input matInput formControlName="asuntoEmail" required>
+              <mat-icon matIconPrefix>subject</mat-icon>
+              <mat-error>El asunto es requerido</mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Mensaje (opcional)</mat-label>
+              <textarea matInput formControlName="mensajeEmail" rows="3"
+                        placeholder="Mensaje personalizado para el email..."></textarea>
+              <mat-icon matIconPrefix>message</mat-icon>
+            </mat-form-field>
+          </div>
+        </div>
+
+        </div>
+
+
 
       <!-- Sección Derecha: Columnas -->
       <div class="columnas-section">

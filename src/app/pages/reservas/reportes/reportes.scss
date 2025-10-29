@@ -166,3 +166,56 @@
 .columnas-list::-webkit-scrollbar-thumb:hover {
   background: #a1a1a1;
 }
+
+
+/* Sección de Email */
+.email-section {
+  border-top: 1px solid #e0e0e0;
+  padding-top: 16px;
+  margin-top: 8px;
+
+  .email-checkbox {
+    margin-bottom: 16px;
+
+    strong {
+      color: #1976d2;
+    }
+  }
+
+  .email-fields {
+    padding-left: 24px;
+    border-left: 3px solid #1976d2;
+    background-color: #f8f9fa;
+    padding: 16px;
+    border-radius: 4px;
+
+    mat-form-field {
+      margin-bottom: 12px;
+
+      &:last-child {
+        margin-bottom: 0;
+      }
+    }
+
+    mat-icon[matIconPrefix] {
+      color: #1976d2;
+      margin-right: 8px;
+    }
+  }
+}
+
+/* Animación para campos de email */
+.email-fields {
+  animation: slideIn 0.3s ease-in-out;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

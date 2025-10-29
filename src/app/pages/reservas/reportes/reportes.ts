@@ -57,6 +57,10 @@ export class Reportes {
     estado: [''],
     formato: ['pdf', Validators.required],
     // tipoReporte: ['gerencial', Validators.required]
+    enviarPorEmail: [false],
+    emailDestinatario: [''],
+    asuntoEmail: [''],
+    mensajeEmail: ['Adjunto el reporte solicitado de reservas.']
   });
 
   // Columnas disponibles
@@ -115,6 +119,20 @@ export class Reportes {
       return;
     }
 
+    const formValue = this.parametrosForm.value;
+
+    // Validar email si está marcado envío por email
+    if (formValue.enviarPorEmail) {
+      if (!formValue.emailDestinatario) {
+        this.snackBar.open('Ingrese el email de destino', 'Cerrar', { duration: 3000 });
+        return;
+      }
+      if (!formValue.asuntoEmail) {
+        this.snackBar.open('Ingrese el asunto del email', 'Cerrar', { duration: 3000 });
+        return;
+      }
+    }
+
     const columnasSeleccionadas = this.columnasDisponibles
       .filter(col => col.selected)
       .map(col => col.key);
@@ -133,23 +151,48 @@ export class Reportes {
       format: this.parametrosForm.get('formato')?.value
     };
 
+    // Si es envío por email, agregar campos adicionales
+    if (formValue.enviarPorEmail) {
+      Object.assign(config, {
+        recipient_email: formValue.emailDestinatario,
+        subject: formValue.asuntoEmail,
+        message: formValue.mensajeEmail || 'Adjunto el reporte solicitado de reservas.'
+      });
+    }
+
     console.log('Enviando configuración de reporte:', config);
 
-    this.apiService.generarReporte('reservas/reportes/reservas_base/export', config).subscribe({
+    // Determinar endpoint según si es email o descarga
+    const endpoint = formValue.enviarPorEmail ?
+      'reservas/reportes/reservas_base/email' :
+      'reservas/reportes/reservas_base/export';
+
+    this.apiService.generarReporte(endpoint, config).subscribe({
+
       next: (blob: Blob) => {
-        console.log('Blob recibido - Tipo:', blob.type, 'Tamaño:', blob.size);
-        this.descargarArchivo(blob, config.format || 'pdf');
+        // console.log('Blob recibido - Tipo:', blob.type, 'Tamaño:', blob.size);
+        // this.descargarArchivo(blob, config.format || 'pdf');
         this.generando = false;
-        this.snackBar.open('Reporte generado exitosamente', 'Cerrar', { duration: 3000 });
+
+        if (formValue.enviarPorEmail) {
+          // Para email, el servidor responde con un mensaje de éxito
+          this.snackBar.open('Reporte enviado por email exitosamente', 'Cerrar', { duration: 3000 });
+        } else {
+          // Para descarga, procesar el blob
+          console.log('Blob recibido - Tipo:', blob.type, 'Tamaño:', blob.size);
+          this.descargarArchivo(blob, config.format || 'pdf');
+          this.snackBar.open('Reporte generado exitosamente', 'Cerrar', { duration: 3000 });
+        }
+
         this.dialogRef.close(true);
       },
       error: (error) => {
         console.error('Error completo:', error);
         this.generando = false;
-        const mensaje = error.status === 406 ?
-        'Error 406: El servidor no puede generar el formato solicitado' :
+        const mensaje = formValue.enviarPorEmail ?
+        'Error al enviar reporte por email' :
         'Error al generar reporte';
-        this.snackBar.open('Error al generar reporte', 'Cerrar', { duration: 3000 });
+        this.snackBar.open(mensaje, 'Cerrar', { duration: 3000 });
       }
     });
   }
@@ -218,4 +261,29 @@ export class Reportes {
     this.dialogRef.close(false);
   }
 
+  onEnviarEmailChange() {
+    const enviarPorEmail = this.parametrosForm.get('enviarPorEmail')?.value;
+
+    if (enviarPorEmail) {
+      // Hacer campos de email obligatorios
+      this.parametrosForm.get('emailDestinatario')?.setValidators([Validators.required, Validators.email]);
+      this.parametrosForm.get('asuntoEmail')?.setValidators([Validators.required]);
+
+      // Generar asunto por defecto
+      const fechaActual = new Date().toLocaleDateString('es-ES', {
+        month: 'long',
+        year: 'numeric'
+      });
+      this.parametrosForm.patchValue({
+        asuntoEmail: `Reporte de Reservas - ${fechaActual}`
+      });
+    } else {
+      // Quitar validaciones
+      this.parametrosForm.get('emailDestinatario')?.clearValidators();
+      this.parametrosForm.get('asuntoEmail')?.clearValidators();
+    }
+
+    this.parametrosForm.get('emailDestinatario')?.updateValueAndValidity();
+    this.parametrosForm.get('asuntoEmail')?.updateValueAndValidity();
+  }
 }
