@@ -14,6 +14,10 @@ export class TenantService {
    * @param datos Datos del formulario
    */
   registrarTenant(datos: TenantForm): Observable<TenantResponse> {
+    console.log('🌐 TenantService - Datos recibidos:', datos);
+    console.log('🌐 TenantService - plan_id:', datos.plan_id);
+    console.log('🌐 TenantService - Tipo de plan_id:', typeof datos.plan_id);
+
     return this.apiService.crear<TenantResponse>('public/tenants-forms', datos);
   }
 }

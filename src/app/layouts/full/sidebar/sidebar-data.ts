@@ -86,6 +86,11 @@ export const navItems: NavItem[] = [
     iconName: 'solar:shield-user-line-duotone',
     route: '/roles-permisos',
   },
+  {
+    displayName: 'Suscripciones',
+    iconName: 'solar:home-smile-line-duotone',
+    route: '/suscripcion',
+  },
 
   {
     navCap: 'Ui Components',
