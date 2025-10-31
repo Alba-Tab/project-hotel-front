@@ -8,6 +8,8 @@ import { ApiService } from 'src/app/services/api.service';
 import { MaterialModule } from "src/app/material.module";
 import { PagosFormModal } from './pagos-form-modal/pagos-form-modal';
 
+import { ReportesPagos } from './reportes-pagos/reportes-pagos';
+
 @Component({
   selector: 'app-pagos',
   standalone: true,
@@ -24,7 +26,7 @@ export class PagosComponent implements OnInit {
   // Columnas para la tabla
   columnasTabla: string[] = [
     'id',
-    'estado', 
+    'estado',
     'monto',
     'metodo',
     'fecha_pago',
@@ -101,6 +103,21 @@ export class PagosComponent implements OnInit {
     }
   }
 
+  abrirModalReportes(): void {
+  const dialogRef = this.dialog.open(ReportesPagos, {
+    width: '750px',
+    maxHeight: '90vh',
+    panelClass: 'custom-dialog-container',
+    disableClose: false
+  });
+
+  dialogRef.afterClosed().subscribe((result) => {
+    if (result) {
+      console.log('Reporte de pagos generado exitosamente');
+    }
+  });
+}
+
   getEstadoColor(pago: any): string {
     switch (pago.estado?.toLowerCase()) {
       case 'pagado':
@@ -119,19 +136,19 @@ export class PagosComponent implements OnInit {
   // Función para convertir fecha UTC al huso horario del navegador
   convertirFechaUTC(fechaISO: string): Date {
     if (!fechaISO) return new Date();
-    
+
     // Si ya tiene información de zona horaria, crear la fecha directamente
     if (fechaISO.includes('Z') || fechaISO.includes('+') || fechaISO.includes('-')) {
       return new Date(fechaISO);
     }
-    
+
     // Si no tiene zona horaria, asumir que es UTC y convertir al huso local
     return new Date(fechaISO + 'Z');
   }
 
   crearPago(payload?: any): void {
     const pagoData = payload || this.nuevoPago;
-    
+
     this.apiServices.crear('pagos', pagoData).subscribe({
       next: () => {
         this.snackBar.open('Pago creado correctamente', 'Cerrar', {
