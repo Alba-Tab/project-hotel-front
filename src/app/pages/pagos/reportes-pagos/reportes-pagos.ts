@@ -15,7 +15,18 @@ import { MatDividerModule } from '@angular/material/divider';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ApiService } from '../../../services/api.service';
+import { MatTab, MatTabsModule } from '@angular/material/tabs';
+import { MatCardModule } from '@angular/material/card';
+import { MatTableModule } from '@angular/material/table';
+// import { DataSource } from '@angular/cdk/data-source.d';
 
+
+interface FiltroQBE {
+  field: string;
+  op: string;
+  value: any;
+  fieldLabel?: string;
+}
 
 @Component({
   selector: 'app-reportes-pagos',
@@ -34,6 +45,9 @@ import { ApiService } from '../../../services/api.service';
     MatIconModule,
     MatDividerModule,
     MatProgressSpinnerModule,
+    MatTabsModule,
+    MatTableModule,
+    MatCardModule,
   ],
   templateUrl: './reportes-pagos.html',
   styleUrls: ['./reportes-pagos.scss']
@@ -46,6 +60,8 @@ export class ReportesPagos {
   private snackBar = inject(MatSnackBar);
 
   generando = false;
+  previsualizando = false;
+  datosPreview: any[] = [];
 
   // Formulario de parámetros
   parametrosForm = this.fb.group({
@@ -56,12 +72,16 @@ export class ReportesPagos {
     montoMinimo: [''],
     montoMaximo: [''],
     formato: ['pdf', Validators.required],
+    limite: [20],
 
     enviarPorEmail: [false],
     emailDestinatario: [''],
     asuntoEmail: [''],
     mensajeEmail: ['Adjunto el reporte solicitado de reservas.']
   });
+
+  // Filtros QBE dinámicos
+  filtrosQBE: FiltroQBE[] = [];
 
   // Columnas disponibles para pagos
   columnasDisponibles = [
@@ -72,8 +92,56 @@ export class ReportesPagos {
     { key: 'fecha_pago', label: 'Fecha de Pago', selected: true },
     { key: 'referencia', label: 'Referencia', selected: true },
     { key: 'folio_estancia', label: 'Folio ID', selected: false },
+    { key: 'folio_estancia__reserva__hotel__nombre', label: 'Hotel', selected: false },
+    { key: 'folio_estancia__reserva__huesped__username', label: 'Huésped', selected: false },
     { key: 'observaciones', label: 'Observaciones', selected: false }
   ];
+
+  // Campos disponibles para QBE
+  camposQBE = [
+    { key: 'id', label: 'ID', tipo: 'number' },
+    { key: 'estado', label: 'Estado', tipo: 'select' },
+    { key: 'monto', label: 'Monto', tipo: 'number' },
+    { key: 'metodo', label: 'Método', tipo: 'select' },
+    { key: 'fecha_pago', label: 'Fecha Pago', tipo: 'date' },
+    { key: 'referencia', label: 'Referencia', tipo: 'text' },
+    { key: 'folio_estancia', label: 'Folio ID', tipo: 'number' },
+    { key: 'folio_estancia__reserva__hotel__nombre', label: 'Hotel', tipo: 'text' },
+    { key: 'folio_estancia__reserva__huesped__username', label: 'Huésped', tipo: 'text' },
+  ];
+
+  // Operadores por tipo
+  operadoresPorTipo = {
+    text: [
+      { key: 'eq', label: 'Igual a' },
+      { key: 'ne', label: 'Diferente de' },
+      { key: 'contains', label: 'Contiene' },
+      { key: 'icontains', label: 'Contiene (sin mayús.)' },
+      { key: 'startswith', label: 'Empieza con' },
+      { key: 'endswith', label: 'Termina con' }
+    ],
+    number: [
+      { key: 'eq', label: 'Igual a' },
+      { key: 'ne', label: 'Diferente de' },
+      { key: 'gt', label: 'Mayor que' },
+      { key: 'gte', label: 'Mayor o igual' },
+      { key: 'lt', label: 'Menor que' },
+      { key: 'lte', label: 'Menor o igual' }
+    ],
+    date: [
+      { key: 'eq', label: 'Igual a' },
+      { key: 'ne', label: 'Diferente de' },
+      { key: 'gt', label: 'Posterior a' },
+      { key: 'gte', label: 'Posterior o igual' },
+      { key: 'lt', label: 'Anterior a' },
+      { key: 'lte', label: 'Anterior o igual' }
+    ],
+    select: [
+      { key: 'eq', label: 'Igual a' },
+      { key: 'ne', label: 'Diferente de' },
+      { key: 'in', label: 'En lista' }
+    ]
+  };
 
   // Opciones para filtros
   estadosDisponibles = [
@@ -100,11 +168,69 @@ export class ReportesPagos {
     { value: 'docx', label: 'Word' }
   ];
 
+  // Métodos QBE
+  agregarFiltroQBE() {
+    this.filtrosQBE.push({
+      field: '',
+      op: '',
+      value: '',
+      fieldLabel: ''
+    });
+  }
+
+  eliminarFiltroQBE(index: number) {
+    this.filtrosQBE.splice(index, 1);
+  }
+
+  onCampoQBEChange(index: number, campo: string) {
+    const campoInfo = this.camposQBE.find(c => c.key === campo);
+    this.filtrosQBE[index].field = campo;
+    this.filtrosQBE[index].fieldLabel = campoInfo?.label || campo;
+    this.filtrosQBE[index].op = '';
+    this.filtrosQBE[index].value = '';
+  }
+
+  getOperadoresParaCampo(index: number) {
+    const filtro = this.filtrosQBE[index];
+    if (!filtro.field) return [];
+
+    const campo = this.camposQBE.find(c => c.key === filtro.field);
+    return this.operadoresPorTipo[campo?.tipo as keyof typeof this.operadoresPorTipo] || [];
+  }
+
+  getTipoCampo(field: string): string {
+    const campo = this.camposQBE.find(c => c.key === field);
+    return campo?.tipo || 'text';
+  }
+
+  // Preview de datos
+  previsualizarDatos() {
+    if (!this.validarConfiguracion()) return;
+
+    this.previsualizando = true;
+    const config = this.construirConfiguracion();
+
+    this.apiService.generarReporte('pagos/reportes/pagos_base/preview', config).subscribe({
+      next: (response: any) => {
+        this.datosPreview = response.results || response;
+        this.previsualizando = false;
+        this.snackBar.open('Vista previa cargada', 'Cerrar', { duration: 2000 });
+      },
+      error: (error) => {
+        console.error('Error en preview:', error);
+        this.previsualizando = false;
+        this.snackBar.open('Error al cargar vista previa', 'Cerrar', { duration: 3000 });
+      }
+    });
+  }
+
   generarReporte() {
-    if (this.parametrosForm.invalid) {
-      this.snackBar.open('Complete los campos requeridos', 'Cerrar', { duration: 3000 });
-      return;
-    }
+    // if (this.parametrosForm.invalid) {
+    //   this.snackBar.open('Complete los campos requeridos', 'Cerrar', { duration: 3000 });
+    //   return;
+    // }
+
+    if (!this.validarConfiguracion()) return;
 
     const formValue = this.parametrosForm.value;
 
@@ -120,23 +246,25 @@ export class ReportesPagos {
       }
     }
 
-    const columnasSeleccionadas = this.columnasDisponibles
-      .filter(col => col.selected)
-      .map(col => col.key);
+    // const columnasSeleccionadas = this.columnasDisponibles
+    //   .filter(col => col.selected)
+    //   .map(col => col.key);
 
-    if (columnasSeleccionadas.length === 0) {
-      this.snackBar.open('Seleccione al menos una columna', 'Cerrar', { duration: 3000 });
-      return;
-    }
+    // if (columnasSeleccionadas.length === 0) {
+    //   this.snackBar.open('Seleccione al menos una columna', 'Cerrar', { duration: 3000 });
+    //   return;
+    // }
 
     this.generando = true;
+    const config = this.construirConfiguracion();
 
-    const config = {
-      columns: columnasSeleccionadas,
-      filters: this.construirFiltros(),
-      ordering: ['-id'],
-      format: formValue.formato
-    };
+    // const config = {
+    //   columns: columnasSeleccionadas,
+    //   filters: this.construirFiltros(),
+    //   ordering: ['-id'],
+    //   format: formValue.formato
+    // };
+
 
     // Si es envío por email, agregar campos adicionales
     if (formValue.enviarPorEmail) {
@@ -146,8 +274,6 @@ export class ReportesPagos {
         message: formValue.mensajeEmail || 'Adjunto el reporte solicitado de reservas.'
       });
     }
-
-    console.log('Enviando configuración de pagos:', config);
 
     // Determinar endpoint según si es email o descarga
     const endpoint = formValue.enviarPorEmail ?
@@ -166,7 +292,7 @@ export class ReportesPagos {
           this.snackBar.open('Reporte enviado por email exitosamente', 'Cerrar', { duration: 3000 });
         } else {
           // Para descarga, procesar el blob
-          console.log('Blob recibido - Tipo:', blob.type, 'Tamaño:', blob.size);
+          // console.log('Blob recibido - Tipo:', blob.type, 'Tamaño:', blob.size);
           this.descargarArchivo(blob, config.format || 'pdf');
           this.snackBar.open('Reporte generado exitosamente', 'Cerrar', { duration: 3000 });
         }
@@ -183,6 +309,32 @@ export class ReportesPagos {
         this.snackBar.open(mensaje, 'Cerrar', { duration: 3000 });
       }
     });
+  }
+
+  private validarConfiguracion(): boolean {
+    const columnasSeleccionadas = this.columnasDisponibles.filter(col => col.selected);
+    if (columnasSeleccionadas.length === 0) {
+      this.snackBar.open('Seleccione al menos una columna', 'Cerrar', { duration: 3000 });
+      return false;
+    }
+    return true;
+  }
+
+  private construirConfiguracion() {
+    const formValue = this.parametrosForm.value;
+    const columnasSeleccionadas = this.columnasDisponibles
+      .filter(col => col.selected)
+      .map(col => col.key);
+
+    const config = {
+      columns: columnasSeleccionadas,
+      filters: this.construirFiltros(),
+      ordering: ['-id'],
+      format: formValue.formato,
+      limit: formValue.limite || 20
+    };
+
+    return config;
   }
 
   private construirFiltros() {
@@ -236,6 +388,27 @@ export class ReportesPagos {
         value: parseFloat(form.montoMaximo)
       });
     }
+
+    // Agregar filtros QBE
+    this.filtrosQBE.forEach(filtro => {
+      if (filtro.field && filtro.op && filtro.value !== '') {
+        let valor = filtro.value;
+
+        // Convertir valores según tipo
+        const tipoCampo = this.getTipoCampo(filtro.field);
+        if (tipoCampo === 'number') {
+          valor = parseFloat(valor);
+        } else if (tipoCampo === 'date') {
+          valor = new Date(valor).toISOString().split('T')[0];
+        }
+
+        filtros.push({
+          field: filtro.field,
+          op: filtro.op,
+          value: valor
+        });
+      }
+    });
 
     return filtros;
   }

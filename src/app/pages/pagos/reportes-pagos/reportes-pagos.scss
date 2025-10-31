@@ -1,6 +1,6 @@
 .reportes-dialog {
-  width: 750px;
-  min-height: 550px;
+  width: 900px;
+  min-height: 600px;
 }
 
 .dialog-title {
@@ -18,69 +18,190 @@
 }
 
 .dialog-content {
+  padding: 0;
+}
+
+.tab-content {
   padding: 20px;
 }
 
-.parametros-form {
-  display: flex;
-  gap: 30px;
-  min-height: 450px;
-}
+/* Secciones de formulario */
+.section {
+  margin-bottom: 24px;
 
-.parametros-section {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-.columnas-section {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  border-left: 1px solid #e0e0e0;
-  padding-left: 20px;
-}
-
-.section-title {
-  margin: 0;
-  font-size: 14px;
-  font-weight: 600;
-  color: #333;
-  padding-bottom: 8px;
-  border-bottom: 2px solid #4caf50;
-}
-
-.fechas-group, .montos-group {
-  display: flex;
-  gap: 12px;
-
-  .fecha-field, .monto-field {
-    flex: 1;
+  h3 {
+    margin: 0 0 16px 0;
+    font-size: 16px;
+    font-weight: 600;
+    color: #333;
+    border-bottom: 2px solid #4caf50;
+    padding-bottom: 8px;
   }
 }
 
-.full-width {
-  width: 100%;
+.fechas-group, .filters-group, .config-group {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+
+  mat-form-field {
+    width: 100%;
+  }
 }
 
-.columnas-list {
+/* QBE Content */
+.qbe-content {
+  min-height: 400px;
+}
+
+.qbe-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+
+  h3 {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 600;
+    color: #333;
+  }
+}
+
+.qbe-filters {
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  max-height: 320px;
-  overflow-y: auto;
+  gap: 16px;
+}
 
-  .columna-checkbox {
-    font-size: 14px;
+.filter-card {
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 
-    .mat-mdc-checkbox-label {
-      font-size: 14px;
+  .filter-row {
+    display: grid;
+    grid-template-columns: 2fr 1.5fr 2fr auto;
+    gap: 16px;
+    align-items: center;
+
+    .field-select, .operator-select {
+      min-width: 150px;
+    }
+
+    .value-field {
+      min-width: 200px;
+
+      mat-form-field {
+        width: 100%;
+      }
     }
   }
 }
 
+.no-filters {
+  text-align: center;
+  padding: 40px;
+  color: #666;
+
+  p {
+    margin: 8px 0;
+  }
+}
+
+/* Columnas Content */
+.columnas-content {
+  h3 {
+    margin-bottom: 20px;
+    font-size: 16px;
+    font-weight: 600;
+    color: #333;
+  }
+}
+
+.columnas-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 12px;
+
+  .columna-checkbox {
+    font-size: 14px;
+  }
+}
+
+/* Preview Content */
+.preview-content {
+  min-height: 400px;
+}
+
+.preview-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+
+  h3 {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 600;
+    color: #333;
+  }
+}
+
+.preview-table {
+  margin-top: 16px;
+
+  .preview-data {
+    width: 100%;
+
+    th, td {
+      padding: 12px 8px;
+      border-bottom: 1px solid #e0e0e0;
+    }
+
+    th {
+      background-color: #f5f5f5;
+      font-weight: 600;
+    }
+  }
+}
+
+.no-preview {
+  text-align: center;
+  padding: 60px;
+  color: #666;
+
+  mat-icon {
+    font-size: 48px;
+    margin-bottom: 16px;
+    color: #ccc;
+  }
+
+  p {
+    margin: 8px 0;
+  }
+}
+
+/* Email Section */
+.email-checkbox {
+  margin-bottom: 16px;
+}
+
+.email-fields {
+  padding: 16px;
+  border: 1px solid #4caf50;
+  border-radius: 4px;
+  background-color: #f8fff8;
+
+  mat-form-field {
+    width: 100%;
+    margin-bottom: 12px;
+
+    mat-icon[matIconPrefix] {
+      color: #4caf50;
+    }
+  }
+}
+
+/* Dialog Actions */
 .dialog-actions {
   display: flex;
   justify-content: flex-end;
@@ -90,7 +211,7 @@
   background-color: #f9f9f9;
 
   button {
-    min-width: 80px;
+    min-width: 100px;
 
     &.mat-mdc-raised-button {
       display: flex;
@@ -100,7 +221,7 @@
   }
 }
 
-.spinner-btn {
+.spinner-btn, .spinner-inline {
   width: 16px !important;
   height: 16px !important;
 }
@@ -112,81 +233,22 @@
     max-width: 95vw;
   }
 
-  .parametros-form {
-    flex-direction: column;
-    gap: 20px;
+  .fechas-group, .filters-group, .config-group {
+    grid-template-columns: 1fr;
   }
 
-  .columnas-section {
-    border-left: none;
-    border-top: 1px solid #e0e0e0;
-    padding-left: 0;
-    padding-top: 20px;
-  }
-
-  .fechas-group, .montos-group {
-    flex-direction: column;
+  .filter-row {
+    grid-template-columns: 1fr;
     gap: 12px;
   }
-}
 
-/* Scroll personalizado */
-.columnas-list::-webkit-scrollbar {
-  width: 4px;
-}
-
-.columnas-list::-webkit-scrollbar-track {
-  background: #f1f1f1;
-  border-radius: 2px;
-}
-
-.columnas-list::-webkit-scrollbar-thumb {
-  background: #c1c1c1;
-  border-radius: 2px;
-}
-
-.columnas-list::-webkit-scrollbar-thumb:hover {
-  background: #a1a1a1;
-}
-
-/* Sección de Email */
-.email-section {
-  border-top: 1px solid #e0e0e0;
-  padding-top: 16px;
-  margin-top: 8px;
-
-  .email-checkbox {
-    margin-bottom: 16px;
-
-    strong {
-      color: #1976d2;
-    }
-  }
-
-  .email-fields {
-    padding-left: 24px;
-    border-left: 3px solid #1976d2;
-    background-color: #f8f9fa;
-    padding: 16px;
-    border-radius: 4px;
-
-    mat-form-field {
-      margin-bottom: 12px;
-
-      &:last-child {
-        margin-bottom: 0;
-      }
-    }
-
-    mat-icon[matIconPrefix] {
-      color: #1976d2;
-      margin-right: 8px;
-    }
+  .columnas-grid {
+    grid-template-columns: 1fr;
   }
 }
 
-/* Animación para campos de email */
-.email-fields {
+/* Animaciones */
+.filter-card {
   animation: slideIn 0.3s ease-in-out;
 }
 
