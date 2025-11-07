@@ -10,6 +10,7 @@ import { RouterModule } from '@angular/router';
 
 import { ApiService } from '../../services/api.service'
 import { CreareditarHabitacionesComponent } from './creareditar-habitaciones/creareditar-habitaciones.component';
+import { ReporteDialogComponent } from '../../components/reporte-dialog/reporte-dialog.component';
 import { MatDialogModule, MatDialog } from '@angular/material/dialog';
 
 
@@ -116,6 +117,21 @@ export class HabitacionesComponent implements OnInit {
            });
          }
        }
+     }
+
+     abrirDialogoReporte() {
+       const dialogRef = this.dialog.open(ReporteDialogComponent, {
+         width: '900px',
+         height: '700px',
+         disableClose: false,
+         data: {}
+       });
+
+       dialogRef.afterClosed().subscribe(result => {
+         if (result) {
+           console.log('Reporte generado', result);
+         }
+       });
      }
 
 }

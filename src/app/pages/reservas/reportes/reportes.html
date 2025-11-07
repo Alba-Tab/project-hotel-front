@@ -1,130 +1,287 @@
-<div class="reportes-dialog">
+<div class="reportes-qbe-dialog">
   <h2 mat-dialog-title class="dialog-title">
-    <mat-icon>assessment</mat-icon>
-    Parámetros de Reporte
+    <mat-icon>analytics</mat-icon>
+    Reportes QBE - Reservas
   </h2>
 
   <mat-dialog-content class="dialog-content">
-    <form [formGroup]="parametrosForm" class="parametros-form">
+    <form [formGroup]="parametrosForm">
+      <mat-tab-group [(selectedIndex)]="tabSeleccionada" class="qbe-tabs">
 
-      <!-- Sección Izquierda: Parámetros -->
-      <div class="parametros-section">
-        <h3 class="section-title">Parámetros</h3>
+      <!-- Tab 1: Parámetros Básicos -->
+      <mat-tab label="Parámetros">
+        <div class="tab-content">
+          <form [formGroup]="parametrosForm" class="parametros-form">
 
-        <!-- Fechas -->
-        <div class="fechas-group">
-          <mat-form-field appearance="outline" class="fecha-field">
-            <mat-label>Fecha Inicio</mat-label>
-            <input matInput [matDatepicker]="pickerInicio" formControlName="fechaInicio" required>
-            <mat-datepicker-toggle matIconSuffix [for]="pickerInicio"></mat-datepicker-toggle>
-            <mat-datepicker #pickerInicio></mat-datepicker>
-          </mat-form-field>
+            <!-- Fechas -->
+            <div class="fechas-group">
+              <mat-form-field appearance="outline" class="fecha-field">
+                <mat-label>Fecha Inicio</mat-label>
+                <input matInput [matDatepicker]="pickerInicio" formControlName="fechaInicio">
+                <mat-datepicker-toggle matIconSuffix [for]="pickerInicio"></mat-datepicker-toggle>
+                <mat-datepicker #pickerInicio></mat-datepicker>
+                <mat-hint>Filtro por fecha de entrada</mat-hint>
+              </mat-form-field>
 
-          <mat-form-field appearance="outline" class="fecha-field">
-            <mat-label>Fecha Fin</mat-label>
-            <input matInput [matDatepicker]="pickerFin" formControlName="fechaFin" required>
-            <mat-datepicker-toggle matIconSuffix [for]="pickerFin"></mat-datepicker-toggle>
-            <mat-datepicker #pickerFin></mat-datepicker>
-          </mat-form-field>
+              <mat-form-field appearance="outline" class="fecha-field">
+                <mat-label>Fecha Fin</mat-label>
+                <input matInput [matDatepicker]="pickerFin" formControlName="fechaFin">
+                <mat-datepicker-toggle matIconSuffix [for]="pickerFin"></mat-datepicker-toggle>
+                <mat-datepicker #pickerFin></mat-datepicker>
+                <mat-hint>Filtro por fecha de salida</mat-hint>
+              </mat-form-field>
+            </div>
+
+            <!-- Estado -->
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Estado</mat-label>
+              <mat-select formControlName="estado">
+                <mat-option value="">Todos los estados</mat-option>
+                <mat-option *ngFor="let estado of estadosDisponibles" [value]="estado.value">
+                  {{estado.label}}
+                </mat-option>
+              </mat-select>
+              <mat-hint>Filtro por estado de la reserva</mat-hint>
+            </mat-form-field>
+
+            <!-- Límite de registros -->
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Límite de registros</mat-label>
+              <input matInput type="number" formControlName="limite" min="1" max="1000">
+              <mat-hint>Máximo 1000 registros (por defecto 30)</mat-hint>
+            </mat-form-field>
+
+            <!-- Formato -->
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Formato de salida</mat-label>
+              <mat-select formControlName="formato">
+                <mat-option *ngFor="let formato of formatosDisponibles" [value]="formato.value">
+                  {{formato.label}}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+
+          </form>
         </div>
+      </mat-tab>
 
-        <!-- Estado -->
-        <mat-form-field appearance="outline" class="full-width">
-          <mat-label>Estado</mat-label>
-          <mat-select formControlName="estado">
-            <mat-option *ngFor="let estado of estadosDisponibles" [value]="estado.value">
-              {{estado.label}}
-            </mat-option>
-          </mat-select>
-        </mat-form-field>
+      <!-- Tab 2: Query By Example (QBE) -->
+      <mat-tab label="Filtros QBE">
+        <div class="tab-content qbe-content">
+          <div class="qbe-header">
+            <h3>Query By Example - Filtros Avanzados</h3>
+            <div class="qbe-actions">
+              <button mat-raised-button color="primary" (click)="agregarFiltroQBE()">
+                <mat-icon>add</mat-icon>
+                Agregar Filtro
+              </button>
+              <button mat-button (click)="limpiarFiltrosQBE()" *ngIf="filtrosQBE.length > 0">
+                <mat-icon>clear_all</mat-icon>
+                Limpiar
+              </button>
+            </div>
+          </div>
 
-        <!-- Tipo de Reporte -->
-        <!-- <div class="tipo-section">
-          <h4>Tipo:</h4>
-          <mat-radio-group formControlName="tipoReporte" (change)="onTipoChange()">
-            <mat-radio-button *ngFor="let tipo of tiposReporte"
-                              [value]="tipo.value"
-                              class="tipo-radio">
-              {{tipo.label}}
-            </mat-radio-button>
-          </mat-radio-group>
-        </div> -->
+          <div class="qbe-filters" *ngIf="filtrosQBE.length > 0">
+            <mat-card *ngFor="let filtro of filtrosQBE; let i = index" class="filtro-card">
+              <mat-card-content class="filtro-content">
 
-        <!-- Formato -->
-        <mat-form-field appearance="outline" class="full-width">
-          <mat-label>Formato</mat-label>
-          <mat-select formControlName="formato">
-            <mat-option *ngFor="let formato of formatosDisponibles" [value]="formato.value">
-              {{formato.label}}
-            </mat-option>
-          </mat-select>
-        </mat-form-field>
+                <!-- Campo -->
+                <mat-form-field appearance="outline" class="campo-field">
+                  <mat-label>Campo</mat-label>
+                  <mat-select [ngModel]="filtro.field" (ngModelChange)="onCampoQBEChange(i, $event)">
+                    <mat-option *ngFor="let campo of camposQBE" [value]="campo.key">
+                      {{campo.label}}
+                    </mat-option>
+                  </mat-select>
+                </mat-form-field>
 
-                <!-- Envío por Email -->
-        <div class="email-section">
-          <mat-checkbox
-            formControlName="enviarPorEmail"
-            (change)="onEnviarEmailChange()"
-            class="email-checkbox">
-            <strong>Enviar por Email</strong>
-          </mat-checkbox>
+                <!-- Operador -->
+                <mat-form-field appearance="outline" class="operator-select">
+                  <mat-label>Operador</mat-label>
+                  <mat-select [(ngModel)]="filtro.op">
+                    <mat-option *ngFor="let op of getOperadoresParaCampo(i)" [value]="op.key">
+                      {{op.label}}
+                    </mat-option>
+                  </mat-select>
+                </mat-form-field>
 
-          <div *ngIf="parametrosForm.get('enviarPorEmail')?.value" class="email-fields">
-            <mat-form-field appearance="outline" class="full-width">
-              <mat-label>Email Destinatario</mat-label>
-              <input matInput type="email" formControlName="emailDestinatario" required>
-              <mat-icon matIconPrefix>email</mat-icon>
-              <mat-error>Ingrese un email válido</mat-error>
-            </mat-form-field>
+                <!-- Valor -->
+                <div class="valor-field">
+                  <!-- Valor para texto -->
+                  <mat-form-field *ngIf="getTipoCampo(filtro.field) === 'text'" appearance="outline">
+                    <mat-label>Valor</mat-label>
+                    <input matInput [(ngModel)]="filtro.value">
+                  </mat-form-field>
 
-            <mat-form-field appearance="outline" class="full-width">
-              <mat-label>Asunto</mat-label>
-              <input matInput formControlName="asuntoEmail" required>
-              <mat-icon matIconPrefix>subject</mat-icon>
-              <mat-error>El asunto es requerido</mat-error>
-            </mat-form-field>
+                  <!-- Valor para número -->
+                  <mat-form-field *ngIf="getTipoCampo(filtro.field) === 'number'" appearance="outline">
+                    <mat-label>Valor</mat-label>
+                    <input matInput type="number" [(ngModel)]="filtro.value" step="0.01">
+                  </mat-form-field>
 
-            <mat-form-field appearance="outline" class="full-width">
-              <mat-label>Mensaje (opcional)</mat-label>
-              <textarea matInput formControlName="mensajeEmail" rows="3"
-                        placeholder="Mensaje personalizado para el email..."></textarea>
-              <mat-icon matIconPrefix>message</mat-icon>
-            </mat-form-field>
+                  <!-- Valor para fecha -->
+                  <mat-form-field *ngIf="getTipoCampo(filtro.field) === 'date'" appearance="outline">
+                    <mat-label>Valor</mat-label>
+                    <input matInput [matDatepicker]="picker" [(ngModel)]="filtro.value">
+                    <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+                    <mat-datepicker #picker></mat-datepicker>
+                  </mat-form-field>
+
+                  <!-- Valor para select -->
+                  <mat-form-field *ngIf="getTipoCampo(filtro.field) === 'select'" appearance="outline">
+                    <mat-label>Valor</mat-label>
+                    <mat-select [(ngModel)]="filtro.value">
+                      <ng-container *ngIf="filtro.field === 'estado'">
+                        <mat-option *ngFor="let estado of estadosDisponibles" [value]="estado.value">
+                          {{estado.label}}
+                        </mat-option>
+                      </ng-container>
+                    </mat-select>
+                  </mat-form-field>
+                </div>
+
+                <!-- Eliminar filtro -->
+                <button mat-icon-button color="warn" (click)="eliminarFiltroQBE(i)" class="eliminar-btn">
+                  <mat-icon>delete</mat-icon>
+                </button>
+
+              </mat-card-content>
+            </mat-card>
+          </div>
+
+          <div *ngIf="filtrosQBE.length === 0" class="no-filtros">
+            <mat-icon>search</mat-icon>
+            <p>No hay filtros QBE configurados.</p>
+            <p>Haga clic en "Agregar Filtro" para comenzar.</p>
           </div>
         </div>
-      </div>
+      </mat-tab>
 
-      <!-- Sección Derecha: Columnas -->
-      <div class="columnas-section">
-        <h3 class="section-title">Columnas a Incluir</h3>
+      <!-- Tab 3: Columnas -->
+      <mat-tab label="Columnas">
+        <div class="tab-content">
+          <div class="columnas-header">
+            <h3>Selección de Columnas</h3>
+            <div class="columnas-stats">
+              <span class="stats-text">{{columnasSeleccionadas.length}} de {{columnasDisponibles.length}} seleccionadas</span>
+            </div>
+          </div>
 
-        <div class="columnas-list">
-          <mat-checkbox *ngFor="let columna of columnasDisponibles"
-                        [(ngModel)]="columna.selected"
-                        [ngModelOptions]="{standalone: true}"
-                        class="columna-checkbox">
-            {{columna.label}}
-          </mat-checkbox>
+          <div class="columnas-grid">
+            <mat-checkbox *ngFor="let columna of columnasDisponibles"
+                          [(ngModel)]="columna.selected"
+                          [ngModelOptions]="{standalone: true}"
+                          class="columna-checkbox">
+              <div class="columna-info">
+                <span class="columna-label">{{columna.label}}</span>
+                <span class="columna-key">{{columna.key}}</span>
+              </div>
+            </mat-checkbox>
+          </div>
         </div>
-      </div>
+      </mat-tab>
 
+      <!-- Tab 4: Vista Previa y Email -->
+      <mat-tab label="Vista Previa">
+        <div class="tab-content preview-content">
+
+          <!-- Controles de Preview -->
+          <div class="preview-controls">
+            <button mat-raised-button color="accent"
+                    (click)="previsualizarDatos()"
+                    [disabled]="previsualizando">
+              <mat-spinner *ngIf="previsualizando" diameter="16"></mat-spinner>
+              <mat-icon *ngIf="!previsualizando">visibility</mat-icon>
+              {{previsualizando ? 'Cargando...' : 'Vista Previa'}}
+            </button>
+
+            <div class="preview-info" *ngIf="datosPreview.length > 0">
+              <span>{{datosPreview.length}} registros encontrados</span>
+            </div>
+          </div>
+
+          <!-- Tabla de Preview -->
+          <div class="preview-table" *ngIf="datosPreview.length > 0">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th *ngFor="let col of columnasSeleccionadas">
+                    {{getLabelForColumn(col)}}
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let fila of datosPreview.slice(0, 10)">
+                  <td *ngFor="let col of columnasSeleccionadas">
+                    {{fila[col] || '-'}}
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+            <p class="preview-note" *ngIf="datosPreview.length > 10">
+              Mostrando primeros 10 registros de {{datosPreview.length}} total
+            </p>
+          </div>
+
+          <!-- Configuración de Email -->
+          <mat-divider class="email-divider"></mat-divider>
+
+          <div class="email-section">
+            <mat-checkbox formControlName="enviarPorEmail"
+                          (change)="onEnviarEmailChange()"
+                          class="email-checkbox">
+              <strong>Enviar reporte por email</strong>
+            </mat-checkbox>
+
+            <div *ngIf="parametrosForm.get('enviarPorEmail')?.value" class="email-fields">
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Email destinatario</mat-label>
+                <input matInput type="email" formControlName="emailDestinatario" required>
+                <mat-icon matIconPrefix>email</mat-icon>
+                <mat-error>Ingrese un email válido</mat-error>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Asunto del email</mat-label>
+                <input matInput formControlName="asuntoEmail" required>
+                <mat-icon matIconPrefix>subject</mat-icon>
+                <mat-error>El asunto es requerido</mat-error>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Mensaje personalizado (opcional)</mat-label>
+                <textarea matInput formControlName="mensajeEmail"
+                          rows="3"
+                          placeholder="Escriba un mensaje personalizado que acompañe al reporte..."></textarea>
+                <mat-icon matIconPrefix>message</mat-icon>
+              </mat-form-field>
+            </div>
+          </div>
+
+        </div>
+      </mat-tab>
+
+      </mat-tab-group>
     </form>
   </mat-dialog-content>
 
+  <!-- Acciones del Dialog -->
   <mat-dialog-actions class="dialog-actions">
     <button mat-button (click)="cancelar()" [disabled]="generando">
+      <mat-icon>cancel</mat-icon>
       Cancelar
     </button>
 
-    <button mat-raised-button
-            color="primary"
+    <button mat-raised-button color="primary"
             (click)="generarReporte()"
-            [disabled]="parametrosForm.invalid || generando">
+            [disabled]="generando">
 
       <mat-spinner *ngIf="generando" diameter="16" class="spinner-btn"></mat-spinner>
       <mat-icon *ngIf="!generando">download</mat-icon>
 
-      {{ generando ? 'Generando...' : 'OK' }}
+      {{ generando ? 'Generando...' : 'Generar Reporte' }}
     </button>
   </mat-dialog-actions>
+
 </div>

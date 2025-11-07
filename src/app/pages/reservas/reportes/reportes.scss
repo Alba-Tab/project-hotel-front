@@ -1,212 +1,375 @@
-.reportes-dialog {
-  width: 700px;
-  min-height: 500px;
+.reportes-qbe-dialog {
+  width: 900px;
+  min-height: 600px;
 }
 
 .dialog-title {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 12px;
   color: #1976d2;
-  font-size: 18px;
+  font-size: 20px;
   font-weight: 600;
   margin-bottom: 0;
 
   mat-icon {
-    font-size: 22px;
+    font-size: 24px;
   }
 }
 
 .dialog-content {
-  padding: 20px;
+  padding: 0;
+  overflow: hidden;
 }
 
-.parametros-form {
-  display: flex;
-  gap: 30px;
-  min-height: 400px;
-}
+// ===== PESTAÑAS =====
+.qbe-tabs {
+  .mat-mdc-tab-group {
+    height: 100%;
+  }
 
-.parametros-section {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
+  .mat-mdc-tab-body-wrapper {
+    height: 100%;
+  }
 
-.columnas-section {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  border-left: 1px solid #e0e0e0;
-  padding-left: 20px;
-}
+  .mat-mdc-tab-header {
+    border-bottom: 1px solid #e0e0e0;
+  }
 
-.section-title {
-  margin: 0;
-  font-size: 14px;
-  font-weight: 600;
-  color: #333;
-  padding-bottom: 8px;
-  border-bottom: 2px solid #1976d2;
-}
+  .mat-mdc-tab {
+    min-width: 120px;
 
-.fechas-group {
-  display: flex;
-  gap: 12px;
-
-  .fecha-field {
-    flex: 1;
+    .mdc-tab__text-label {
+      font-weight: 500;
+    }
   }
 }
 
+.tab-content {
+  padding: 24px;
+  min-height: 400px;
+}
+
+// ===== TAB 1: PARÁMETROS =====
+.parametros-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  max-width: 600px;
+}
+
+.fechas-group {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.fecha-field,
 .full-width {
   width: 100%;
 }
 
-.tipo-section {
-  h4 {
-    margin: 0 0 8px 0;
-    font-size: 13px;
-    font-weight: 600;
-    color: #555;
+// ===== TAB 2: QBE =====
+.qbe-content {
+  .qbe-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+    padding-bottom: 12px;
+    border-bottom: 2px solid #e3f2fd;
+
+    h3 {
+      margin: 0;
+      color: #1976d2;
+      font-size: 18px;
+      font-weight: 600;
+    }
+
+    .qbe-actions {
+      display: flex;
+      gap: 12px;
+    }
   }
 
-  .mat-mdc-radio-group {
+  .qbe-filters {
     display: flex;
+    flex-direction: column;
     gap: 16px;
   }
 
-  .tipo-radio {
-    font-size: 14px;
+  .filtro-card {
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    transition: box-shadow 0.2s ease;
+
+    &:hover {
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    .filtro-content {
+      padding: 16px;
+      display: grid;
+      grid-template-columns: 2fr 1.5fr 2fr auto;
+      gap: 16px;
+      align-items: center;
+
+      .campo-field,
+      .operador-field,
+      .valor-field {
+        margin: 0;
+      }
+
+      .eliminar-btn {
+        color: #f44336;
+
+        &:hover {
+          background-color: #ffebee;
+        }
+      }
+    }
   }
-}
 
-.columnas-list {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  max-height: 300px;
-  overflow-y: auto;
+  .no-filtros {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 20px;
+    text-align: center;
+    color: #666;
 
-  .columna-checkbox {
-    font-size: 14px;
+    mat-icon {
+      font-size: 48px;
+      width: 48px;
+      height: 48px;
+      margin-bottom: 16px;
+      opacity: 0.5;
+    }
 
-    .mat-mdc-checkbox-label {
+    p {
+      margin: 4px 0;
       font-size: 14px;
     }
   }
 }
 
-.dialog-actions {
+// ===== TAB 3: COLUMNAS =====
+.columnas-header {
   display: flex;
-  justify-content: flex-end;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  padding-bottom: 12px;
+  border-bottom: 2px solid #e8f5e8;
+
+  h3 {
+    margin: 0;
+    color: #388e3c;
+    font-size: 18px;
+    font-weight: 600;
+  }
+
+  .columnas-stats {
+    .stats-text {
+      background-color: #e8f5e8;
+      color: #2e7d32;
+      padding: 4px 12px;
+      border-radius: 16px;
+      font-size: 12px;
+      font-weight: 500;
+    }
+  }
+}
+
+.columnas-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: 12px;
-  padding: 16px 20px;
-  border-top: 1px solid #e0e0e0;
-  background-color: #f9f9f9;
 
-  button {
-    min-width: 80px;
+  .columna-checkbox {
+    padding: 12px;
+    border: 1px solid #e0e0e0;
+    border-radius: 6px;
+    transition: all 0.2s ease;
 
-    &.mat-mdc-raised-button {
+    &:hover {
+      background-color: #f5f5f5;
+      border-color: #ccc;
+    }
+
+    .columna-info {
       display: flex;
-      align-items: center;
-      gap: 6px;
+      flex-direction: column;
+      margin-left: 8px;
+
+      .columna-label {
+        font-weight: 500;
+        font-size: 14px;
+        color: #333;
+      }
+
+      .columna-key {
+        font-size: 12px;
+        color: #666;
+        font-family: 'Courier New', monospace;
+      }
     }
   }
 }
 
-.spinner-btn {
-  width: 16px !important;
-  height: 16px !important;
-}
-
-/* Responsivo */
-@media (max-width: 768px) {
-  .reportes-dialog {
-    width: 95vw;
-    max-width: 95vw;
-  }
-
-  .parametros-form {
-    flex-direction: column;
-    gap: 20px;
-  }
-
-  .columnas-section {
-    border-left: none;
-    border-top: 1px solid #e0e0e0;
-    padding-left: 0;
-    padding-top: 20px;
-  }
-
-  .fechas-group {
-    flex-direction: column;
-    gap: 12px;
-  }
-}
-
-/* Scroll personalizado */
-.columnas-list::-webkit-scrollbar {
-  width: 4px;
-}
-
-.columnas-list::-webkit-scrollbar-track {
-  background: #f1f1f1;
-  border-radius: 2px;
-}
-
-.columnas-list::-webkit-scrollbar-thumb {
-  background: #c1c1c1;
-  border-radius: 2px;
-}
-
-.columnas-list::-webkit-scrollbar-thumb:hover {
-  background: #a1a1a1;
-}
-
-
-/* Sección de Email */
-.email-section {
-  border-top: 1px solid #e0e0e0;
-  padding-top: 16px;
-  margin-top: 8px;
-
-  .email-checkbox {
-    margin-bottom: 16px;
-
-    strong {
-      color: #1976d2;
-    }
-  }
-
-  .email-fields {
-    padding-left: 24px;
-    border-left: 3px solid #1976d2;
-    background-color: #f8f9fa;
+// ===== TAB 4: VISTA PREVIA =====
+.preview-content {
+  .preview-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
     padding: 16px;
-    border-radius: 4px;
+    background-color: #f8f9fa;
+    border-radius: 8px;
 
-    mat-form-field {
-      margin-bottom: 12px;
+    .preview-info {
+      font-size: 14px;
+      color: #666;
+      font-weight: 500;
+    }
+  }
 
-      &:last-child {
-        margin-bottom: 0;
+  .preview-table {
+    margin-bottom: 32px;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    overflow: hidden;
+
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+
+      thead {
+        background-color: #f5f5f5;
+
+        th {
+          padding: 12px 8px;
+          text-align: left;
+          font-weight: 600;
+          color: #333;
+          border-bottom: 2px solid #ddd;
+          font-size: 12px;
+          text-transform: uppercase;
+        }
+      }
+
+      tbody {
+        tr {
+          &:nth-child(even) {
+            background-color: #fafafa;
+          }
+
+          &:hover {
+            background-color: #f0f0f0;
+          }
+
+          td {
+            padding: 10px 8px;
+            border-bottom: 1px solid #eee;
+            color: #555;
+          }
+        }
       }
     }
 
-    mat-icon[matIconPrefix] {
-      color: #1976d2;
-      margin-right: 8px;
+    .preview-note {
+      padding: 12px;
+      margin: 0;
+      background-color: #fff3cd;
+      color: #856404;
+      font-size: 12px;
+      text-align: center;
+      border-top: 1px solid #ffeaa7;
+    }
+  }
+
+  .email-divider {
+    margin: 32px 0 24px 0;
+  }
+
+  .email-section {
+    .email-checkbox {
+      margin-bottom: 20px;
+
+      strong {
+        font-size: 16px;
+        color: #1976d2;
+      }
+    }
+
+    .email-fields {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      padding: 20px;
+      background-color: #f8f9fa;
+      border-radius: 8px;
+      border-left: 4px solid #1976d2;
     }
   }
 }
 
-/* Animación para campos de email */
-.email-fields {
-  animation: slideIn 0.3s ease-in-out;
+// ===== ACCIONES DEL DIALOG =====
+.dialog-actions {
+  padding: 16px 24px;
+  border-top: 1px solid #e0e0e0;
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+
+  button {
+    min-width: 120px;
+
+    mat-icon {
+      margin-right: 8px;
+    }
+
+    &.mat-mdc-raised-button {
+      font-weight: 600;
+    }
+  }
+
+  .spinner-btn {
+    margin-right: 8px;
+  }
+}
+
+// ===== RESPONSIVE =====
+@media (max-width: 768px) {
+  .reportes-qbe-dialog {
+    width: 95vw;
+    max-width: none;
+  }
+
+  .tab-content {
+    padding: 16px;
+  }
+
+  .filtro-content {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .fechas-group {
+    grid-template-columns: 1fr;
+  }
+
+  .columnas-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+// ===== ANIMACIONES =====
+.filtro-card {
+  animation: slideIn 0.3s ease;
 }
 
 @keyframes slideIn {
@@ -218,4 +381,14 @@
     opacity: 1;
     transform: translateY(0);
   }
+}
+
+// ===== UTILIDADES =====
+.full-width {
+  width: 100%;
+}
+
+.spinner-btn {
+  width: 16px;
+  height: 16px;
 }

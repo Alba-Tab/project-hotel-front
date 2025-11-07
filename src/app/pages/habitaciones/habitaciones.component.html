@@ -1,3 +1,17 @@
+<style>
+  .button-container {
+    display: flex;
+    gap: 12px;
+    margin-top: 16px;
+    flex-wrap: wrap;
+  }
+  .button-container button {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+</style>
+
 <mat-card class="cardWithShadow">
   <mat-card-content>
     <mat-card-title>Habitaciones</mat-card-title>
@@ -100,10 +114,17 @@
         <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
       </table>
 
-      <button mat-raised-button color="primary" (click)="abrirModal()">
-        <mat-icon>add</mat-icon>
-        <span>Crear Habitación</span>
-      </button>
+      <div class="button-container">
+        <button mat-raised-button color="primary" (click)="abrirModal()">
+          <mat-icon>add</mat-icon>
+          <span>Crear Habitación</span>
+        </button>
+
+        <button mat-raised-button color="accent" (click)="abrirDialogoReporte()">
+          <mat-icon>description</mat-icon>
+          <span>Generar Reporte</span>
+        </button>
+      </div>
     </div>
   </mat-card-content>
 </mat-card>
