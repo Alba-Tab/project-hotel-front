@@ -1,6 +1,11 @@
 <mat-card class="cardWithShadow">
   <mat-card-content>
     <mat-card-title>Habitaciones</mat-card-title>
+    <div class="flex justify-end mb-3">
+  <button routerLink="/habitaciones/recomendaciones" class="btn btn-primary">
+    Ver recomendaciones de precio
+  </button>
+</div>
 
     <div class="table-responsive">
       <table mat-table [dataSource]="datos" class="w-100">

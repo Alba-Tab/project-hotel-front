@@ -1,0 +1,36 @@
+<h2 class="mb-3">Recomendaciones de Precio</h2>
+
+<div *ngIf="loading">Cargando...</div>
+
+<div *ngIf="!loading && !data">
+  <p>No hay datos disponibles.</p>
+</div>
+
+<div *ngIf="data">
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th>ID Habitación</th>
+        <th>Reservas</th>
+        <th>Noches</th>
+        <th>Ocupación (%)</th>
+        <th>Ranking</th>
+        <th>Recomendación (%)</th>
+        <th>Precio Sugerido</th>
+        <th>Motivo</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let h of data.habitaciones">
+        <td>{{ h.habitacion_id }}</td>
+        <td>{{ h.reservas_totales }}</td>
+        <td>{{ h.noches_reservadas }}</td>
+        <td>{{ h.porcentaje_ocupacion }}</td>
+        <td>{{ h.ranking }}</td>
+        <td>{{ h.recomendacion_porcentaje }}%</td>
+        <td>{{ h.precio_recomendado | currency }}</td>
+        <td>{{ h.motivo }}</td>
+      </tr>
+    </tbody>
+  </table>
+</div>

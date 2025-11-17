@@ -7,6 +7,7 @@ import { authGuard } from './guards/auth.guard';
 import { TenantRegisterComponent } from './pages/tenant-register/tenant-register.component';
 import { MainPageComponent } from './pages/main-page/main-page.component';
 
+
 export const routes: Routes = [
   {
     path: '',
@@ -63,12 +64,12 @@ export const routes: Routes = [
           import('./pages/hoteles/hoteles.component').then(
             (m) => m.HotelesComponent
           ),
-      },
+      },  
       {
         path: 'habitaciones',
-        loadComponent: () =>
-          import('./pages/habitaciones/habitaciones.component').then(
-            (m) => m.HabitacionesComponent
+        loadChildren: () =>
+          import('./pages/habitaciones/habitaciones.routes').then(
+            (m) => m.HabitacionesRoutes
           ),
       },
       {
