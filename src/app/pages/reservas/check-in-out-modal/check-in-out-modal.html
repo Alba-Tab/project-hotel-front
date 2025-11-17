@@ -104,6 +104,78 @@
         </div>
       </div>
 
+      <!-- Captura de Foto (solo para Check-In) -->
+      <div *ngIf="!isCheckOut" class="camera-section mb-3">
+        <h6 class="mb-2"><strong>Verificación Facial</strong></h6>
+
+        <!-- Botón para abrir cámara -->
+        <div *ngIf="!isCameraOpen && !photoPreviewUrl" class="text-center">
+          <button
+            mat-raised-button
+            color="accent"
+            (click)="openCamera()"
+            type="button"
+          >
+            <mat-icon>camera_alt</mat-icon>
+            Abrir Cámara
+          </button>
+          <p class="text-muted mt-2 mb-0" style="font-size: 0.85rem">
+            <mat-icon style="font-size: 16px; vertical-align: middle"
+              >info</mat-icon
+            >
+            Se requiere una foto para verificación facial
+          </p>
+        </div>
+
+        <!-- Video de cámara -->
+        <div *ngIf="isCameraOpen" class="camera-preview text-center">
+          <video
+            #videoElement
+            autoplay
+            playsinline
+            class="w-100 rounded mb-2"
+            style="max-width: 400px"
+          ></video>
+          <canvas #canvasElement style="display: none"></canvas>
+          <div class="d-flex gap-2 justify-content-center">
+            <button
+              mat-raised-button
+              color="primary"
+              (click)="capturePhoto()"
+              type="button"
+            >
+              <mat-icon>photo_camera</mat-icon>
+              Capturar Foto
+            </button>
+            <button mat-button (click)="closeCamera()" type="button">
+              <mat-icon>close</mat-icon>
+              Cerrar
+            </button>
+          </div>
+        </div>
+
+        <!-- Preview de foto capturada -->
+        <div *ngIf="photoPreviewUrl" class="photo-preview text-center">
+          <img
+            [src]="photoPreviewUrl"
+            alt="Foto capturada"
+            class="rounded mb-2"
+            style="max-width: 300px; width: 100%"
+          />
+          <div class="d-flex gap-2 justify-content-center">
+            <button
+              mat-button
+              color="accent"
+              (click)="retakePhoto()"
+              type="button"
+            >
+              <mat-icon>refresh</mat-icon>
+              Tomar otra foto
+            </button>
+          </div>
+        </div>
+      </div>
+
       <!-- Observaciones -->
       <mat-form-field appearance="outline" class="w-100">
         <mat-label>Observaciones</mat-label>
@@ -124,7 +196,7 @@
       mat-raised-button
       color="primary"
       (click)="onSubmit()"
-      [disabled]="!form.valid"
+      [disabled]="!form.valid || (!isCheckOut && !photoCapture)"
     >
       <mat-icon class="me-1">{{ isCheckOut ? 'logout' : 'login' }}</mat-icon>
       {{ isCheckOut ? 'Confirmar Check-Out' : 'Confirmar Check-In' }}

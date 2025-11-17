@@ -242,7 +242,19 @@ export class Reservas implements OnInit {
   realizarCheckIn(datos: any): void {
     console.log('🔄 Realizando Check-In con datos:', datos);
     this.loading = true;
-    this.apiService.crear('checkinout/checkin', datos).subscribe({
+    
+    // Crear FormData para enviar la foto
+    const formData = new FormData();
+    formData.append('reserva_id', datos.reserva_id);
+    formData.append('fecha_checkin', datos.fecha_checkin);
+    formData.append('hora_checkin', datos.hora_checkin);
+    formData.append('observaciones', datos.observaciones || '');
+    
+    if (datos.photo_checkin) {
+      formData.append('photo_checkin', datos.photo_checkin);
+    }
+    
+    this.apiService.crear('checkinout/checkin', formData).subscribe({
       next: () => {
         console.log('✅ Check-In realizado correctamente');
         this.snackBar.open('Check-In realizado correctamente', 'Cerrar', {
@@ -252,8 +264,8 @@ export class Reservas implements OnInit {
       },
       error: (error) => {
         console.error('❌ Error al realizar check-in:', error);
-        const mensaje = error?.error?.detail || 'Error al realizar el check-in';
-        this.snackBar.open(mensaje, 'Cerrar', { duration: 3000 });
+        const mensaje = error?.error?.detail || error?.error?.non_field_errors?.[0] || 'Error al realizar el check-in';
+        this.snackBar.open(mensaje, 'Cerrar', { duration: 4000 });
         this.loading = false;
       },
     });
