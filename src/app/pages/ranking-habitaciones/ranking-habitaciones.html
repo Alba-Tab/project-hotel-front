@@ -1,0 +1,144 @@
+<div class="row">
+  <div class="col-12">
+    <mat-card class="cardWithShadow m-b-20">
+      <mat-card-title class="m-b-16">
+        <mat-icon>assessment</mat-icon> Ranking de Demanda de Habitaciones
+      </mat-card-title>
+      
+      <div class="d-flex align-items-end gap-16 m-b-16 flex-wrap">
+        
+        <mat-form-field appearance="outline" class="flex-30">
+          <mat-label>Hotel</mat-label>
+          <mat-select [(ngModel)]="idHotel">
+            <mat-option [value]="null">TODOS (Admin)</mat-option>
+            @for (hotel of hoteles(); track hotel.id) {
+              <mat-option [value]="hotel.id">{{ hotel.nombre }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="flex-30">
+          <mat-label>Fecha Inicio</mat-label>
+          <input matInput [matDatepicker]="pickerStart" [(ngModel)]="fechaInicio">
+          <mat-datepicker-toggle matSuffix [for]="pickerStart"></mat-datepicker-toggle>
+          <mat-datepicker #pickerStart></mat-datepicker>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="flex-30">
+          <mat-label>Fecha Fin</mat-label>
+          <input matInput [matDatepicker]="pickerEnd" [(ngModel)]="fechaFin">
+          <mat-datepicker-toggle matSuffix [for]="pickerEnd"></mat-datepicker-toggle>
+          <mat-datepicker #pickerEnd></mat-datepicker>
+        </mat-form-field>
+        
+        <button mat-raised-button color="primary" (click)="cargarRanking()" [disabled]="loading()">
+          <mat-icon>search</mat-icon> Aplicar
+        </button>
+      </div>
+
+      <mat-chip-listbox aria-label="Periodo Usado" class="m-t-16">
+        <mat-chip color="accent" [highlighted]="true" selected>
+          Periodo del Ranking: {{ periodoUsado().inicio }} al {{ periodoUsado().fin }}
+        </mat-chip>
+      </mat-chip-listbox>
+    </mat-card>
+  </div>
+
+<div class="col-lg-12">
+    <mat-card class="cardWithShadow m-b-20">
+      <mat-card-title class="m-b-16">Tendencia Mensual de Reservas en el Último Año</mat-card-title>
+      
+      @if (loading()) {
+        } @else if (demandaHistorica().length > 0) {
+        
+        <div style="width: 100%;">
+            <apx-chart
+                [series]="demandaChart().series!"
+                [chart]="demandaChart().chart!"
+                [xaxis]="demandaChart().xaxis!"
+                [yaxis]="demandaChart().yaxis!"
+                [dataLabels]="demandaChart().dataLabels!"
+                [grid]="demandaChart().grid!"
+                [plotOptions]="demandaChart().plotOptions!"
+                [stroke]="demandaChart().stroke!"
+                [markers]="demandaChart().markers!"
+            ></apx-chart>
+        </div>
+      } @else {
+        <div class="text-center p-4">
+          <mat-icon>history</mat-icon>
+          <p class="text-muted m-0">No hay historial de demanda disponible.</p>
+        </div>
+      }
+    </mat-card>
+  </div>
+
+  <div class="col-lg-12">
+    <mat-card class="cardWithShadow">
+      <mat-card-title class="m-b-16">
+        Habitaciones más Solicitadas (Top {{ ranking().length }})
+      </mat-card-title>
+      
+      @if (loading()) {
+        <div class="text-center p-4"><mat-spinner diameter="30"></mat-spinner></div>
+      } @else if (ranking().length > 0) {
+        <div class="table-responsive">
+          <table mat-table [dataSource]="ranking()" class="w-100">
+
+            <ng-container matColumnDef="ranking">
+              <th mat-header-cell *matHeaderCellDef>#</th>
+              <td mat-cell *matCellDef="let element; let i = index"> {{ i + 1 }} </td>
+            </ng-container>
+
+            <ng-container matColumnDef="hotel">
+              <th mat-header-cell *matHeaderCellDef>Hotel</th>
+              <td mat-cell *matCellDef="let element"> {{ element.hotel__nombre }} </td>
+            </ng-container>
+
+            <ng-container matColumnDef="numero">
+              <th mat-header-cell *matHeaderCellDef>Habitación</th>
+              <td mat-cell *matCellDef="let element"> {{ element.numero }} (ID: {{ element.id }})</td>
+            </ng-container>
+            
+            <ng-container matColumnDef="tipo">
+              <th mat-header-cell *matHeaderCellDef>Tipo</th>
+              <td mat-cell *matCellDef="let element"> {{ element.tipo | titlecase }} </td>
+            </ng-container>
+
+            <ng-container matColumnDef="reservas">
+              <th mat-header-cell *matHeaderCellDef>Total Reservas</th>
+              <td mat-cell *matCellDef="let element">
+                <mat-chip color="primary" [highlighted]="element.total_reservas > 0"> 
+                  {{ element.total_reservas }}
+                </mat-chip> 
+              </td>
+            </ng-container>
+
+            <ng-container matColumnDef="precio">
+              <th mat-header-cell *matHeaderCellDef>Precio Actual</th>
+              <td mat-cell *matCellDef="let element"> ${{ element.precio_noche }} </td>
+            </ng-container>
+
+            <ng-container matColumnDef="accion">
+              <th mat-header-cell *matHeaderCellDef>Ajustar Precio</th>
+              <td mat-cell *matCellDef="let element">
+                <button mat-icon-button color="warn" (click)="abrirDialogoAjuste(element)" matTooltip="Ajustar precio (PATCH)">
+                  <mat-icon>trending_up</mat-icon>
+                </button>
+              </td
+>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+          </table>
+        </div>
+      } @else {
+        <div class="text-center p-4">
+          <mat-icon>list_alt</mat-icon>
+          <p class="text-muted m-0">No se encontraron habitaciones reservadas para este período.</p>
+        </div>
+      }
+    </mat-card>
+  </div>
+</div>
