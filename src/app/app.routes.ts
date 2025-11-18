@@ -16,6 +16,7 @@ export const routes: Routes = [
         component: MainPageComponent, // ✅ Página principal como inicio
         pathMatch: 'full',
       },
+      
       {
         path: 'authentication',
         loadChildren: () =>
@@ -120,6 +121,13 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./pages/folio-estancia/folio-estancia').then(
             (m) => m.FolioEstanciaComponent
+          ),
+      },
+      {
+        path: 'backups',
+        loadChildren: () =>
+          import('./pages/backups/backups.routes').then(
+            (m) => m.BackupsRoutes
           ),
       },
     ],

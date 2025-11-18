@@ -98,6 +98,31 @@ export const navItems: NavItem[] = [
     iconName: 'solar:shield-user-line-duotone',
     route: '/roles-permisos',
   },
+  {
+    displayName: 'Backups',
+    iconName: 'solar:server-2-line-duotone',
+    route: '/backups',
+    children: [
+      {
+        displayName: 'Lista de Backups',
+        subItemIcon: true,
+        iconName: 'solar:round-alt-arrow-right-line-duotone',
+        route: '/backups',
+      },
+      {
+        displayName: 'Crear Backup',
+        subItemIcon: true,
+        iconName: 'solar:round-alt-arrow-right-line-duotone',
+        route: '/backups/crear',
+      },
+      // {
+      //   displayName: 'Estadísticas',
+      //   subItemIcon: true,
+      //   iconName: 'solar:round-alt-arrow-right-line-duotone',
+      //   route: '/backups/estadisticas',
+      // },
+    ],
+  },
 
   {
     divider: true,

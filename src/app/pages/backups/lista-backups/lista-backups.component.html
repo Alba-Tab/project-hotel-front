@@ -1,0 +1,202 @@
+<mat-card class="cardWithShadow">
+  <mat-card-header>
+    <mat-card-title>
+      <div class="d-flex align-items-center justify-content-between">
+        <h4 class="m-0">📦 Gestión de Backups</h4>
+        <button mat-raised-button color="primary" routerLink="/backups/crear">
+          <mat-icon>add</mat-icon>
+          Crear Backup
+        </button>
+      </div>
+    </mat-card-title>
+  </mat-card-header>
+
+  <mat-card-content>
+    <!-- FILTROS -->
+    <div class="filtros-container mb-3">
+      <div class="row g-3">
+        <div class="col-md-3">
+          <mat-form-field appearance="outline" class="w-100">
+            <mat-label>Tipo de Backup</mat-label>
+            <mat-select [(ngModel)]="filtros.backup_type">
+              <mat-option *ngFor="let tipo of tiposBackupType" [value]="tipo.value">
+                {{ tipo.label }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+
+        <div class="col-md-3">
+          <mat-form-field appearance="outline" class="w-100">
+            <mat-label>Frecuencia</mat-label>
+            <mat-select [(ngModel)]="filtros.tipo">
+              <mat-option *ngFor="let tipo of tiposBackup" [value]="tipo.value">
+                {{ tipo.label }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+
+        <div class="col-md-3">
+          <mat-form-field appearance="outline" class="w-100">
+            <mat-label>Estado</mat-label>
+            <mat-select [(ngModel)]="filtros.estado">
+              <mat-option *ngFor="let estado of estadosBackup" [value]="estado.value">
+                {{ estado.label }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+
+        <div class="col-md-3 d-flex align-items-start gap-2">
+          <button mat-raised-button color="primary" (click)="aplicarFiltros()" class="flex-fill">
+            <mat-icon>search</mat-icon>
+            Filtrar
+          </button>
+          <button mat-raised-button (click)="limpiarFiltros()" class="flex-fill">
+            <mat-icon>clear</mat-icon>
+            Limpiar
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- BUSCADOR -->
+    <mat-form-field appearance="outline" class="w-100 mb-3">
+      <mat-label>Buscar en tabla</mat-label>
+      <input matInput (keyup)="aplicarFiltroTabla($event)" placeholder="Buscar por tenant, fecha, etc.">
+      <mat-icon matSuffix>search</mat-icon>
+    </mat-form-field>
+
+    <!-- LOADING -->
+    <div *ngIf="cargando" class="text-center py-5">
+      <mat-spinner diameter="50" class="mx-auto"></mat-spinner>
+      <p class="mt-3">Cargando backups...</p>
+    </div>
+
+    <!-- TABLA -->
+    <div class="table-responsive" *ngIf="!cargando">
+      <table mat-table [dataSource]="dataSource" matSort class="w-100">
+
+        <!-- ID -->
+        <ng-container matColumnDef="id">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header> ID </th>
+          <td mat-cell *matCellDef="let backup"> #{{ backup.id }} </td>
+        </ng-container>
+
+        <!-- Fecha -->
+        <ng-container matColumnDef="fecha">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header> Fecha </th>
+          <td mat-cell *matCellDef="let backup">
+            {{ backup.fecha | date:'dd/MM/yyyy HH:mm' }}
+          </td>
+        </ng-container>
+
+        <!-- Tipo de Backup -->
+        <ng-container matColumnDef="backup_type_display">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header> Tipo </th>
+          <td mat-cell *matCellDef="let backup">
+            <mat-chip [color]="backup.backup_type === 'full' ? 'accent' : 'primary'">
+              {{ backup.backup_type_display }}
+            </mat-chip>
+          </td>
+        </ng-container>
+
+        <!-- Tenant -->
+        <ng-container matColumnDef="tenant_schema">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header> Tenant </th>
+          <td mat-cell *matCellDef="let backup">
+            {{ backup.tenant_schema || 'N/A' }}
+          </td>
+        </ng-container>
+
+        <!-- Frecuencia -->
+        <ng-container matColumnDef="tipo_display">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header> Frecuencia </th>
+          <td mat-cell *matCellDef="let backup">
+            {{ backup.tipo_display }}
+          </td>
+        </ng-container>
+
+        <!-- Estado -->
+        <ng-container matColumnDef="estado">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header> Estado </th>
+          <td mat-cell *matCellDef="let backup">
+            <mat-chip
+              [color]="getEstadoColor(backup.estado)"
+              [matTooltip]="backup.mensaje">
+              {{ backup.estado_display }}
+            </mat-chip>
+          </td>
+        </ng-container>
+
+        <!-- Tamaño -->
+        <ng-container matColumnDef="tamaño_mb">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header> Tamaño </th>
+          <td mat-cell *matCellDef="let backup">
+            {{ backup.tamano_mb }} MB
+          </td>
+        </ng-container>
+
+        <!-- Duración -->
+        <ng-container matColumnDef="duracion_segundos">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header> Duración </th>
+          <td mat-cell *matCellDef="let backup">
+            {{ formatearDuracion(backup.duracion_segundos) }}
+          </td>
+        </ng-container>
+
+        <!-- Acciones -->
+        <ng-container matColumnDef="acciones">
+          <th mat-header-cell *matHeaderCellDef> Acciones </th>
+          <td mat-cell *matCellDef="let backup">
+            <button
+              mat-icon-button
+              color="accent"
+              (click)="restaurarBackup(backup)"
+              [disabled]="backup.estado !== 'ok'"
+              matTooltip="Restaurar a esta versión"
+              class="me-1">
+              <mat-icon>restore</mat-icon>
+            </button>
+
+            <button
+              mat-icon-button
+              color="primary"
+              (click)="descargarBackup(backup)"
+              [disabled]="backup.estado !== 'ok'"
+              matTooltip="Descargar"
+              class="me-1">
+              <mat-icon>download</mat-icon>
+            </button>
+
+            <button
+              mat-icon-button
+              color="warn"
+              (click)="eliminarBackup(backup)"
+              matTooltip="Eliminar">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+
+        <!-- Sin datos -->
+        <tr class="mat-row" *matNoDataRow>
+          <td class="mat-cell text-center py-4" [attr.colspan]="displayedColumns.length">
+            No se encontraron backups
+          </td>
+        </tr>
+      </table>
+
+      <!-- PAGINADOR -->
+      <mat-paginator
+        [pageSizeOptions]="[5, 10, 25, 50]"
+        [pageSize]="10"
+        showFirstLastButtons>
+      </mat-paginator>
+    </div>
+  </mat-card-content>
+</mat-card>
