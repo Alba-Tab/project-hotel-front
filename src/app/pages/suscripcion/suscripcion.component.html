@@ -1,0 +1,239 @@
+<div class="suscripcion-container">
+  <!-- Header -->
+  <div class="page-header m-b-24">
+    <h1 class="mat-headline-4 m-0">Mi Suscripción</h1>
+    <p class="mat-body-1 text-muted m-t-8">
+      Administra tu plan y revisa el uso de recursos
+    </p>
+  </div>
+
+  <!-- Estado de Carga -->
+  @if(cargando) {
+  <div class="text-center p-y-64">
+    <mat-spinner diameter="64" color="primary"></mat-spinner>
+    <p class="mat-body-1 text-muted m-t-24">Cargando información...</p>
+  </div>
+  } @else if(error) {
+  <mat-card class="error-card">
+    <mat-card-content class="text-center p-y-48">
+      <mat-icon class="icon-64 text-danger m-b-16">error_outline</mat-icon>
+      <h3 class="mat-headline-6 m-b-16">Error al cargar suscripción</h3>
+      <p class="mat-body-1 text-muted m-b-24">
+        No se pudo obtener la información de tu suscripción
+      </p>
+      <button mat-raised-button color="primary" (click)="cargarEstadisticas()">
+        <mat-icon>refresh</mat-icon>
+        Reintentar
+      </button>
+    </mat-card-content>
+  </mat-card>
+  } @else if(estadisticas) {
+  <div class="suscripcion-content">
+    <!-- Tarjeta Principal de Suscripción -->
+    <mat-card class="cardWithShadow suscripcion-card">
+      <mat-card-header>
+        <mat-card-title
+          class="d-flex align-items-center justify-content-between w-100"
+        >
+          <div class="d-flex align-items-center">
+            <mat-icon class="m-r-12" color="primary"
+              >workspace_premium</mat-icon
+            >
+            <span>{{ estadisticas.suscripcion.plan_nombre }}</span>
+          </div>
+          <mat-chip
+            [color]="obtenerColorEstado(estadisticas.suscripcion.estado)"
+            [highlighted]="true"
+          >
+            {{ obtenerTextoEstado(estadisticas.suscripcion.estado) }}
+          </mat-chip>
+        </mat-card-title>
+      </mat-card-header>
+
+      <mat-card-content class="p-24">
+        <!-- Precio y Tipo -->
+        <div class="plan-precio text-center m-b-32">
+          <p class="mat-headline-3 m-0 text-primary">
+            ${{ estadisticas.suscripcion.plan_detalles.precio }}
+          </p>
+          <p class="mat-body-1 text-muted">
+            / {{ estadisticas.suscripcion.plan_detalles.tipo }}
+          </p>
+        </div>
+
+        <mat-divider class="m-b-24"></mat-divider>
+
+        <!-- Fechas -->
+        <div class="fechas-container m-b-32">
+          <div class="fecha-item">
+            <mat-icon class="icon-20 text-muted">calendar_today</mat-icon>
+            <div>
+              <p class="mat-caption text-muted m-0">Inicio del periodo</p>
+              <p class="mat-body-2 m-0">
+                {{ formatearFecha(estadisticas.suscripcion.inicio_periodo) }}
+              </p>
+            </div>
+          </div>
+
+          <div class="fecha-item">
+            <mat-icon class="icon-20 text-muted">event</mat-icon>
+            <div>
+              <p class="mat-caption text-muted m-0">Fin del periodo</p>
+              <p class="mat-body-2 m-0">
+                {{ formatearFecha(estadisticas.suscripcion.fin_periodo) }}
+              </p>
+            </div>
+          </div>
+
+          <div class="fecha-item dias-restantes">
+            <mat-icon
+              class="icon-20"
+              [color]="
+                obtenerColorDias(estadisticas.suscripcion.dias_restantes)
+              "
+            >
+              schedule
+            </mat-icon>
+            <div>
+              <p class="mat-caption text-muted m-0">Días restantes</p>
+              <p
+                class="mat-body-2 m-0 f-w-600"
+                [class.text-warn]="estadisticas.suscripcion.dias_restantes < 7"
+              >
+                {{ estadisticas.suscripcion.dias_restantes }} días
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <mat-divider class="m-b-24"></mat-divider>
+
+        <!-- Límites del Plan -->
+        <div class="limites-container m-b-24">
+          <h3 class="mat-subtitle-2 m-b-16">Límites del Plan</h3>
+
+          <div class="limite-item">
+            <mat-icon color="primary">hotel</mat-icon>
+            <span class="limite-texto">
+              Hasta {{ estadisticas.limite_hoteles }} hotel{{
+                estadisticas.limite_hoteles > 1 ? "es" : ""
+              }}
+            </span>
+          </div>
+
+          <div class="limite-item">
+            <mat-icon color="primary">groups</mat-icon>
+            <span class="limite-texto">
+              Hasta {{ estadisticas.limite_usuarios }} usuarios
+            </span>
+          </div>
+        </div>
+
+        <!-- Botón Renovar -->
+        <button
+          mat-raised-button
+          color="accent"
+          class="w-100 renovar-button"
+          (click)="abrirModalRenovar()"
+        >
+          <mat-icon>autorenew</mat-icon>
+          Renovar o Cambiar Plan
+        </button>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Tarjeta de Uso de Recursos -->
+    <mat-card class="cardWithShadow uso-card">
+      <mat-card-header>
+        <mat-card-title>
+          <mat-icon class="m-r-12" color="primary">analytics</mat-icon>
+          Uso de Recursos
+        </mat-card-title>
+        <mat-card-subtitle>
+          Última actualización:
+          {{ formatearFecha(estadisticas.uso.ultima_actualizacion) }}
+        </mat-card-subtitle>
+      </mat-card-header>
+
+      <mat-card-content class="p-24">
+        <!-- Uso de Hoteles -->
+        <div class="uso-item m-b-32">
+          <div class="uso-header m-b-12">
+            <div class="d-flex align-items-center">
+              <mat-icon class="m-r-8" color="primary">hotel</mat-icon>
+              <span class="mat-subtitle-2">Hoteles</span>
+            </div>
+            <span class="mat-body-2">
+              {{ estadisticas.uso.hoteles }} / {{ estadisticas.limite_hoteles }}
+            </span>
+          </div>
+
+          <mat-progress-bar
+            mode="determinate"
+            [value]="estadisticas.uso.porcentaje_hoteles"
+            [color]="obtenerColorProgreso(estadisticas.uso.porcentaje_hoteles)"
+          ></mat-progress-bar>
+
+          <p class="mat-caption text-muted m-t-8">
+            {{ estadisticas.uso.porcentaje_hoteles }}% utilizado
+          </p>
+
+          @if(!estadisticas.puede_crear_hotel) {
+          <div class="alerta-limite">
+            <mat-icon class="icon-18">warning</mat-icon>
+            <span>Has alcanzado el límite de hoteles</span>
+          </div>
+          }
+        </div>
+
+        <!-- Uso de Usuarios -->
+        <div class="uso-item">
+          <div class="uso-header m-b-12">
+            <div class="d-flex align-items-center">
+              <mat-icon class="m-r-8" color="primary">groups</mat-icon>
+              <span class="mat-subtitle-2">Usuarios</span>
+            </div>
+            <span class="mat-body-2">
+              {{ estadisticas.uso.usuarios }} /
+              {{ estadisticas.limite_usuarios }}
+            </span>
+          </div>
+
+          <mat-progress-bar
+            mode="determinate"
+            [value]="estadisticas.uso.porcentaje_usuarios"
+            [color]="obtenerColorProgreso(estadisticas.uso.porcentaje_usuarios)"
+          ></mat-progress-bar>
+
+          <p class="mat-caption text-muted m-t-8">
+            {{ estadisticas.uso.porcentaje_usuarios }}% utilizado
+          </p>
+
+          @if(!estadisticas.puede_crear_usuario) {
+          <div class="alerta-limite">
+            <mat-icon class="icon-18">warning</mat-icon>
+            <span>Has alcanzado el límite de usuarios</span>
+          </div>
+          }
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Info Adicional -->
+    <mat-card class="cardWithShadow info-card">
+      <mat-card-content class="p-24">
+        <div class="info-section">
+          <mat-icon class="info-icon" color="primary">info</mat-icon>
+          <div>
+            <h4 class="mat-subtitle-2 m-b-8">¿Necesitas más recursos?</h4>
+            <p class="mat-body-2 text-muted">
+              Puedes renovar tu suscripción o cambiar a un plan superior en
+              cualquier momento. Los cambios se aplicarán inmediatamente.
+            </p>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+  }
+</div>

@@ -6,6 +6,8 @@ import { authGuard } from './guards/auth.guard';
 
 import { TenantRegisterComponent } from './pages/tenant-register/tenant-register.component';
 import { MainPageComponent } from './pages/main-page/main-page.component';
+
+
 export const routes: Routes = [
   {
     path: '',
@@ -16,7 +18,7 @@ export const routes: Routes = [
         component: MainPageComponent, // ✅ Página principal como inicio
         pathMatch: 'full',
       },
-      
+
       {
         path: 'authentication',
         loadChildren: () =>
@@ -66,9 +68,9 @@ export const routes: Routes = [
       },
       {
         path: 'habitaciones',
-        loadComponent: () =>
-          import('./pages/habitaciones/habitaciones.component').then(
-            (m) => m.HabitacionesComponent
+        loadChildren: () =>
+          import('./pages/habitaciones/habitaciones.routes').then(
+            (m) => m.HabitacionesRoutes
           ),
       },
       {
@@ -77,19 +79,18 @@ export const routes: Routes = [
           import('./pages/reservas/reservas').then((m) => m.Reservas),
       },
       {
-        path: 'servicioreserva',
-        loadComponent: () =>
-          import('./pages/servicioreserva/servicioreserva.component').then(
-            (m) => m.ServicioreservaComponent
-          ),
-      },
-      {
         path: 'pagos',
         loadComponent: () =>
-          import('./pages/pagos/pagos.component').then(
-            (m) => m.PagosComponent
-          ),
+          import('./pages/pagos/pagos.component').then((m) => m.PagosComponent),
       },
+      {
+  path: 'auditoria',
+  loadComponent: () =>
+    import('./pages/auditoria/auditoria.component').then(
+      (m) => m.AuditoriaComponent
+    ),
+},
+
       {
         path: 'fidelizacion',
         loadComponent: () =>
@@ -117,10 +118,25 @@ export const routes: Routes = [
           ),
       },
       {
+        path: 'servicios-asociados',
+        loadComponent: () =>
+          import(
+            './pages/servicios-asociados/servicios-asociados.component'
+          ).then((m) => m.ServiciosAsociadosComponent),
+      },
+      {
         path: 'folio-estancia',
         loadComponent: () =>
           import('./pages/folio-estancia/folio-estancia').then(
             (m) => m.FolioEstanciaComponent
+          ),
+      },
+
+      {
+        path: 'suscripcion',
+        loadComponent: () =>
+          import('./pages/suscripcion/suscripcion.component').then(
+            (m) => m.SuscripcionComponent
           ),
       },
       {
@@ -137,6 +153,4 @@ export const routes: Routes = [
     path: '**',
     redirectTo: 'authentication/error',
   },
-
-
 ];

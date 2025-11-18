@@ -8,6 +8,15 @@
     </div>
     <button
       mat-raised-button
+      color="accent"
+      (click)="abrirModalReportes()"
+      class="d-flex align-items-center gap-2"
+    >
+      <mat-icon>assessment</mat-icon>
+      Generar Reporte
+    </button>
+    <button
+      mat-raised-button
       color="primary"
       (click)="abrirModalCrear()"
       class="d-flex align-items-center gap-2"
@@ -148,13 +157,13 @@
                 <div *ngIf="tieneCheckIn(r)" class="check-info">
                   <small class="text-muted">
                     <mat-icon class="small-icon">login</mat-icon>
-                    {{ r.checkinout.fecha_checkin | date:'short' }}
+                    {{ r.checkin.fecha_checkin | date:'short' }}
                   </small>
                 </div>
                 <div *ngIf="tieneCheckOut(r)" class="check-info">
                   <small class="text-muted">
                     <mat-icon class="small-icon">logout</mat-icon>
-                    {{ r.checkinout.fecha_checkout | date:'short' }}
+                    {{ r.checkout.fecha_checkout | date:'short' }}
                   </small>
                 </div>
               </div>

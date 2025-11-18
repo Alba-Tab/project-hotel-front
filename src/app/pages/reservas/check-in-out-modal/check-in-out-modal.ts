@@ -1,4 +1,4 @@
-import { Component, Inject, OnInit } from '@angular/core';
+import { Component, Inject, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
   FormBuilder,
@@ -17,6 +17,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatIconModule } from '@angular/material/icon';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-check-in-out-modal',
@@ -31,19 +32,30 @@ import { MatIconModule } from '@angular/material/icon';
     MatDatepickerModule,
     MatNativeDateModule,
     MatIconModule,
+    MatSnackBarModule,
   ],
   templateUrl: './check-in-out-modal.html',
   styleUrls: ['./check-in-out-modal.scss'],
 })
-export class CheckInOutModal implements OnInit {
+export class CheckInOutModal implements OnInit, OnDestroy {
+  @ViewChild('videoElement') videoElement!: ElementRef<HTMLVideoElement>;
+  @ViewChild('canvasElement') canvasElement!: ElementRef<HTMLCanvasElement>;
+  
   form: FormGroup;
   isCheckOut: boolean = false;
   reserva: any;
   checkInData: any = null;
+  
+  // Propiedades para captura de cámara
+  isCameraOpen = false;
+  photoCapture: File | null = null;
+  photoPreviewUrl: string | null = null;
+  stream: MediaStream | null = null;
 
   constructor(
     private fb: FormBuilder,
     private dialogRef: MatDialogRef<CheckInOutModal>,
+    private snackBar: MatSnackBar,
     @Inject(MAT_DIALOG_DATA) public data: any
   ) {
     this.reserva = data.reserva;
@@ -97,13 +109,20 @@ export class CheckInOutModal implements OnInit {
 
   onSubmit(): void {
     if (this.form.valid) {
+      // Validar foto solo para check-in
+      if (!this.isCheckOut && !this.photoCapture) {
+        this.snackBar.open('Debe capturar una foto para verificación facial', 'Cerrar', { duration: 3000 });
+        return;
+      }
+
       const formValue = this.form.getRawValue();
 
       const data: any = {
-        reserva: this.reserva.id,
+        reserva_id: this.reserva.id,
         fecha_checkin: this.formatDate(formValue.fecha_checkin),
         hora_checkin: formValue.hora_checkin,
         observaciones: formValue.observaciones || '',
+        photo_checkin: this.photoCapture // Añadir foto
       };
 
       if (this.isCheckOut) {
@@ -115,7 +134,65 @@ export class CheckInOutModal implements OnInit {
     }
   }
 
+  // Métodos para manejo de cámara
+  async openCamera(): Promise<void> {
+    try {
+      this.stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } });
+      this.isCameraOpen = true;
+      setTimeout(() => {
+        if (this.videoElement) {
+          this.videoElement.nativeElement.srcObject = this.stream;
+        }
+      }, 100);
+    } catch (error) {
+      this.snackBar.open('No se pudo acceder a la cámara', 'Cerrar', { duration: 3000 });
+      console.error('Error al acceder a la cámara:', error);
+    }
+  }
+
+  capturePhoto(): void {
+    if (!this.videoElement || !this.canvasElement) return;
+
+    const video = this.videoElement.nativeElement;
+    const canvas = this.canvasElement.nativeElement;
+    const context = canvas.getContext('2d');
+
+    if (context) {
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+      context.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+      canvas.toBlob((blob) => {
+        if (blob) {
+          this.photoCapture = new File([blob], 'photo_checkin.jpg', { type: 'image/jpeg' });
+          this.photoPreviewUrl = URL.createObjectURL(blob);
+          this.closeCamera();
+          this.snackBar.open('Foto capturada correctamente', 'Cerrar', { duration: 2000 });
+        }
+      }, 'image/jpeg', 0.8);
+    }
+  }
+
+  closeCamera(): void {
+    if (this.stream) {
+      this.stream.getTracks().forEach(track => track.stop());
+      this.stream = null;
+    }
+    this.isCameraOpen = false;
+  }
+
+  retakePhoto(): void {
+    this.photoCapture = null;
+    this.photoPreviewUrl = null;
+    this.openCamera();
+  }
+
   onCancel(): void {
+    this.closeCamera();
     this.dialogRef.close();
+  }
+
+  ngOnDestroy(): void {
+    this.closeCamera();
   }
 }

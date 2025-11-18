@@ -1,10 +1,6 @@
 <div class="container">
   <div class="header">
-    <h1>Gestión de Folios de Estancia</h1>
-    <button mat-raised-button color="primary" (click)="abrirModalCrear()">
-      <mat-icon>add</mat-icon>
-      Nuevo Folio
-    </button>
+    <h1>Folios de Estancia</h1>
   </div>
 
   <div class="table-container" *ngIf="!cargando">
@@ -20,7 +16,7 @@
       </ng-container>
 
       <ng-container matColumnDef="total_pagado">
-        <th mat-header-cell *matHeaderCellDef>Total Pagado</th>
+        <th mat-header-cell *matHeaderCellDef>Total</th>
         <td mat-cell *matCellDef="let element">${{ element.total_pagado }}</td>
       </ng-container>
 
@@ -33,26 +29,46 @@
 
       <ng-container matColumnDef="reserva_id">
         <th mat-header-cell *matHeaderCellDef>Reserva</th>
-        <td mat-cell *matCellDef="let element">#{{ element.reserva }}</td>
+        <td mat-cell *matCellDef="let element">#{{ element.reserva_id }}</td>
       </ng-container>
 
+      <!-- Acciones para Ver, sin editar ni eliminar -->
       <ng-container matColumnDef="acciones">
         <th mat-header-cell *matHeaderCellDef>Acciones</th>
         <td mat-cell *matCellDef="let element">
+          <!-- Botón Ver Detalle -->
           <button
             mat-icon-button
             color="primary"
-            (click)="abrirModalEditar(element)"
+            (click)="abrirModalVer(element)"
+            matTooltip="Ver Detalle"
           >
-            <mat-icon>edit</mat-icon>
+            <mat-icon>visibility</mat-icon>
           </button>
+
+          <!-- Botón Agregar Servicio - Solo si NO está pagado -->
+          @if (element.estado?.toLowerCase() !== 'pagado') {
           <button
             mat-icon-button
-            color="warn"
-            (click)="eliminarFolio(element.id)"
+            color="accent"
+            (click)="abrirModalServicioAsociado(element)"
+            matTooltip="Agregar Servicio"
           >
-            <mat-icon>delete</mat-icon>
+            <mat-icon>add_shopping_cart</mat-icon>
           </button>
+          }
+
+          <!-- Botón Realizar Pago - Solo si NO está pagado -->
+          @if (element.estado?.toLowerCase() !== 'pagado') {
+          <button
+            mat-icon-button
+            style="color: #00c292"
+            (click)="abrirModalPagoDirecto(element)"
+            matTooltip="Realizar Pago"
+          >
+            <mat-icon>payment</mat-icon>
+          </button>
+          }
         </td>
       </ng-container>
 

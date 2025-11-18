@@ -1,0 +1,303 @@
+<div mat-dialog-title class="d-flex align-items-center pb-3">
+  <mat-icon class="text-primary me-2"> {{ isEdit ? 'edit' : 'add' }} </mat-icon>
+  <span>{{ isEdit ? 'Editar' : 'Crear' }} Pago</span>
+</div>
+
+<div mat-dialog-content class="pt-4 pb-3">
+  <form [formGroup]="pagoForm" (ngSubmit)="enviarFormulario()">
+    <div class="row">
+      <!-- Buscador de Usuario -->
+      <div class="col-12 mb-6" style="margin-top: 8px; margin-bottom: 2rem">
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Buscar Usuario</mat-label>
+          <input
+            matInput
+            type="text"
+            [(ngModel)]="busquedaUsuario"
+            (input)="filtrarUsuarios()"
+            [ngModelOptions]="{standalone: true}"
+            placeholder="Buscar por nombre o apellido"
+          />
+          <mat-icon matSuffix>search</mat-icon>
+          <button
+            mat-icon-button
+            matSuffix
+            *ngIf="usuarioSeleccionado"
+            (click)="limpiarBusqueda()"
+            type="button"
+          >
+            <mat-icon>clear</mat-icon>
+          </button>
+          <mat-hint>Busca y selecciona un usuario para ver sus folios</mat-hint>
+        </mat-form-field>
+
+        <!-- Lista de usuarios filtrados -->
+        <div
+          *ngIf="usuariosFiltrados.length > 0 && busquedaUsuario && !usuarioSeleccionado"
+        >
+          <mat-card>
+            <mat-list>
+              <mat-list-item
+                *ngFor="let usuario of usuariosFiltrados"
+                (click)="seleccionarUsuario(usuario)"
+              >
+                <mat-icon matListItemIcon>person</mat-icon>
+                <div matListItemTitle>
+                  {{ usuario.first_name }} {{ usuario.last_name }}
+                </div>
+                <div matListItemLine>{{ usuario.email }}</div>
+              </mat-list-item>
+            </mat-list>
+          </mat-card>
+        </div>
+
+        <!-- Usuario seleccionado -->
+        <div *ngIf="usuarioSeleccionado">
+          <mat-chip-set>
+            <mat-chip>
+              <mat-icon matChipAvatar>person</mat-icon>
+              {{ usuarioSeleccionado.first_name }} {{
+              usuarioSeleccionado.last_name }}
+            </mat-chip>
+          </mat-chip-set>
+        </div>
+      </div>
+
+      <!-- Folio (solo visible cuando hay usuario seleccionado) -->
+      <div
+        class="col-12 col-md-6 mb-6"
+        style="margin-bottom: 2rem"
+        *ngIf="usuarioSeleccionado"
+      >
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Folio</mat-label>
+          <mat-select
+            formControlName="folio_id"
+            (selectionChange)="onFolioChange($event.value)"
+          >
+            <mat-option *ngIf="cargandoFolios" disabled>
+              Cargando folios...
+            </mat-option>
+            <mat-option *ngIf="!cargandoFolios && folios.length === 0" disabled>
+              No hay folios disponibles para este usuario
+            </mat-option>
+            <mat-option *ngFor="let folio of folios" [value]="folio.id">
+              {{ formatearFolio(folio) }}
+            </mat-option>
+          </mat-select>
+          <mat-icon matSuffix>folder</mat-icon>
+          <mat-hint>Selecciona el folio asociado al pago</mat-hint>
+          <mat-error
+            *ngIf="pagoForm.get('folio_id')?.touched && pagoForm.get('folio_id')?.invalid"
+          >
+            {{ obtenerMensajeError('folio_id') }}
+          </mat-error>
+        </mat-form-field>
+      </div>
+
+      <!-- Monto (calculado automáticamente) -->
+      <div
+        class="col-12 col-md-6 mb-6"
+        style="margin-top: 8px; margin-bottom: 2rem"
+      >
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Monto</mat-label>
+          <input
+            matInput
+            type="number"
+            step="0.01"
+            min="0"
+            formControlName="monto"
+            readonly
+          />
+          <mat-icon matSuffix>attach_money</mat-icon>
+          <mat-hint
+            >Monto calculado automáticamente (total reserva + servicios
+            adicionales)</mat-hint
+          >
+          <mat-error
+            *ngIf="pagoForm.get('monto')?.touched && pagoForm.get('monto')?.invalid"
+          >
+            {{ obtenerMensajeError('monto') }}
+          </mat-error>
+        </mat-form-field>
+      </div>
+
+      <!-- Método de Pago -->
+      <div
+        class="col-12 col-md-6 mb-6"
+        style="margin-top: 8px; margin-bottom: 2rem"
+      >
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Método de Pago</mat-label>
+          <mat-select formControlName="metodo">
+            <mat-option value="efectivo">Efectivo</mat-option>
+            <mat-option value="tarjeta">Tarjeta</mat-option>
+            <mat-option value="transferencia">Transferencia</mat-option>
+            <mat-option value="cheque">Cheque</mat-option>
+          </mat-select>
+          <mat-icon matSuffix>credit_card</mat-icon>
+          <mat-hint>Selecciona el método de pago</mat-hint>
+          <mat-error
+            *ngIf="pagoForm.get('metodo')?.touched && pagoForm.get('metodo')?.invalid"
+          >
+            {{ obtenerMensajeError('metodo') }}
+          </mat-error>
+        </mat-form-field>
+      </div>
+
+      <!-- Referencia -->
+      <div class="col-12 col-md-6 mb-6" style="margin-bottom: 2rem">
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Referencia</mat-label>
+          <input
+            matInput
+            type="text"
+            formControlName="referencia"
+            placeholder="REF123"
+          />
+          <mat-icon matSuffix>confirmation_number</mat-icon>
+          <mat-hint>Código de referencia del pago</mat-hint>
+          <mat-error
+            *ngIf="pagoForm.get('referencia')?.touched && pagoForm.get('referencia')?.invalid"
+          >
+            {{ obtenerMensajeError('referencia') }}
+          </mat-error>
+        </mat-form-field>
+      </div>
+
+      <!-- ✅ SECCIÓN DE FIDELIZACIÓN Y DESCUENTO -->
+      <div class="col-12" *ngIf="folioSeleccionado && !cargandoDescuento">
+        <!-- Card de puntos disponibles -->
+        <mat-card
+          *ngIf="cuentaFidelizacion && descuentoDisponible"
+          class="mb-4"
+          style="background: #f5f5f5"
+        >
+          <mat-card-header>
+            <mat-icon mat-card-avatar style="color: #4caf50">star</mat-icon>
+            <mat-card-title>Puntos de Fidelización Disponibles</mat-card-title>
+          </mat-card-header>
+          <mat-card-content class="mt-3">
+            <div class="row">
+              <div class="col-6">
+                <p class="mb-1">
+                  <strong>Programa:</strong> {{
+                  cuentaFidelizacion.programa_info?.nombre || 'N/A' }}
+                </p>
+                <p class="mb-1">
+                  <strong>Puntos acumulados:</strong> {{
+                  cuentaFidelizacion.puntos_acumulados || 0 }}
+                </p>
+              </div>
+              <div class="col-6">
+                <p class="mb-1">
+                  <strong>Descuento máximo:</strong> ${{
+                  descuentoDisponible.descuento_maximo_disponible?.toFixed(2) ||
+                  '0.00' }}
+                </p>
+                <p class="mb-1">
+                  <strong>% Máximo permitido:</strong> {{
+                  descuentoDisponible.porcentaje_maximo || 0 }}%
+                </p>
+              </div>
+            </div>
+
+            <!-- Toggle para aplicar descuento -->
+            <div class="mt-3 d-flex align-items-center gap-2">
+              <button
+                mat-raised-button
+                [color]="aplicarDescuento ? 'accent' : 'primary'"
+                type="button"
+                (click)="toggleDescuento(!aplicarDescuento)"
+                [disabled]="!descuentoDisponible.descuento_maximo_disponible || descuentoDisponible.descuento_maximo_disponible <= 0"
+              >
+                <mat-icon>{{ aplicarDescuento ? 'close' : 'redeem' }}</mat-icon>
+                {{ aplicarDescuento ? 'Quitar descuento' : 'Aplicar descuento'
+                }}
+              </button>
+
+              <span *ngIf="aplicarDescuento" class="text-success">
+                <strong
+                  >Descuento aplicado: ${{ descuentoAplicado.toFixed(2)
+                  }}</strong
+                >
+              </span>
+            </div>
+
+            <!-- Resumen de pago -->
+            <div
+              *ngIf="aplicarDescuento"
+              class="mt-4 p-3"
+              style="
+                background: white;
+                border-radius: 8px;
+                border: 2px solid #4caf50;
+              "
+            >
+              <h4 class="mb-3">📊 Resumen del Pago</h4>
+              <div class="d-flex justify-content-between mb-2">
+                <span>Monto original:</span>
+                <span style="text-decoration: line-through"
+                  >${{ montoOriginal.toFixed(2) }}</span
+                >
+              </div>
+              <div class="d-flex justify-content-between mb-2 text-success">
+                <span><strong>Descuento:</strong></span>
+                <span
+                  ><strong>- ${{ descuentoAplicado.toFixed(2) }}</strong></span
+                >
+              </div>
+              <hr />
+              <div class="d-flex justify-content-between">
+                <span><strong>Total a pagar:</strong></span>
+                <span style="font-size: 1.5rem; color: #4caf50"
+                  ><strong>${{ montoConDescuento.toFixed(2) }}</strong></span
+                >
+              </div>
+            </div>
+          </mat-card-content>
+        </mat-card>
+
+        <!-- Mensaje cuando no hay puntos -->
+        <mat-card
+          *ngIf="!cuentaFidelizacion"
+          class="mb-4"
+          style="background: #fff3cd"
+        >
+          <mat-card-content>
+            <div class="d-flex align-items-center gap-2">
+              <mat-icon style="color: #856404">info</mat-icon>
+              <span
+                >Este cliente no tiene una cuenta de fidelización activa</span
+              >
+            </div>
+          </mat-card-content>
+        </mat-card>
+      </div>
+
+      <!-- Loading de descuento -->
+      <div class="col-12 text-center" *ngIf="cargandoDescuento">
+        <mat-spinner diameter="40"></mat-spinner>
+        <p class="mt-2">Calculando descuento disponible...</p>
+      </div>
+    </div>
+  </form>
+</div>
+
+<div mat-dialog-actions class="d-flex justify-content-end gap-2">
+  <button mat-button (click)="cancelar()" type="button">
+    <mat-icon class="me-1">close</mat-icon>
+    Cancelar
+  </button>
+  <button
+    mat-raised-button
+    color="primary"
+    (click)="enviarFormulario()"
+    [disabled]="pagoForm.invalid"
+    type="submit"
+  >
+    <mat-icon class="me-1">{{ isEdit ? 'save' : 'add' }}</mat-icon>
+    {{ isEdit ? 'Actualizar' : 'Crear' }} Pago
+  </button>
+</div>

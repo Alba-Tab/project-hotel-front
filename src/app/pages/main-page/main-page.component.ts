@@ -1,18 +1,19 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { HttpClient } from '@angular/common/http';
+import { environment } from '../../../environments/environment';
 
-interface SubscriptionPlan {
-  name: string;
-  price: string;
-  period: string;
-  features: string[];
-  highlighted: boolean;
-  color: string;
-}
+import { SubscriptionCardComponent } from './subscription-card/subscription-card.component';
+import {
+  PlanAgrupado,
+  PlanVariante,
+} from '../../interfaces/planes.interface';
 
 @Component({
   selector: 'app-main-page',
@@ -23,61 +24,83 @@ interface SubscriptionPlan {
     MatCardModule,
     MatButtonModule,
     MatIconModule,
+    MatProgressSpinnerModule,
+    MatSnackBarModule,
+    SubscriptionCardComponent,
   ],
   templateUrl: './main-page.component.html',
   styleUrls: ['./main-page.component.scss'],
 })
-export class MainPageComponent {
-  plans: SubscriptionPlan[] = [
-    {
-      name: 'Básico',
-      price: '99',
-      period: 'mes',
-      features: [
-        'Gestión de hasta 10 habitaciones',
-        'Panel de control básico',
-        'Soporte por email',
-        'Reportes mensuales',
-      ],
-      highlighted: false,
-      color: 'accent',
-    },
-    {
-      name: 'Profesional',
-      price: '199',
-      period: 'mes',
-      features: [
-        'Habitaciones ilimitadas',
-        'Panel de control avanzado',
-        'Soporte prioritario 24/7',
-        'Reportes en tiempo real',
-        'Integración con sistemas externos',
-        'Subdominio personalizado',
-      ],
-      highlighted: true,
-      color: 'primary',
-    },
-    {
-      name: 'Empresa',
-      price: '299',
-      period: 'mes',
-      features: [
-        'Todo lo de Profesional',
-        'Múltiples propiedades',
-        'API personalizada',
-        'Gestor de cuentas dedicado',
-        'Capacitación personalizada',
-        'SLA garantizado',
-      ],
-      highlighted: false,
-      color: 'warn',
-    },
-  ];
+export class MainPageComponent implements OnInit {
+  private router = inject(Router);
+  private http = inject(HttpClient);
+  private snackBar = inject(MatSnackBar);
 
-  constructor(private router: Router) {}
+  planes: PlanAgrupado[] = [];
+  cargando = true;
+  error = false;
 
-  goToRegister(): void {
-    this.router.navigate(['/registrar-empresa']);
+  ngOnInit(): void {
+    this.cargarPlanes();
+  }
+
+  cargarPlanes(): void {
+    this.cargando = true;
+    this.error = false;
+
+    // Endpoint de planes agrupados
+    this.http
+      .get<PlanAgrupado[]>(`${environment.apiUrl}/api/planes/agrupados/`)
+      .subscribe({
+        next: (data) => {
+          this.planes = data;
+          this.cargando = false;
+        },
+        error: (err) => {
+          console.error('Error al cargar planes:', err);
+          this.error = true;
+          this.cargando = false;
+          this.mostrarError(
+            'No se pudieron cargar los planes de suscripción'
+          );
+        },
+      });
+  }
+
+  onVarianteSeleccionada(data: {
+    plan: PlanAgrupado;
+    variante: PlanVariante;
+  }): void {
+    console.log('🎯 Variante seleccionada:', data.variante);
+    console.log('🆔 Plan ID a enviar:', data.variante.id);
+    
+    const planData = {
+      planId: data.variante.id,
+      planNombre: data.plan.nombre,
+      precio: data.variante.precio,
+      tipo: data.variante.tipo_display,
+      maxUsuarios: data.plan.max_usuarios,
+      maxHoteles: data.plan.max_hoteles,
+    };
+    
+    console.log('📦 Datos del plan a navegar:', planData);
+    
+    // Navegar a registro con los datos del plan seleccionado
+    this.router.navigate(['/registrar-empresa'], {
+      state: {
+        planSeleccionado: planData,
+      },
+    });
+  }
+
+  obtenerColorPlan(index: number): string {
+    const colores = ['accent', 'primary', 'warn'];
+    return colores[index % colores.length];
+  }
+
+  esPlanDestacado(index: number): boolean {
+    // Destacar el plan del medio (generalmente el más popular)
+    return index === Math.floor(this.planes.length / 2);
   }
 
   scrollToSection(sectionId: string): void {
@@ -85,5 +108,14 @@ export class MainPageComponent {
     if (element) {
       element.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
+  }
+
+  private mostrarError(mensaje: string): void {
+    this.snackBar.open(mensaje, 'Cerrar', {
+      duration: 5000,
+      horizontalPosition: 'end',
+      verticalPosition: 'top',
+      panelClass: ['snackbar-error'],
+    });
   }
 }

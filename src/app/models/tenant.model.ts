@@ -6,6 +6,7 @@ export interface TenantForm {
   username: string;
   password: string;
   phone: string;
+  plan_id?: number; // ID del plan de suscripción seleccionado
 }
 
 export interface TenantResponse {

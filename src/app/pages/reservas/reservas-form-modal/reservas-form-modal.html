@@ -59,6 +59,7 @@
             <mat-option value="confirmada">Confirmada</mat-option>
             <mat-option value="pendiente">Pendiente</mat-option>
             <mat-option value="cancelada">Cancelada</mat-option>
+            <mat-option value="realizada">Realizada</mat-option>
           </mat-select>
           <mat-error
             *ngIf="reservaForm.get('estado')?.touched && reservaForm.get('estado')?.invalid"
@@ -138,7 +139,7 @@
               *ngFor="let hab of habitacionesFiltradas"
               [value]="hab.id"
             >
-              Habitación {{ hab.nro_habitacion }} — {{ hab.precio_noche |
+              Habitación {{ hab.numero }} — {{ hab.precio_noche |
               currency:'USD' }}/noche ({{ hab.tipo | titlecase }})
             </mat-option>
           </mat-select>
@@ -157,7 +158,7 @@
           <mat-label>Total (USD)</mat-label>
           <input matInput type="number" formControlName="total" readonly />
           <mat-icon matSuffix>attach_money</mat-icon>
-          <mat-hint>Este valor se enviará como 0 y no puede editarse.</mat-hint>
+          <mat-hint>Este valor de las noches por el precio de la habitacion.</mat-hint>
         </mat-form-field>
       </div>
     </div>

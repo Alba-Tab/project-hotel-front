@@ -5,8 +5,12 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { ApiService } from 'src/app/services/api.service';
 import { FolioEstanciaFormModal } from './folio-estancia-form-modal/folio-estancia-form-modal';
+import { FolioVerModal } from './folio-ver-modal/folio-ver-modal';
+import { CrearServicioAsociadoComponent } from '../servicios-asociados/crear-servicio-asociado/crear-servicio-asociado.component';
+import { PagosFormModal } from '../pagos/pagos-form-modal/pagos-form-modal';
 
 @Component({
   selector: 'app-folio-estancia',
@@ -17,6 +21,7 @@ import { FolioEstanciaFormModal } from './folio-estancia-form-modal/folio-estanc
     MatIconModule,
     MatDialogModule,
     MatSnackBarModule,
+    MatTooltipModule,
   ],
   templateUrl: './folio-estancia.html',
   styleUrls: ['./folio-estancia.scss'],
@@ -58,71 +63,69 @@ export class FolioEstanciaComponent implements OnInit {
     });
   }
 
-  abrirModalCrear(): void {
-    const dialogRef = this.dialog.open(FolioEstanciaFormModal, {
+  abrirModalVer(folio: any): void {
+    const dialogRef = this.dialog.open(FolioVerModal, {
       width: '600px',
-      data: { isEdit: false },
+      data: { folioId: folio.id },
+    });
+  }
+
+  abrirModalServicioAsociado(folio: any): void {
+    const dialogRef = this.dialog.open(CrearServicioAsociadoComponent, {
+      width: '700px',
+      height: 'auto',
+      disableClose: false,
+      data: {
+        titulo: 'Crear Servicio Asociado',
+        folioEstanciaId: folio.id,
+        folioEstancia: folio.id, // ✅ Precargar folio
+        huesped_nombre: folio.huesped_nombre, // ✅ Para mostrar en el modal
+        reserva_id: folio.reserva_id, // ✅ Para referencia
+      },
     });
 
-    dialogRef.afterClosed().subscribe((resultado) => {
-      if (resultado) {
-        this.crearFolio(resultado);
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        this.mostrarMensaje('Servicio asociado creado exitosamente');
+        // Opcionalmente recargar la tabla si es necesario
+        this.cargarFolios();
       }
     });
   }
 
-  abrirModalEditar(folio: any): void {
-    const dialogRef = this.dialog.open(FolioEstanciaFormModal, {
-      width: '600px',
-      data: { isEdit: true, folio },
+  abrirModalPagoDirecto(folio: any): void {
+    // Abrir modal de pago con datos precargados del folio
+    const dialogRef = this.dialog.open(PagosFormModal, {
+      width: '700px',
+      data: {
+        isEdit: false,
+        folioPrecargado: {
+          id: folio.id,
+          huesped_id: folio.huesped_id,
+          huesped_nombre: folio.huesped_nombre,
+          total: folio.total_pagado, // ✅ Usar total_pagado del folio
+        },
+      },
     });
 
-    dialogRef.afterClosed().subscribe((resultado) => {
-      if (resultado) {
-        this.actualizarFolio(folio.id, resultado);
+    dialogRef.afterClosed().subscribe((payload) => {
+      if (payload) {
+        this.crearPago(payload);
       }
     });
   }
 
-  crearFolio(datos: any): void {
-    this.apiService.crear('folioestancias', datos).subscribe({
+  crearPago(payload: any): void {
+    this.apiService.crear('pagos', payload).subscribe({
       next: () => {
-        this.mostrarMensaje('Folio de estancia creado exitosamente');
+        this.mostrarMensaje('Pago creado correctamente');
         this.cargarFolios();
       },
-      error: (error) => {
-        console.error('Error al crear folio de estancia:', error);
-        this.mostrarMensaje('Error al crear folio de estancia');
+      error: (err) => {
+        console.error('Error al crear pago:', err);
+        this.mostrarMensaje('Error al crear el pago');
       },
     });
-  }
-
-  actualizarFolio(id: number, datos: any): void {
-    this.apiService.actualizar('folioestancias', id, datos).subscribe({
-      next: () => {
-        this.mostrarMensaje('Folio de estancia actualizado exitosamente');
-        this.cargarFolios();
-      },
-      error: (error) => {
-        console.error('Error al actualizar folio de estancia:', error);
-        this.mostrarMensaje('Error al actualizar folio de estancia');
-      },
-    });
-  }
-
-  eliminarFolio(id: number): void {
-    if (confirm('¿Estás seguro de eliminar este folio de estancia?')) {
-      this.apiService.eliminar('folioestancias', id).subscribe({
-        next: () => {
-          this.mostrarMensaje('Folio de estancia eliminado exitosamente');
-          this.cargarFolios();
-        },
-        error: (error) => {
-          console.error('Error al eliminar folio de estancia:', error);
-          this.mostrarMensaje('Error al eliminar folio de estancia');
-        },
-      });
-    }
   }
 
   private mostrarMensaje(mensaje: string): void {

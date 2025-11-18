@@ -1,0 +1,22 @@
+mat-dialog-content {
+  padding: 20px;
+  max-height: 70vh;
+  overflow-y: auto;
+}
+
+.row {
+  margin-bottom: 10px;
+}
+
+.w-100 {
+  width: 100%;
+}
+
+mat-form-field {
+  margin-bottom: 8px;
+}
+
+mat-dialog-actions {
+  padding: 16px 20px;
+  border-top: 1px solid #e0e0e0;
+}

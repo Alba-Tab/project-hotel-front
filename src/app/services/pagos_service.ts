@@ -18,7 +18,7 @@ export class PagosService {
   }
 
   getPagos(): Observable<any[]> {
-    return this.http.get<any[]>(this.baseUrl);
+    return this.http.get<any[]>(`${this.baseUrl}list/`);
   }
 
   createPago(data: any): Observable<any> {

@@ -1,0 +1,138 @@
+<h2 mat-dialog-title>
+  <mat-icon class="m-r-12">autorenew</mat-icon>
+  Renovar o Cambiar Plan
+</h2>
+
+<mat-dialog-content>
+  @if(cargandoPlanes) {
+  <div class="text-center p-y-48">
+    <mat-spinner diameter="48" color="primary"></mat-spinner>
+    <p class="mat-body-1 text-muted m-t-16">Cargando planes disponibles...</p>
+  </div>
+  } @else {
+  <!-- Plan Actual -->
+  @if(data?.suscripcionActual) {
+  <div class="plan-actual-card m-b-24">
+    <h3 class="mat-subtitle-2 m-b-12">Tu Plan Actual</h3>
+    <div class="plan-actual-content">
+      <div>
+        <p class="mat-body-2 f-w-600">
+          {{ data.suscripcionActual.plan_nombre }}
+        </p>
+        <p class="mat-caption text-muted">
+          ${{ data.suscripcionActual.plan_detalles.precio }} /
+          {{ data.suscripcionActual.plan_detalles.tipo }}
+        </p>
+      </div>
+      <mat-chip color="primary" [highlighted]="true">Actual</mat-chip>
+    </div>
+  </div>
+  }
+
+  <!-- Uso Actual -->
+  @if(data?.uso) {
+  <div class="uso-actual-alert m-b-24">
+    <mat-icon class="icon-20">info</mat-icon>
+    <div>
+      <p class="mat-caption m-0">
+        <strong>Uso actual:</strong> {{ data.uso.hoteles }} hoteles,
+        {{ data.uso.usuarios }} usuarios
+      </p>
+      <p class="mat-caption m-0 text-muted">
+        Asegúrate de que el nuevo plan cubra tus necesidades actuales
+      </p>
+    </div>
+  </div>
+  }
+
+  <!-- Planes Disponibles -->
+  <h3 class="mat-subtitle-2 m-b-16">Selecciona un Nuevo Plan</h3>
+
+  <div class="planes-grid">
+    @for(plan of planes; track plan.nombre; let i = $index) {
+    <mat-card
+      class="plan-card"
+      [class.selected]="esPlanSeleccionado(plan)"
+    >
+      <mat-card-header>
+        <mat-card-title>{{ plan.nombre }}</mat-card-title>
+        <mat-card-subtitle>
+          <div class="d-flex align-items-center gap-8 m-t-8">
+            <mat-icon class="icon-16">groups</mat-icon>
+            <span>{{ plan.max_usuarios }} usuarios</span>
+          </div>
+          <div class="d-flex align-items-center gap-8">
+            <mat-icon class="icon-16">hotel</mat-icon>
+            <span
+              >{{ plan.max_hoteles }} hotel{{
+                plan.max_hoteles > 1 ? "es" : ""
+              }}</span
+            >
+          </div>
+        </mat-card-subtitle>
+      </mat-card-header>
+
+      <mat-card-content>
+        <!-- Variantes -->
+        <div class="variantes-container">
+          @for(variante of plan.variantes; track variante.id) {
+          <button
+            mat-stroked-button
+            class="variante-button"
+            [class.selected]="planSeleccionado?.id === variante.id"
+            [class.actual]="esPlanActual(variante)"
+            [color]="planSeleccionado?.id === variante.id ? 'primary' : ''"
+            (click)="seleccionarPlan(variante)"
+          >
+            <div class="variante-content">
+              <div>
+                <p class="variante-tipo m-0">{{ variante.tipo_display }}</p>
+                <p class="variante-precio m-0">${{ variante.precio }}</p>
+              </div>
+              @if(esPlanActual(variante)) {
+              <mat-chip class="chip-actual">Actual</mat-chip>
+              }
+            </div>
+          </button>
+          }
+        </div>
+      </mat-card-content>
+    </mat-card>
+    }
+  </div>
+
+  <!-- Información del Plan Seleccionado -->
+  @if(planSeleccionado) {
+  <div class="seleccion-info m-t-24">
+    <mat-icon color="primary">check_circle</mat-icon>
+    <div>
+      <p class="mat-body-2 f-w-600 m-0">Plan seleccionado:</p>
+      <p class="mat-body-2 m-0">
+        ${{ planSeleccionado.precio }} / {{ planSeleccionado.tipo_display }}
+      </p>
+    </div>
+  </div>
+  } }
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="cerrar()" [disabled]="renovando">Cancelar</button>
+  <button
+    mat-raised-button
+    color="primary"
+    (click)="renovarSuscripcion()"
+    [disabled]="!planSeleccionado || renovando"
+  >
+    @if(renovando) {
+    <ng-container>
+      <mat-spinner diameter="20" class="spinner-inline"></mat-spinner>
+      <span>Renovando...</span>
+    </ng-container>
+    } @else {
+    <ng-container>
+      <mat-icon>check</mat-icon>
+      <span>Confirmar Renovación</span>
+    </ng-container>
+    }
+  </button>
+</mat-dialog-actions>
