@@ -1,36 +1,117 @@
-<h2 class="mb-3">Recomendaciones de Precio</h2>
+<mat-card class="cardWithShadow">
+  <mat-card-content>
 
-<div *ngIf="loading">Cargando...</div>
+    <!-- FILTROS DE FECHAS -->
+    <div class="flex items-center gap-4 mb-4">
 
-<div *ngIf="!loading && !data">
-  <p>No hay datos disponibles.</p>
-</div>
+      <div>
+        <label>Fecha inicio</label>
+        <input type="date" [(ngModel)]="fechaInicio" class="form-control" />
+      </div>
 
-<div *ngIf="data">
-  <table class="table table-striped">
-    <thead>
-      <tr>
-        <th>ID Habitación</th>
-        <th>Reservas</th>
-        <th>Noches</th>
-        <th>Ocupación (%)</th>
-        <th>Ranking</th>
-        <th>Recomendación (%)</th>
-        <th>Precio Sugerido</th>
-        <th>Motivo</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let h of data.habitaciones">
-        <td>{{ h.habitacion_id }}</td>
-        <td>{{ h.reservas_totales }}</td>
-        <td>{{ h.noches_reservadas }}</td>
-        <td>{{ h.porcentaje_ocupacion }}</td>
-        <td>{{ h.ranking }}</td>
-        <td>{{ h.recomendacion_porcentaje }}%</td>
-        <td>{{ h.precio_recomendado | currency }}</td>
-        <td>{{ h.motivo }}</td>
-      </tr>
-    </tbody>
-  </table>
-</div>
+      <div>
+        <label>Fecha fin</label>
+        <input type="date" [(ngModel)]="fechaFin" class="form-control" />
+      </div>
+
+      <button class="btn btn-primary mt-4" (click)="buscar()">Calcular</button>
+    </div>
+
+    <!-- TITULO -->
+    <mat-card-title>Recomendaciones de Precio</mat-card-title>
+
+    <!-- RESUMEN -->
+    <div class="mb-3" *ngIf="recomendaciones">
+      <p><strong>Total Habitaciones:</strong> {{ recomendaciones.habitaciones.length }}</p>
+      <p><strong>Fechas Analizadas:</strong> {{ recomendaciones.fecha_inicio }} → {{ recomendaciones.fecha_fin }}</p>
+      <p><strong>Días del Periodo:</strong> {{ recomendaciones.dias_periodo }}</p>
+    </div>
+
+    <!-- TABLA -->
+    <div class="table-responsive" *ngIf="recomendaciones">
+      <table mat-table [dataSource]="recomendaciones.habitaciones" class="w-100">
+
+        <!-- ID -->
+        <ng-container matColumnDef="habitacion_id">
+          <th mat-header-cell *matHeaderCellDef class="f-w-600">ID</th>
+          <td mat-cell *matCellDef="let h">{{ h.habitacion_id }}</td>
+        </ng-container>
+
+        <!-- Número -->
+        <ng-container matColumnDef="numero">
+          <th mat-header-cell *matHeaderCellDef class="f-w-600">Habitación</th>
+          <td mat-cell *matCellDef="let h">{{ h.numero }}</td>
+        </ng-container>
+
+        <!-- Tipo -->
+        <ng-container matColumnDef="tipo">
+          <th mat-header-cell *matHeaderCellDef class="f-w-600">Tipo</th>
+          <td mat-cell *matCellDef="let h">{{ h.tipo }}</td>
+        </ng-container>
+
+        <!-- Precio Actual -->
+        <ng-container matColumnDef="precio_actual">
+          <th mat-header-cell *matHeaderCellDef class="f-w-600">Precio Actual</th>
+          <td mat-cell *matCellDef="let h">
+            <span class="badge bg-info text-dark px-2 py-1">
+              {{ h.precio_actual | currency:'USD' }}
+            </span>
+          </td>
+        </ng-container>
+
+        <!-- Ocupación -->
+        <ng-container matColumnDef="ocupacion">
+          <th mat-header-cell *matHeaderCellDef class="f-w-600">Ocupación (%)</th>
+          <td mat-cell *matCellDef="let h">{{ h.porcentaje_ocupacion }}%</td>
+        </ng-container>
+
+        <!-- Ranking con colores -->
+        <ng-container matColumnDef="ranking">
+          <th mat-header-cell *matHeaderCellDef class="f-w-600">Ranking</th>
+          <td mat-cell *matCellDef="let h">
+            <span class="badge"
+              [ngClass]="{
+                'bg-success text-white': h.ranking <= 3,
+                'bg-warning text-dark': h.ranking > 3 && h.ranking <= 6,
+                'bg-danger text-white': h.ranking > 6
+              }">
+              {{ h.ranking }}
+            </span>
+          </td>
+        </ng-container>
+
+        <!-- Recomendación (%) -->
+        <ng-container matColumnDef="recomendacion">
+          <th mat-header-cell *matHeaderCellDef class="f-w-600">Recomendación (%)</th>
+          <td mat-cell *matCellDef="let h">
+            <span
+              [ngClass]="{
+                'text-success': h.recomendacion_porcentaje > 0,
+                'text-muted': h.recomendacion_porcentaje == 0,
+                'text-danger': h.recomendacion_porcentaje < 0
+              }">
+              {{ h.recomendacion_porcentaje > 0 ? '+' : '' }}{{ h.recomendacion_porcentaje }}%
+            </span>
+          </td>
+        </ng-container>
+
+        <!-- Precio sugerido -->
+        <ng-container matColumnDef="precio">
+          <th mat-header-cell *matHeaderCellDef class="f-w-600">Precio Sugerido</th>
+          <td mat-cell *matCellDef="let h">{{ h.precio_recomendado | currency }}</td>
+        </ng-container>
+
+        <!-- Motivo -->
+        <ng-container matColumnDef="motivo">
+          <th mat-header-cell *matHeaderCellDef class="f-w-600">Motivo</th>
+          <td mat-cell *matCellDef="let h">{{ h.motivo }}</td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="columnas"></tr>
+        <tr mat-row *matRowDef="let row; columns: columnas"></tr>
+
+      </table>
+    </div>
+
+  </mat-card-content>
+</mat-card>

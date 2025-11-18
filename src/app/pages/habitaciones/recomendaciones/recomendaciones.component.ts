@@ -1,29 +1,65 @@
 import { Component, OnInit } from '@angular/core';
-import { CommonModule, CurrencyPipe } from '@angular/common';
+import { CommonModule, NgFor, NgIf } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { HabitacionesService } from 'src/app/services/habitaciones.service';
+import { MatTableModule } from '@angular/material/table';
+import { MatCardModule } from '@angular/material/card';
 
 @Component({
   selector: 'app-recomendaciones',
-  standalone: true,  // importantísimo
-  imports: [CommonModule, CurrencyPipe],  // ← AQUI SE AGREGA
+  standalone: true,
   templateUrl: './recomendaciones.component.html',
+  imports: [
+    CommonModule,
+    FormsModule,
+    NgFor,
+    NgIf,
+    MatTableModule,
+    MatCardModule
+  ]
 })
 export class RecomendacionesComponent implements OnInit {
-  data: any = null;
-  loading = true;
+
+  recomendaciones: any = null;
+  loading: boolean = true;
+
+  // fechas para enviar al backend
+  fechaInicio: string | null = null;
+  fechaFin: string | null = null;
+
+  columnas: string[] = [
+    "habitacion_id",
+    "numero",
+    "tipo",
+    "precio_actual",
+    "ocupacion",
+    "ranking",
+    "recomendacion",
+    "precio",
+    "motivo"
+  ];
 
   constructor(private habitacionesService: HabitacionesService) {}
 
   ngOnInit(): void {
-    this.habitacionesService.getRecomendacionesPrecio().subscribe({
+    // carga inicial sin filtros
+    this.buscar();
+  }
+
+  buscar() {
+    this.loading = true;
+
+    this.habitacionesService.getRecomendacionesPrecio(
+      this.fechaInicio ?? undefined,
+      this.fechaFin ?? undefined
+    ).subscribe({
       next: (resp) => {
-        this.data = resp;
+        this.recomendaciones = resp;
         this.loading = false;
       },
-      error: (err) => {
-        console.error(err);
+      error: () => {
         this.loading = false;
-      },
+      }
     });
   }
 }

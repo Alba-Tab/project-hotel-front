@@ -13,10 +13,17 @@ export class HabitacionesService {
     private http: HttpClient,
     private tenantDomainService: TenantDomainService
   ) {
-    this.baseUrl = `${this.tenantDomainService.getTenantApiUrl()}/habitaciones/`;
+    this.baseUrl = `${this.tenantDomainService.getTenantApiUrl()}/habitaciones/habitaciones/`;
   }
 
-  getRecomendacionesPrecio(): Observable<any> {
-    return this.http.get<any>(`${this.baseUrl}recomendaciones-precio/`);
+  getRecomendacionesPrecio(inicio?: string, fin?: string): Observable<any> {
+    let url = `${this.baseUrl}recomendaciones-precio/`;
+
+    const params: any = {};
+
+    if (inicio) params.inicio = inicio;
+    if (fin) params.fin = fin;
+
+    return this.http.get<any>(url, { params });
   }
 }
