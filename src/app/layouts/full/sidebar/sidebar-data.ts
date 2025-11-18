@@ -40,6 +40,11 @@ export const navItems: NavItem[] = [
     route: '/fidelizacion',
   },
   {
+    displayName: 'Auditoría',
+    iconName: 'solar:add-folder-broken',
+    route: '/auditoria',
+  },
+  {
     displayName: 'Hoteles',
     iconName: 'solar:widget-add-line-duotone',
     route: '/hoteles',

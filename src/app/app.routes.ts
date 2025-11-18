@@ -6,6 +6,8 @@ import { authGuard } from './guards/auth.guard';
 
 import { TenantRegisterComponent } from './pages/tenant-register/tenant-register.component';
 import { MainPageComponent } from './pages/main-page/main-page.component';
+
+
 export const routes: Routes = [
   {
     path: '',
@@ -62,12 +64,12 @@ export const routes: Routes = [
           import('./pages/hoteles/hoteles.component').then(
             (m) => m.HotelesComponent
           ),
-      },
+      },  
       {
         path: 'habitaciones',
-        loadComponent: () =>
-          import('./pages/habitaciones/habitaciones.component').then(
-            (m) => m.HabitacionesComponent
+        loadChildren: () =>
+          import('./pages/habitaciones/habitaciones.routes').then(
+            (m) => m.HabitacionesRoutes
           ),
       },
       {
@@ -80,6 +82,14 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./pages/pagos/pagos.component').then((m) => m.PagosComponent),
       },
+      {
+  path: 'auditoria',
+  loadComponent: () =>
+    import('./pages/auditoria/auditoria.component').then(
+      (m) => m.AuditoriaComponent
+    ),
+},
+
       {
         path: 'fidelizacion',
         loadComponent: () =>
@@ -120,6 +130,7 @@ export const routes: Routes = [
             (m) => m.FolioEstanciaComponent
           ),
       },
+
       {
         path: 'suscripcion',
         loadComponent: () =>

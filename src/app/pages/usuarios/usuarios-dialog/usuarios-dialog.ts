@@ -42,6 +42,10 @@ export class UsuariosDialog implements OnInit {
   rolesDisponibles = signal<any[]>([]);
 
   usuarioForm!: FormGroup;
+  
+  // Propiedades para foto
+  photoFile: File | null = null;
+  photoPreviewUrl: string | null = null;
 
   ngOnInit() {
     this.initForm();
@@ -98,6 +102,11 @@ export class UsuariosDialog implements OnInit {
         email: this.data.usuario.email,
         groups: this.data.usuario.groups?.[0]?.id || '' // Tomar el primer grupo si existe
       });
+      
+      // Cargar foto existente si hay
+      if (this.data.usuario.photo_url) {
+        this.photoPreviewUrl = this.data.usuario.photo_url;
+      }
 
       // En modo edición, la contraseña es opcional
       this.usuarioForm.get('password')?.clearValidators();
@@ -186,6 +195,11 @@ export class UsuariosDialog implements OnInit {
         formData.group_ids = [formData.groups]; // Backend espera group_ids
         delete formData.groups; // Remover groups del envío
       }
+      
+      // Añadir foto si existe
+      if (this.photoFile) {
+        formData.photo = this.photoFile;
+      }
 
       console.log('📤 Enviando datos:', formData);
 
@@ -204,6 +218,31 @@ export class UsuariosDialog implements OnInit {
       });
       console.log('❌ Formulario inválido');
     }
+  }
+
+  /**
+   * Manejar selección de foto
+   */
+  onPhotoSelected(event: any): void {
+    const file = event.target.files[0];
+    if (file) {
+      this.photoFile = file;
+      
+      // Crear preview
+      const reader = new FileReader();
+      reader.onload = (e: any) => {
+        this.photoPreviewUrl = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+  }
+
+  /**
+   * Remover foto seleccionada
+   */
+  removePhoto(): void {
+    this.photoFile = null;
+    this.photoPreviewUrl = null;
   }
 
   /**

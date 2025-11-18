@@ -97,7 +97,7 @@ export class CreareditarHabitacionesComponent {
   }
 
   cargarHoteles() {
-    this.apiService.listar<any>('hoteles').subscribe({
+    this.apiService.listar<any>('hoteles/hoteles/').subscribe({
       next: (data) => {
         this.hoteles = data;
       },
