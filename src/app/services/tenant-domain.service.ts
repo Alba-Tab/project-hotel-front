@@ -16,8 +16,10 @@ export class TenantDomainService {
     this.isTenant = !!this.subdomain;
 
     this.apiUrl = this.isTenant
-      ? `http://${this.subdomain}.localhost:8000/api`
-      : `http://hotelsol.localhost:8000/api`;
+      ? `http://${this.subdomain}.https://jgyqzmxg7p.us-east-2.awsapprunner.com/api`
+      : //? `http://${this.subdomain}.localhost:8000/api`
+        `http://https://jgyqzmxg7p.us-east-2.awsapprunner.com/api`;
+    //: `http://localhost:8000/api`;
 
     this.logInfo();
   }
