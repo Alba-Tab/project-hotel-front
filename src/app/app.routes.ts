@@ -32,7 +32,7 @@ export const routes: Routes = [
   {
     path: '',
     component: FullComponent,
-    // canActivate: [authGuard], // ← Agregar esto
+    canActivate: [authGuard], // ← Agregar esto
     children: [
       {
         path: '',
@@ -85,6 +85,13 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./pages/fidelizacion/fidelizacion.component').then(
             (m) => m.FidelizacionComponent
+          ),
+      },
+      {
+        path: 'configuracion-apariencia',
+        loadComponent: () =>
+          import('./pages/configuracion-apariencia/configuracion-apariencia').then(
+            (m) => m.ConfiguracionApariencia
           ),
       },
       {
