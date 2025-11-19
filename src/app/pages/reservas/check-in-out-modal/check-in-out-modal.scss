@@ -29,6 +29,27 @@
     padding: 16px 24px;
     margin: 0;
   }
+
+  .camera-section {
+    border: 1px solid #dee2e6;
+    padding: 16px;
+    border-radius: 8px;
+    background-color: #f8f9fa;
+
+    h6 {
+      color: #495057;
+    }
+
+    .camera-preview video {
+      border: 2px solid #007bff;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    .photo-preview img {
+      border: 2px solid #28a745;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+  }
 }
 
 ::ng-deep .mat-mdc-dialog-container {

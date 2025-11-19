@@ -1,0 +1,134 @@
+<mat-card
+  class="cardWithShadow h-100 position-relative subscription-card"
+  [ngClass]="{ 'highlighted-plan': highlighted }"
+>
+  @if(highlighted) {
+  <div class="ribbon bg-primary text-white">
+    <span class="f-s-12 f-w-600">MÁS POPULAR</span>
+  </div>
+  }
+
+  <mat-card-content class="p-32">
+    <!-- Título del Plan -->
+    <div class="text-center m-b-24">
+      <h3 class="mat-headline-6 m-b-8">{{ plan.nombre }}</h3>
+      <div class="plan-details mat-body-2 text-muted m-b-16">
+        <div
+          class="d-flex align-items-center justify-content-center gap-8 m-b-4"
+        >
+          <mat-icon class="icon-18">groups</mat-icon>
+          <span>Hasta {{ plan.max_usuarios }} usuarios</span>
+        </div>
+        <div class="d-flex align-items-center justify-content-center gap-8">
+          <mat-icon class="icon-18">hotel</mat-icon>
+          <span
+            >{{ plan.max_hoteles }} hotel{{
+              plan.max_hoteles > 1 ? "es" : ""
+            }}</span
+          >
+        </div>
+      </div>
+    </div>
+
+    <!-- Precio Dinámico -->
+    <div class="text-center m-b-24 precio-container">
+      @if(varianteActiva) {
+      <div>
+        <span
+          class="mat-headline-3 f-w-700"
+          [style.color]="'var(--mat-sys-' + color + ')'"
+        >
+          ${{ varianteActiva.precio }}
+        </span>
+        <span class="mat-body-1 text-muted"
+          >/ {{ varianteActiva.tipo_display }}</span
+        >
+      </div>
+      }
+    </div>
+
+    <!-- Botones de Variantes (Chips) -->
+    <div class="variantes-container m-b-24">
+      <div class="d-flex justify-content-center flex-wrap gap-8">
+        @for(variante of plan.variantes; track variante.id) {
+        <mat-chip
+          [class.active-chip]="varianteActiva?.id === variante.id"
+          [color]="varianteActiva?.id === variante.id ? color : ''"
+          [highlighted]="varianteActiva?.id === variante.id"
+          (click)="seleccionarVariante(variante)"
+          class="cursor-pointer variante-chip"
+        >
+          <span class="chip-label">
+            {{ variante.tipo_display }}
+          </span>
+        </mat-chip>
+        }
+      </div>
+    </div>
+
+    <!-- Características del Plan -->
+    <div class="m-b-24 features-list">
+      <div class="d-flex align-items-start m-b-12">
+        <mat-icon [color]="color" class="icon-20 m-r-8" style="margin-top: 2px">
+          check_circle
+        </mat-icon>
+        <span class="mat-body-2">
+          Gestión de hasta {{ plan.max_usuarios }} usuarios simultáneos
+        </span>
+      </div>
+
+      <div class="d-flex align-items-start m-b-12">
+        <mat-icon [color]="color" class="icon-20 m-r-8" style="margin-top: 2px">
+          check_circle
+        </mat-icon>
+        <span class="mat-body-2">
+          Administración de {{ plan.max_hoteles }} propiedad{{
+            plan.max_hoteles > 1 ? "es" : ""
+          }}
+        </span>
+      </div>
+
+      <div class="d-flex align-items-start m-b-12">
+        <mat-icon [color]="color" class="icon-20 m-r-8" style="margin-top: 2px">
+          check_circle
+        </mat-icon>
+        <span class="mat-body-2">Panel de control completo</span>
+      </div>
+
+      <div class="d-flex align-items-start m-b-12">
+        <mat-icon [color]="color" class="icon-20 m-r-8" style="margin-top: 2px">
+          check_circle
+        </mat-icon>
+        <span class="mat-body-2">Reportes y estadísticas</span>
+      </div>
+
+      @if(plan.max_hoteles > 1) {
+      <div class="d-flex align-items-start m-b-12">
+        <mat-icon [color]="color" class="icon-20 m-r-8" style="margin-top: 2px">
+          check_circle
+        </mat-icon>
+        <span class="mat-body-2">Gestión multi-propiedad</span>
+      </div>
+      } @if(plan.max_usuarios > 10) {
+      <div class="d-flex align-items-start m-b-12">
+        <mat-icon [color]="color" class="icon-20 m-r-8" style="margin-top: 2px">
+          check_circle
+        </mat-icon>
+        <span class="mat-body-2">Soporte prioritario</span>
+      </div>
+      }
+    </div>
+
+    <!-- Botón de Suscripción -->
+    <button
+      mat-flat-button
+      [color]="highlighted ? 'primary' : 'accent'"
+      class="w-100 subscribe-button"
+      (click)="suscribirse()"
+      [disabled]="!varianteActiva"
+    >
+      <mat-icon class="m-r-8">shopping_cart</mat-icon>
+      Suscribirse
+    </button>
+  </mat-card-content>
+</mat-card>

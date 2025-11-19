@@ -47,6 +47,11 @@ export const navItems: NavItem[] = [
     route: '/fidelizacion',
   },
   {
+    displayName: 'Auditoría',
+    iconName: 'solar:add-folder-broken',
+    route: '/auditoria',
+  },
+  {
     displayName: 'Hoteles',
     iconName: 'solar:widget-add-line-duotone',
     route: '/hoteles',
@@ -92,6 +97,11 @@ export const navItems: NavItem[] = [
     displayName: 'Roles y Permisos',
     iconName: 'solar:shield-user-line-duotone',
     route: '/roles-permisos',
+  },
+  {
+    displayName: 'Suscripciones',
+    iconName: 'solar:home-smile-line-duotone',
+    route: '/suscripcion',
   },
 
   {

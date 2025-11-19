@@ -15,6 +15,8 @@ import { ReservasFormModal } from './reservas-form-modal/reservas-form-modal';
 import { ReservasDeleteModal } from './reservas-delete-modal/reservas-delete-modal';
 import { CheckInOutModal } from './check-in-out-modal/check-in-out-modal';
 
+import { Reportes } from './reportes/reportes';
+
 @Component({
   selector: 'app-reservas',
   imports: [
@@ -169,6 +171,21 @@ export class Reservas implements OnInit {
     });
   }
 
+  abrirModalReportes(): void {
+  const dialogRef = this.dialog.open(Reportes, {
+    width: '800px',
+    maxHeight: '90vh',
+    panelClass: 'custom-dialog-container',
+    disableClose: false
+  });
+
+  dialogRef.afterClosed().subscribe((result) => {
+    if (result) {
+      console.log('Reporte generado exitosamente');
+    }
+  });
+}
+
   // Métodos para Check-In/Check-Out
   puedeHacerCheckIn(reserva: any): boolean {
     return (
@@ -225,7 +242,19 @@ export class Reservas implements OnInit {
   realizarCheckIn(datos: any): void {
     console.log('🔄 Realizando Check-In con datos:', datos);
     this.loading = true;
-    this.apiService.crear('checkinout/checkin', datos).subscribe({
+    
+    // Crear FormData para enviar la foto
+    const formData = new FormData();
+    formData.append('reserva_id', datos.reserva_id);
+    formData.append('fecha_checkin', datos.fecha_checkin);
+    formData.append('hora_checkin', datos.hora_checkin);
+    formData.append('observaciones', datos.observaciones || '');
+    
+    if (datos.photo_checkin) {
+      formData.append('photo_checkin', datos.photo_checkin);
+    }
+    
+    this.apiService.crear('checkinout/checkin', formData).subscribe({
       next: () => {
         console.log('✅ Check-In realizado correctamente');
         this.snackBar.open('Check-In realizado correctamente', 'Cerrar', {
@@ -235,8 +264,8 @@ export class Reservas implements OnInit {
       },
       error: (error) => {
         console.error('❌ Error al realizar check-in:', error);
-        const mensaje = error?.error?.detail || 'Error al realizar el check-in';
-        this.snackBar.open(mensaje, 'Cerrar', { duration: 3000 });
+        const mensaje = error?.error?.detail || error?.error?.non_field_errors?.[0] || 'Error al realizar el check-in';
+        this.snackBar.open(mensaje, 'Cerrar', { duration: 4000 });
         this.loading = false;
       },
     });
@@ -246,13 +275,13 @@ export class Reservas implements OnInit {
     console.log('🔄 Realizando Check-Out con datos:', datos);
     console.log('🏨 ID de reserva:', reservaId);
     this.loading = true;
-    
+
     // Realizar check-out usando el ID de la reserva
     this.apiService.editar(`checkinout/checkout`, reservaId, datos).subscribe({
       next: () => {
         console.log('✅ Check-Out actualizado');
         this.cargarDatos();
-        
+
         // // Cambiar el estado de la reserva a 'realizada' al completar el check-out
         // const updateData = { estado: 'realizada' };
         // this.apiService.editar('reservas', reservaId, updateData).subscribe({

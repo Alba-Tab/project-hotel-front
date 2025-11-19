@@ -68,7 +68,7 @@ export class HotelesComponent {
   }
 
   cargarHoteles() {
-    this.apiService.listar('hoteles/hoteles').subscribe({
+    this.apiService.listar('hoteles/hoteles/').subscribe({
       next: (hoteles: any) => {
         this.dataSource1 = hoteles.map((hotel:any) => ({
           ...hotel,

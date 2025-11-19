@@ -1,4 +1,4 @@
 export const environment = {
   production: true,
-  apiUrl: 'https://api.mihotel.com/api'
+  apiUrl: 'https://jgyqzmxg7p.us-east-2.awsapprunner.com'
 };

@@ -7,7 +7,8 @@ import { Hotel } from '../interfaces/hotel.interface';
   providedIn: 'root',
 })
 export class HotelService {
-  private url = 'http://localhost:8000/api';
+  private url = 'https://jgyqzmxg7p.us-east-2.awsapprunner.com/api';
+  //'http://localhost:8000/api';
 
   constructor(private http: HttpClient) {}
 

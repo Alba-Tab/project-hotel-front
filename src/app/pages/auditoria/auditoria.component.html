@@ -1,0 +1,61 @@
+<mat-card class="cardWithShadow">
+  <mat-card-content>
+    <mat-card-title>Registro de Auditoría</mat-card-title>
+
+    <div class="table-responsive">
+      <table mat-table [dataSource]="dataSource" class="w-100">
+
+        <!-- Actor -->
+        <ng-container matColumnDef="actor">
+          <th mat-header-cell *matHeaderCellDef>Actor</th>
+          <td mat-cell *matCellDef="let element">{{ element.actor || '—' }}</td>
+        </ng-container>
+
+        <!-- Acción -->
+        <ng-container matColumnDef="action">
+          <th mat-header-cell *matHeaderCellDef>Acción</th>
+          <td mat-cell *matCellDef="let element">
+            <span class="bg-light-primary text-primary rounded p-6 p-y-4 f-s-12 f-w-600">
+              {{ getActionLabel(element.action) }}
+            </span>
+          </td>
+        </ng-container>
+
+        <!-- Tipo -->
+        <ng-container matColumnDef="content_type">
+          <th mat-header-cell *matHeaderCellDef>Tipo</th>
+          <td mat-cell *matCellDef="let element">{{ element.content_type }}</td>
+        </ng-container>
+
+        <!-- Objeto -->
+        <ng-container matColumnDef="object_pk">
+          <th mat-header-cell *matHeaderCellDef>ID Objeto</th>
+          <td mat-cell *matCellDef="let element">{{ element.object_pk }}</td>
+        </ng-container>
+
+        <!-- Cambios -->
+        <ng-container matColumnDef="changes">
+          <th mat-header-cell *matHeaderCellDef>Cambios</th>
+          <td mat-cell *matCellDef="let element">
+            <div *ngFor="let c of formatChanges(element.changes)">
+              <span class="text-dark f-s-13">• {{ c }}</span>
+            </div>
+          </td>
+        </ng-container>
+
+        <!-- Timestamp -->
+        <ng-container matColumnDef="timestamp">
+          <th mat-header-cell *matHeaderCellDef>Fecha</th>
+          <td mat-cell *matCellDef="let element">
+            {{ element.timestamp | date: 'yyyy-MM-dd HH:mm:ss' }}
+          </td>
+        </ng-container>
+
+        <!-- Header & Rows -->
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+
+      </table>
+    </div>
+  </mat-card-content>
+</mat-card>
