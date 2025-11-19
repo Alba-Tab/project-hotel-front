@@ -1,0 +1,252 @@
+<div class="configuracion-container">
+
+  <!-- 📊 ENCABEZADO -->
+  <mat-card class="header-card">
+    <mat-card-header>
+      <div class="header-content">
+        <div class="title-section">
+          <mat-icon class="header-icon">palette</mat-icon>
+          <div>
+            <mat-card-title>Configuración de Apariencia</mat-card-title>
+            <mat-card-subtitle>Personaliza los colores, fuentes y tema de tu hotel</mat-card-subtitle>
+          </div>
+        </div>
+
+        @if (!cargando()) {
+        <div class="preview-badge">
+          @if (previsualizando()) {
+          <mat-chip color="accent" selected>
+            <mat-icon>visibility</mat-icon>
+            Vista Previa Activa
+          </mat-chip>
+          }
+        </div>
+        }
+      </div>
+    </mat-card-header>
+  </mat-card>
+
+  <!-- 🔄 LOADING PRINCIPAL -->
+  @if (cargando()) {
+  <mat-card class="loading-card">
+    <mat-card-content class="loading-content">
+      <mat-spinner diameter="40"></mat-spinner>
+      <p>Cargando configuración...</p>
+    </mat-card-content>
+  </mat-card>
+  }
+
+  <!-- 📝 FORMULARIO PRINCIPAL -->
+  @if (!cargando()) {
+  <form [formGroup]="formulario" (ngSubmit)="guardarConfiguracion()"  class="config-form">
+
+    <!-- 🎨 SECCIÓN DE COLORES -->
+    <mat-card class="section-card colors-section">
+      <mat-card-header>
+        <mat-icon class="section-icon">color_lens</mat-icon>
+        <mat-card-title>Colores del Sistema</mat-card-title>
+        <mat-card-subtitle>Define la paleta de colores de tu aplicación</mat-card-subtitle>
+      </mat-card-header>
+
+      <mat-card-content>
+        <div class="colors-grid">
+
+          <!-- Color Primario -->
+          <div class="color-field-wrapper">
+            <mat-form-field appearance="outline" class="color-field">
+              <mat-label>Color Primario</mat-label>
+              <input matInput type="color" formControlName="color_primario">
+              <mat-icon matPrefix>circle</mat-icon>
+              <mat-hint>Botones, links, elementos activos</mat-hint>
+              @if (colorPrimario?.errors?.['required']) {
+              <mat-error>Requerido</mat-error>
+              }
+            </mat-form-field>
+            <div class="color-preview-large" [style.background-color]="colorPrimario?.value">
+              <span class="color-code">{{ colorPrimario?.value }}</span>
+            </div>
+          </div>
+
+          <!-- Color Secundario -->
+          <div class="color-field-wrapper">
+            <mat-form-field appearance="outline" class="color-field">
+              <mat-label>Color Secundario</mat-label>
+              <input matInput type="color" formControlName="color_secundario">
+              <mat-icon matPrefix>circle</mat-icon>
+              <mat-hint>Acentos, badges, elementos secundarios</mat-hint>
+              @if (colorSecundario?.errors?.['required']) {
+              <mat-error>Requerido</mat-error>
+              }
+            </mat-form-field>
+            <div class="color-preview-large" [style.background-color]="colorSecundario?.value">
+              <span class="color-code">{{ colorSecundario?.value }}</span>
+            </div>
+          </div>
+
+          <!-- Color de Fondo -->
+          <div class="color-field-wrapper">
+            <mat-form-field appearance="outline" class="color-field">
+              <mat-label>Color de Fondo</mat-label>
+              <input matInput type="color" formControlName="color_fondo">
+              <mat-icon matPrefix>circle</mat-icon>
+              <mat-hint>Fondo principal de la aplicación</mat-hint>
+              @if (colorFondo?.errors?.['required']) {
+              <mat-error>Requerido</mat-error>
+              }
+            </mat-form-field>
+            <div class="color-preview-large" [style.background-color]="colorFondo?.value">
+              <span class="color-code">{{ colorFondo?.value }}</span>
+            </div>
+          </div>
+
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- 📝 SECCIÓN DE TIPOGRAFÍA -->
+    <mat-card class="section-card typography-section">
+      <mat-card-header>
+        <mat-icon class="section-icon">font_download</mat-icon>
+        <mat-card-title>Tipografía</mat-card-title>
+        <mat-card-subtitle>Configura la fuente y tamaño del texto</mat-card-subtitle>
+      </mat-card-header>
+
+      <mat-card-content>
+        <div class="typography-grid">
+
+          <!-- Familia de Fuente -->
+          <mat-form-field appearance="outline" class="font-select">
+            <mat-label>Familia de Fuente</mat-label>
+            <mat-select formControlName="familia_fuente">
+              @for (fuente of fuentesDisponibles; track fuente) {
+              <mat-option [value]="fuente" [style.font-family]="fuente">
+                <span [style.font-family]="fuente">{{ fuente }}</span>
+              </mat-option>
+              }
+            </mat-select>
+            <mat-icon matPrefix>text_fields</mat-icon>
+            <mat-hint>Fuente que se aplicará en toda la aplicación</mat-hint>
+          </mat-form-field>
+
+          <!-- Tamaño de Fuente -->
+          <div class="slider-container">
+            <div class="slider-header">
+              <label class="slider-label">Tamaño de Fuente Base</label>
+              <span class="slider-value">{{ tamanoFuenteBase?.value }}px</span>
+            </div>
+
+            <mat-slider min="12" max="18" step="1" discrete showTickMarks class="font-slider">
+              <input matSliderThumb formControlName="tamano_fuente_base">
+            </mat-slider>
+
+            <div class="slider-hints">
+              <span class="hint-text">Pequeño (12px)</span>
+              <span class="hint-text">Recomendado (14px)</span>
+              <span class="hint-text">Grande (18px)</span>
+            </div>
+
+            @if (tamanoFuenteBase?.errors) {
+            <mat-error class="slider-error">
+              El tamaño debe estar entre 12 y 18 píxeles
+            </mat-error>
+            }
+          </div>
+
+        </div>
+
+        <!-- Vista Previa de Tipografía -->
+        <div class="typography-preview" [style.font-family]="familiaFuente?.value" [style.font-size.px]="tamanoFuenteBase?.value">
+          <p class="preview-text">Vista previa: El veloz murciélago hindú comía feliz cardillo y kiwi.</p>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- 🌙 SECCIÓN DE TEMA -->
+    <mat-card class="section-card theme-section">
+      <mat-card-header>
+        <mat-icon class="section-icon">dark_mode</mat-icon>
+        <mat-card-title>Modo de Tema</mat-card-title>
+        <mat-card-subtitle>Selecciona entre tema claro u oscuro</mat-card-subtitle>
+      </mat-card-header>
+
+      <mat-card-content>
+        <div class="theme-options">
+          @for (tema of temasDisponibles; track tema.value) {
+          <div class="theme-option"
+               [class.selected]="modoTema?.value === tema.value"
+               (click)="formulario.patchValue({ modo_tema: tema.value })">
+            <mat-icon class="theme-icon">
+              {{ tema.value === 'claro' ? 'light_mode' : 'dark_mode' }}
+            </mat-icon>
+            <div class="theme-info">
+              <h3>{{ tema.label }}</h3>
+              <p>{{ tema.value === 'claro' ? 'Fondo claro, ideal para el día' : 'Fondo oscuro, reduce fatiga visual' }}</p>
+            </div>
+            @if (modoTema?.value === tema.value) {
+            <mat-icon class="check-icon">check_circle</mat-icon>
+            }
+          </div>
+          }
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- 🎛️ CONTROLES -->
+    <mat-card class="controls-card">
+      <mat-card-content>
+        <div class="controls-wrapper">
+
+          <!-- Toggle de Previsualización -->
+          <div class="preview-section">
+            <div class="preview-info">
+              <h3>Vista Previa en Tiempo Real</h3>
+              <p>Activa para ver los cambios antes de guardar</p>
+            </div>
+            <button type="button"
+                    mat-raised-button
+                    [color]="previsualizando() ? 'accent' : ''"
+                    (click)="togglePrevisualizacion()"
+                    class="preview-toggle">
+              <mat-icon>{{ previsualizando() ? 'visibility' : 'visibility_off' }}</mat-icon>
+              {{ previsualizando() ? 'Vista Previa ON' : 'Vista Previa OFF' }}
+            </button>
+          </div>
+
+          <mat-divider></mat-divider>
+
+          <!-- Botones de Acción -->
+          <div class="action-buttons">
+            <button type="button"
+                    mat-stroked-button
+                    color="warn"
+                    (click)="restablecerDefecto()"
+                    [disabled]="guardando()"
+                    class="reset-btn">
+              <mat-icon>restore</mat-icon>
+              Valores por Defecto
+            </button>
+
+            <button type="submit"
+                    mat-raised-button
+                    color="primary"
+                    [disabled]="formulario.invalid || guardando()"
+                    class="save-btn">
+              @if (guardando()) {
+                <mat-spinner diameter="20"></mat-spinner>
+                <span>Guardando...</span>
+              } @else {
+                <ng-container>
+                  <mat-icon>save</mat-icon>
+                  <span>Guardar Configuración</span>
+                </ng-container>
+              }
+            </button>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+  </form>
+  }
+
+</div>

@@ -9,6 +9,13 @@ export const navItems: NavItem[] = [
     iconName: 'solar:atom-line-duotone',
     route: '/dashboard',
   },
+
+  {
+    displayName: 'Configuración',
+    iconName: 'solar:palette-line-duotone',
+    route: '/configuracion-apariencia',
+  },
+
   {
     displayName: 'Reservas',
     iconName: 'solar:calendar-mark-line-duotone',
