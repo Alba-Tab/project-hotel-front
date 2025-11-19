@@ -34,7 +34,7 @@ export class TenantDomainService {
       'localhost',
       'amplifyapp.com',
       'netlify.app',
-      'vercel.app'
+      'vercel.app',
       // Agrega aquí tu dominio personalizado si tienes uno
     ];
 
@@ -48,18 +48,21 @@ export class TenantDomainService {
     if (parts.length >= 3) {
       const baseDomain = parts.slice(-2).join('.'); // amplifyapp.com
       const appName = parts.slice(-3, -2)[0]; // tuapp
-      
+
       // Si coincide con dominios conocidos y hay un subdominio adicional
-      if (baseDomains.some(bd => baseDomain.includes(bd)) && parts.length > 3) {
+      if (
+        baseDomains.some((bd) => baseDomain.includes(bd)) &&
+        parts.length > 3
+      ) {
         return parts[0]; // hotelsol
       }
-      
+
       // Para dominios personalizados de 3 partes: hotelsol.tudominio.com
       if (parts.length === 3) {
         // Verificar que no sea el dominio principal
         const checkHost = `${parts[1]}.${parts[2]}`;
         // Si no es localhost ni un dominio de hosting, asumir que es subdominio
-        if (!baseDomains.some(bd => checkHost.includes(bd))) {
+        if (!baseDomains.some((bd) => checkHost.includes(bd))) {
           return parts[0];
         }
       }
