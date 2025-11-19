@@ -44,7 +44,7 @@ interface RankingResponse {
   demanda_mensual_historica: DemandaMensual[];
   periodo_ranking_usado: { inicio: string; fin: string; nota: string };
 }
-export interface DemandaChartConfig { 
+export interface DemandaChartConfig {
   series: ApexAxisChartSeries;
   chart: ApexChart;
   xaxis: ApexXAxis;
@@ -75,7 +75,7 @@ export interface DemandaChartConfig {
     MatDialogModule,
     MatProgressSpinnerModule,
     FormsModule,
-    DatePipe,
+    // DatePipe, // No utilizado en el template
     NgApexchartsModule,
   ],
   templateUrl: './ranking-habitaciones.html',
@@ -101,12 +101,12 @@ export class RankingHabitaciones implements OnInit {
   // 💡 Lógica para transformar la señal de datos en la configuración del gráfico
   demandaChart = computed<Partial<DemandaChartConfig>>(() => {
     const data = this.demandaHistorica();
-    
+
     // 1. Limitar a 13 meses (último año + mes actual)
     // Usamos slice(0, 13) para obtener los 13 meses más recientes (si existen)
     const limitedData = [...data].slice(0, 13);
     // 2. Ordenar ascendentemente (Pasado -> Presente)
-    const sortedData = limitedData.reverse(); 
+    const sortedData = limitedData.reverse();
     const dataCount = sortedData.length;
 
     const categories = sortedData.map(d => `${d.month}/${d.year}`);
@@ -115,9 +115,9 @@ export class RankingHabitaciones implements OnInit {
     // Configuración base con valores por defecto (Gráfico de Líneas)
     const baseChartConfig: Partial<DemandaChartConfig> = {
         series: [],
-        chart: { 
-            type: 'line', 
-            height: 250, 
+        chart: {
+            type: 'line',
+            height: 250,
             width: '100%', // 👈 Siempre ocupa el 100% del ancho disponible
             toolbar: { show: false },
             zoom: { enabled: false },
@@ -128,13 +128,13 @@ export class RankingHabitaciones implements OnInit {
         dataLabels: { enabled: false },
         grid: { show: true, borderColor: '#e0e0e0', strokeDashArray: 3 },
         plotOptions: { bar: { horizontal: false, columnWidth: '55%', endingShape: 'rounded' } },
-        stroke: { curve: 'smooth', width: 3 }, 
+        stroke: { curve: 'smooth', width: 3 },
         markers: { size: 6, strokeWidth: 2, hover: { sizeOffset: 4 } },
         dynamicMinWidth: '100%',
     };
 
     if (data.length === 0) {
-      return baseChartConfig; 
+      return baseChartConfig;
     }
 
     return {
@@ -169,7 +169,7 @@ export class RankingHabitaciones implements OnInit {
     // Si tu app ya está en modo tenant, es mejor cargar los hoteles para el select
     this.apiService.listar<any[]>('hoteles/hoteles').subscribe({
       next: (data) => {
-        const hoteldData = Array.isArray(data) ? data : []; 
+        const hoteldData = Array.isArray(data) ? data : [];
         this.hoteles.set(hoteldData);
       },
       error: (err) => console.error('Error cargando hoteles:', err),
@@ -210,10 +210,10 @@ export class RankingHabitaciones implements OnInit {
   abrirDialogoAjuste(habitacion: HabitacionRanking): void {
     // Lógica para abrir el diálogo de ajuste de precio (usando MatDialog)
     // Se usaría un componente de diálogo similar a FidelizacionDialogComponent
-    
+
     // Aquí se simula la acción para actualizar el precio con PATCH
     const nuevoPrecio = prompt(`Habitación ${habitacion.numero} - Precio actual: $${habitacion.precio_noche}. Ingrese nuevo precio:`);
-    
+
     if (nuevoPrecio && !isNaN(Number(nuevoPrecio))) {
         this.actualizarPrecio(habitacion.id, Number(nuevoPrecio));
     } else if (nuevoPrecio !== null) {
@@ -223,7 +223,7 @@ export class RankingHabitaciones implements OnInit {
 
   actualizarPrecio(id: number, nuevoPrecio: number): void {
     const payload = { precio_noche: nuevoPrecio };
-    
+
     this.apiService.actualizar('habitaciones', id, payload).subscribe({
       next: () => {
         this.snackBar.open(`Precio de Habitación ${id} actualizado a $${nuevoPrecio.toFixed(2)}`, 'Cerrar', { duration: 3000, panelClass: ['success-snackbar'] });

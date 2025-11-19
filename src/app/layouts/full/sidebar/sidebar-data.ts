@@ -10,6 +10,25 @@ export const navItems: NavItem[] = [
     route: '/dashboard',
   },
   {
+    displayName: 'Recomendaciones IA',
+    iconName: 'solar:magic-stick-3-line-duotone',
+    route: '/recomendaciones-ia',
+    children: [
+      {
+        displayName: 'Recomendaciones',
+        subItemIcon: true,
+        iconName: 'solar:round-alt-arrow-right-line-duotone',
+        route: '/recomendaciones-ia/lista',
+      },
+      // {
+      //   displayName: 'Historial',
+      //   subItemIcon: true,
+      //   iconName: 'solar:round-alt-arrow-right-line-duotone',
+      //   route: '/recomendaciones-ia/historial',
+      // },
+    ],
+  },
+  {
     displayName: 'Reservas',
     iconName: 'solar:calendar-mark-line-duotone',
     route: '/reservas',
