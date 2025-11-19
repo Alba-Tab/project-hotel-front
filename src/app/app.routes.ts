@@ -18,6 +18,7 @@ export const routes: Routes = [
         component: MainPageComponent, // ✅ Página principal como inicio
         pathMatch: 'full',
       },
+
       {
         path: 'authentication',
         loadChildren: () =>
@@ -47,6 +48,13 @@ export const routes: Routes = [
           import('./pages/pages.routes').then((m) => m.PagesRoutes),
       },
       {
+        path: 'recomendaciones-ia',
+        loadChildren: () =>
+          import('./pages/recomendaciones-ia/recomendaciones-ia.routes').then(
+            (m) => m.RecomendacionesIARoutes
+          ),
+      },
+      {
         path: 'ui-components',
         loadChildren: () =>
           import('./pages/ui-components/ui-components.routes').then(
@@ -64,7 +72,7 @@ export const routes: Routes = [
           import('./pages/hoteles/hoteles.component').then(
             (m) => m.HotelesComponent
           ),
-      },  
+      },
       {
         path: 'habitaciones',
         loadChildren: () =>
@@ -143,6 +151,13 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./pages/suscripcion/suscripcion.component').then(
             (m) => m.SuscripcionComponent
+          ),
+      },
+      {
+        path: 'backups',
+        loadChildren: () =>
+          import('./pages/backups/backups.routes').then(
+            (m) => m.BackupsRoutes
           ),
       },
     ],
