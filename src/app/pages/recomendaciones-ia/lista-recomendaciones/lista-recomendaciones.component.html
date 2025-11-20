@@ -1,0 +1,220 @@
+<div class="recomendaciones-container">
+  <!-- Header con botón de generar -->
+  <div class="header-section mb-3">
+    <div class="d-flex align-items-center justify-content-between">
+      <div>
+        <h2 class="title">Recomendación Inteligente de Tarifas</h2>
+        <p class="subtitle">Sugerencias impulsadas por IA basadas en demandas</p>
+      </div>
+      <button
+        mat-raised-button
+        color="primary"
+        (click)="generarRecomendaciones()"
+        [disabled]="generando">
+        <mat-icon>auto_awesome</mat-icon>
+        {{ generando ? 'Generando...' : 'Generar Recomendaciones' }}
+      </button>
+    </div>
+  </div>
+
+  <!-- Loading -->
+  <div *ngIf="cargando" class="text-center py-5">
+    <mat-spinner diameter="50" class="mx-auto"></mat-spinner>
+    <p class="mt-3">Cargando recomendaciones...</p>
+  </div>
+
+  <!-- Contenido principal -->
+  <div *ngIf="!cargando" class="contenido-principal">
+    <!-- Panel izquierdo: Tabla de tarifas -->
+    <div class="panel-tarifas">
+      <mat-card class="tarifas-card">
+        <mat-card-header>
+          <mat-card-title>Tarifas por Tipo de Habitación</mat-card-title>
+        </mat-card-header>
+
+        <mat-card-content>
+          <!-- Sin recomendaciones -->
+          <div *ngIf="recomendaciones.length === 0" class="sin-recomendaciones">
+            <mat-icon>lightbulb_outline</mat-icon>
+            <p>No hay recomendaciones disponibles</p>
+            <button mat-raised-button color="primary" (click)="generarRecomendaciones()">
+              Generar Primera Recomendación
+            </button>
+          </div>
+
+          <!-- Tabla de recomendaciones agrupadas por tipo -->
+          <div *ngIf="recomendacionesAgrupadas.length > 0" class="tarifas-agrupadas">
+
+            <!-- Grupo por tipo de habitación -->
+            <div *ngFor="let grupo of recomendacionesAgrupadas" class="grupo-tipo">
+              <!-- Header del grupo -->
+              <div class="grupo-header">
+                <div class="grupo-titulo">
+                  <mat-icon>hotel</mat-icon>
+                  <h3>{{ grupo.tipo }}</h3>
+                  <span class="badge-count">{{ grupo.recomendaciones.length }} habitacion(es)</span>
+                </div>
+                <div class="grupo-resumen">
+                  <div class="resumen-item">
+                    <span class="label">Actual promedio:</span>
+                    <span class="valor">{{ formatearMoneda(grupo.tarifa_promedio_actual) }}</span>
+                  </div>
+                  <div class="resumen-item">
+                    <span class="label">Sugerido promedio:</span>
+                    <span class="valor sugerido">{{ formatearMoneda(grupo.tarifa_promedio_sugerida) }}</span>
+                  </div>
+                  <div class="resumen-item">
+                    <span class="label">Confianza:</span>
+                    <span class="valor confianza">{{ formatearConfianza(grupo.confianza_promedio) }}%</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Habitaciones del grupo -->
+              <div class="grupo-habitaciones">
+                <div
+                  class="habitacion-item"
+                  *ngFor="let rec of grupo.recomendaciones"
+                  [class.disabled]="rec.aceptado || rec.aplicada">
+
+                  <div class="habitacion-check">
+                    <mat-checkbox
+                      [checked]="seleccionadas.has(rec.id)"
+                      (change)="toggleSeleccion(rec.id)"
+                      [disabled]="rec.aceptado || rec.aplicada || procesando">
+                    </mat-checkbox>
+                  </div>
+
+                  <div class="habitacion-info">
+                    <strong>{{ obtenerNombreHabitacion(rec) }}</strong>
+                  </div>
+
+                  <div class="habitacion-tarifas">
+                    <div class="tarifa-item">
+                      <span class="tarifa-label">Actual:</span>
+                      <span class="tarifa-valor actual">{{ formatearMoneda(rec.tarifa_actual) }}</span>
+                    </div>
+                    <mat-icon class="arrow-icon" [class.down]="obtenerTendencia(rec) === 'disminucion'" [class.up]="obtenerTendencia(rec) === 'aumento'">
+                      {{ obtenerTendencia(rec) === 'aumento' ? 'trending_up' : 'trending_down' }}
+                    </mat-icon>
+                    <div class="tarifa-item">
+                      <span class="tarifa-label">Sugerido:</span>
+                      <span class="tarifa-valor sugerida">{{ formatearMoneda(rec.tarifa_sugerida) }}</span>
+                    </div>
+                  </div>
+
+                  <div class="habitacion-confianza">
+                    <div
+                      class="confianza-badge"
+                      [style.background-color]="getConfianzaBgColor(rec.confianza)"
+                      [style.color]="getConfianzaColor(rec.confianza)">
+                      {{ formatearConfianza(rec.confianza) }}%
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Información de filtrado -->
+          <div *ngIf="recomendaciones.length > maxRecomendaciones" class="info-filtrado">
+            <mat-icon>info</mat-icon>
+            <p>
+              Mostrando las {{ maxRecomendaciones }} recomendaciones más prioritarias de {{ recomendaciones.length }} totales.
+              <a href="javascript:void(0)" (click)="verTodasRecomendaciones()">Ver todas</a>
+            </p>
+          </div>
+
+          <!-- Botones de acción -->
+          <div *ngIf="recomendacionesAgrupadas.length > 0" class="acciones-container">
+            <button
+              mat-raised-button
+              class="btn-aceptar-todas"
+              (click)="aceptarTodas()"
+              [disabled]="procesando || !hayRecomendacionesPendientes">
+              <mat-icon>check</mat-icon>
+              Aceptar Todas
+            </button>
+
+            <button
+              mat-stroked-button
+              class="btn-aceptar-individual"
+              (click)="aceptarSeleccionadas()"
+              [disabled]="procesando || seleccionadas.size === 0">
+              <mat-icon>check</mat-icon>
+              Aceptar Individual
+            </button>
+
+            <button
+              mat-raised-button
+              color="warn"
+              class="btn-rechazar"
+              (click)="rechazarRecomendaciones()"
+              [disabled]="procesando || !hayRecomendacionesPendientes">
+              <mat-icon>cancel</mat-icon>
+              Rechazar
+            </button>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+    <!-- Panel derecho: Historial -->
+    <div class="panel-historial">
+      <mat-card class="historial-card">
+        <mat-card-header>
+          <mat-card-title>Historial de Cambios</mat-card-title>
+        </mat-card-header>
+
+        <mat-card-content>
+          <!-- Sin historial -->
+          <div *ngIf="historialReciente.length === 0" class="sin-historial">
+            <mat-icon>history</mat-icon>
+            <p>No hay eventos recientes</p>
+          </div>
+
+          <!-- Timeline de eventos -->
+          <div *ngIf="historialReciente.length > 0" class="timeline">
+            <div class="timeline-item" *ngFor="let evento of historialReciente; let last = last">
+              <div class="timeline-marker">
+                <mat-icon [class]="getEventoIconClass(evento.tipo)">
+                  {{ getEventoIcono(evento.tipo) }}
+                </mat-icon>
+              </div>
+              <div class="timeline-content">
+                <div class="evento-header">
+                  <h4>{{ evento.titulo }}</h4>
+                  <span class="evento-badge" [class]="getTipoBadgeClass(evento.tipo)">
+                    {{ evento.tipo_display }}
+                  </span>
+                </div>
+                <p class="fecha">
+                  <mat-icon class="fecha-icon">schedule</mat-icon>
+                  {{ formatearFecha(evento.fecha) }} • {{ formatearHora(evento.fecha) }}
+                </p>
+                <p class="descripcion">{{ evento.descripcion }}</p>
+
+                <!-- Detalles adicionales -->
+                <div class="evento-detalles" *ngIf="evento.detalles">
+                  <div class="detalle-item" *ngIf="evento.detalles['precios_ajustados']">
+                    <mat-icon>attach_money</mat-icon>
+                    <span>{{ evento.detalles['precios_ajustados'] }} precio(s) ajustado(s)</span>
+                  </div>
+                  <div class="detalle-item" *ngIf="evento.detalles['cantidad']">
+                    <mat-icon>analytics</mat-icon>
+                    <span>{{ evento.detalles['cantidad'] }} generada(s)</span>
+                  </div>
+                  <div class="detalle-item" *ngIf="evento.detalles['rechazadas']">
+                    <mat-icon>block</mat-icon>
+                    <span>{{ evento.detalles['rechazadas'] }} rechazada(s)</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+  </div>
+</div>

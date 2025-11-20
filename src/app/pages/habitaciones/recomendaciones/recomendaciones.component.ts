@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { CommonModule, NgFor, NgIf } from '@angular/common';
+import { CommonModule } from '@angular/common'; // NgFor, NgIf ya incluidos en CommonModule
 import { FormsModule } from '@angular/forms';
 import { HabitacionesService } from 'src/app/services/habitaciones.service';
 import { MatTableModule } from '@angular/material/table';
@@ -12,8 +12,8 @@ import { MatCardModule } from '@angular/material/card';
   imports: [
     CommonModule,
     FormsModule,
-    NgFor,
-    NgIf,
+    // NgFor, // Ya incluido en CommonModule
+    // NgIf,  // Ya incluido en CommonModule
     MatTableModule,
     MatCardModule
   ]

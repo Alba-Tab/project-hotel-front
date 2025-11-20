@@ -24,6 +24,7 @@ export const routes: Routes = [
         path: 'principal',
         component: MainPageComponent,
       },
+
       {
         path: 'authentication',
         loadChildren: () =>
@@ -48,6 +49,13 @@ export const routes: Routes = [
         path: 'dashboard',
         loadChildren: () =>
           import('./pages/pages.routes').then((m) => m.PagesRoutes),
+      },
+      {
+        path: 'recomendaciones-ia',
+        loadChildren: () =>
+          import('./pages/recomendaciones-ia/recomendaciones-ia.routes').then(
+            (m) => m.RecomendacionesIARoutes
+          ),
       },
       {
         path: 'ui-components',
@@ -100,6 +108,13 @@ export const routes: Routes = [
           ),
       },
       {
+        path: 'configuracion-apariencia',
+        loadComponent: () =>
+          import('./pages/configuracion-apariencia/configuracion-apariencia').then(
+            (m) => m.ConfiguracionApariencia
+          ),
+      },
+      {
         path: 'roles-permisos',
         loadComponent: () =>
           import('./pages/roles-permisos/roles-permisos').then(
@@ -137,6 +152,13 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./pages/suscripcion/suscripcion.component').then(
             (m) => m.SuscripcionComponent
+          ),
+      },
+      {
+        path: 'backups',
+        loadChildren: () =>
+          import('./pages/backups/backups.routes').then(
+            (m) => m.BackupsRoutes
           ),
       },
     ],
