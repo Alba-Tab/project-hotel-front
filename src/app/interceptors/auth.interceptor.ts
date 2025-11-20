@@ -16,18 +16,42 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const publicEndpoints = ['/usuarios/login/', '/usuarios/logout/' , '/public/tenants-forms/'];
   const isPublicEndpoint = publicEndpoints.some(endpoint => req.url.includes(endpoint));
 
-  // 🔒 Agregar token si es necesario
+  // 🏨 Extraer tenant del hostname
+  const hostname = window.location.hostname;
+  const parts = hostname.split('.');
+  let tenantDomain = '';
+  
+  // Detectar subdominio
+  if (hostname !== 'localhost' && hostname !== '127.0.0.1') {
+    if (parts.length === 2 && parts[1] === 'localhost') {
+      tenantDomain = parts[0]; // hotel1.localhost -> hotel1
+    } else if (parts.length >= 3) {
+      tenantDomain = parts[0]; // hotel1.tudominio.com -> hotel1
+    }
+  }
+
+  // 🔒 Construir headers
+  const headers: any = {};
+  
+  // Agregar tenant si existe
+  if (tenantDomain) {
+    headers['X-Tenant-Domain'] = tenantDomain;
+    console.log('🏨 Agregando tenant header:', tenantDomain);
+  }
+  
+  // Agregar token si es necesario
   if (token && !isPublicEndpoint) {
+    headers['Authorization'] = `Bearer ${token}`;
     console.log('✅ Agregando Authorization header');
-    req = req.clone({
-      setHeaders: {
-        Authorization: `Bearer ${token}`
-      }
-    });
   } else if (isPublicEndpoint) {
     console.log('🚫 Endpoint público - NO agregar token');
   } else {
     console.log('❌ Sin token - petición sin autenticación');
+  }
+
+  // Clonar request con headers
+  if (Object.keys(headers).length > 0) {
+    req = req.clone({ setHeaders: headers });
   }
 
   // 🚨 Manejar errores HTTP globalmente

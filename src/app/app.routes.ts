@@ -7,16 +7,22 @@ import { authGuard } from './guards/auth.guard';
 import { TenantRegisterComponent } from './pages/tenant-register/tenant-register.component';
 import { MainPageComponent } from './pages/main-page/main-page.component';
 
-
 export const routes: Routes = [
+  // Ruta raíz - redirige a la página principal de suscripciones
+  {
+    path: '',
+    redirectTo: 'principal',
+    pathMatch: 'full',
+  },
+
+  // Rutas públicas SIN protección (BlankComponent)
   {
     path: '',
     component: BlankComponent,
     children: [
       {
         path: 'principal',
-        component: MainPageComponent, // ✅ Página principal como inicio
-        pathMatch: 'full',
+        component: MainPageComponent,
       },
 
       {
@@ -32,16 +38,13 @@ export const routes: Routes = [
       },
     ],
   },
+
+  // Rutas protegidas CON autenticación (FullComponent)
   {
     path: '',
     component: FullComponent,
-    canActivate: [authGuard], // ← Agregar esto
+    canActivate: [authGuard],
     children: [
-      {
-        path: '',
-        redirectTo: 'dashboard', // ✅ Sin barra inicial - redirección relativa
-        pathMatch: 'full',
-      },
       {
         path: 'dashboard',
         loadChildren: () =>
@@ -91,13 +94,12 @@ export const routes: Routes = [
           import('./pages/pagos/pagos.component').then((m) => m.PagosComponent),
       },
       {
-  path: 'auditoria',
-  loadComponent: () =>
-    import('./pages/auditoria/auditoria.component').then(
-      (m) => m.AuditoriaComponent
-    ),
-},
-
+        path: 'auditoria',
+        loadComponent: () =>
+          import('./pages/auditoria/auditoria.component').then(
+            (m) => m.AuditoriaComponent
+          ),
+      },
       {
         path: 'fidelizacion',
         loadComponent: () =>
@@ -145,7 +147,6 @@ export const routes: Routes = [
             (m) => m.FolioEstanciaComponent
           ),
       },
-
       {
         path: 'suscripcion',
         loadComponent: () =>
@@ -163,6 +164,7 @@ export const routes: Routes = [
     ],
   },
 
+  // Ruta catch-all para 404
   {
     path: '**',
     redirectTo: 'authentication/error',

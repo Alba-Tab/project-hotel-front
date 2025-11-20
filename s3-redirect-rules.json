@@ -1,0 +1,20 @@
+[
+  {
+    "Condition": {
+      "HttpErrorCodeReturnedEquals": "404"
+    },
+    "Redirect": {
+      "HostName": "hoteles-front.s3-website.us-east-2.amazonaws.com",
+      "ReplaceKeyPrefixWith": "#!/"
+    }
+  },
+  {
+    "Condition": {
+      "HttpErrorCodeReturnedEquals": "403"
+    },
+    "Redirect": {
+      "HostName": "hoteles-front.s3-website.us-east-2.amazonaws.com",
+      "ReplaceKeyPrefixWith": "#!/"
+    }
+  }
+]
