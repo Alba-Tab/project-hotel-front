@@ -35,6 +35,28 @@
   }
 }
 
+// Botón de login en header
+.login-button {
+  min-width: 150px;
+
+  @media (max-width: 768px) {
+    min-width: auto;
+
+    .mat-icon {
+      margin-right: 4px;
+    }
+  }
+
+  @media (max-width: 480px) {
+    font-size: 0.875rem;
+    padding: 0 12px;
+
+    .m-r-8 {
+      margin-right: 4px !important;
+    }
+  }
+}
+
 // Efecto hover en cards
 .cardWithShadow {
   transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
