@@ -11,9 +11,62 @@ export const navItems: NavItem[] = [
   },
 
   {
-    displayName: 'Configuración',
-    iconName: 'solar:palette-line-duotone',
-    route: '/configuracion-apariencia',
+    divider: true,
+    navCap: 'Operaciones',
+  },
+
+  {
+    displayName: 'Reservas',
+    iconName: 'solar:calendar-mark-line-duotone',
+    route: '/reservas',
+  },
+  {
+    displayName: 'Folios de Estancia',
+    iconName: 'solar:add-folder-broken',
+    route: '/folio-estancia',
+  },
+  {
+    displayName: 'Servicios Asociados',
+    iconName: 'solar:checklist-minimalistic-line-duotone',
+    route: '/servicios-asociados',
+  },
+  {
+    displayName: 'Pagos',
+    iconName: 'solar:card-2-broken',
+    route: '/pagos',
+  },
+
+  {
+    divider: true,
+    navCap: 'Gestión',
+  },
+
+  {
+    displayName: 'Hoteles',
+    iconName: 'solar:widget-add-line-duotone',
+    route: '/hoteles',
+  },
+  {
+    displayName: 'Habitaciones',
+    iconName: 'solar:home-smile-line-duotone',
+    route: '/habitaciones',
+  },
+  {
+    displayName: 'Servicios',
+    iconName: 'solar:bag-2-line-duotone',
+    route: '/servicios',
+    chip: false,
+    external: false,
+  },
+  {
+    displayName: 'Usuarios',
+    iconName: 'solar:atom-line-duotone',
+    route: '/usuarios',
+  },
+
+  {
+    divider: true,
+    navCap: 'Apps',
   },
 
   {
@@ -36,86 +89,30 @@ export const navItems: NavItem[] = [
     ],
   },
   {
-    displayName: 'Reservas',
-    iconName: 'solar:calendar-mark-line-duotone',
-    route: '/reservas',
-  },
-  {
-    displayName: 'Servicios Asociados',
-    iconName: 'solar:checklist-minimalistic-line-duotone',
-    route: '/servicios-asociados',
-  },
-  {
-    displayName: 'Pagos',
-    iconName: 'solar:card-2-broken',
-    route: '/pagos',
-  },
-  {
-    displayName: 'Folios de Estancia',
-    iconName: 'solar:add-folder-broken',
-    route: '/folio-estancia',
-  },
-  {
-    displayName: 'Usuarios',
-    iconName: 'solar:atom-line-duotone',
-    route: '/usuarios',
-  },
-  {
     displayName: 'Fidelización',
     iconName: 'solar:star-line-duotone',
     route: '/fidelizacion',
   },
   {
-    displayName: 'Auditoría',
-    iconName: 'solar:add-folder-broken',
-    route: '/auditoria',
-  },
-  {
-    displayName: 'Hoteles',
-    iconName: 'solar:widget-add-line-duotone',
-    route: '/hoteles',
-  },
-  {
-    displayName: 'Habitaciones',
+    displayName: 'Suscripciones',
     iconName: 'solar:home-smile-line-duotone',
-    route: '/habitaciones',
+    route: '/suscripcion',
   },
-
-  // {
-  //   displayName: 'Login',
-  //   iconName: 'solar:lock-keyhole-minimalistic-line-duotone',
-  //   route: '/authentication',
-  //   children: [
-  //     {
-  //       displayName: 'Login',
-  //        subItemIcon: true,
-  //       iconName: 'solar:round-alt-arrow-right-line-duotone',
-  //       route: '/authentication/login',
-  //     },
-  //     {
-  //       displayName: 'Side Login',
-  //        subItemIcon: true,
-  //       iconName: 'solar:round-alt-arrow-right-line-duotone',
-  //       route: 'https://materialm-angular-main.netlify.app/authentication/login',
-  //       external: true,
-  //       chip: true,
-  //       chipClass: 'bg-light-secondary text-secondary',
-  //       chipContent: 'PRO',
-  //     },
-  //   ],
-  // },
 
   {
-    displayName: 'Servicios',
-    iconName: 'solar:bag-2-line-duotone',
-    route: '/servicios',
-    chip: false,
-    external: false,
+    divider: true,
+    navCap: 'Administración',
   },
+
   {
     displayName: 'Roles y Permisos',
     iconName: 'solar:shield-user-line-duotone',
     route: '/roles-permisos',
+  },
+  {
+    displayName: 'Auditoría',
+    iconName: 'solar:add-folder-broken',
+    route: '/auditoria',
   },
   {
     displayName: 'Backups',
@@ -142,18 +139,43 @@ export const navItems: NavItem[] = [
       // },
     ],
   },
+  {
+    displayName: 'Configuración',
+    iconName: 'solar:palette-line-duotone',
+    route: '/configuracion-apariencia',
+  },
 
   {
     divider: true,
-    navCap: 'Apps',
+    navCap: 'Auth',
   },
-
   {
-    displayName: 'Suscripciones',
-    iconName: 'solar:home-smile-line-duotone',
-    route: '/suscripcion',
+    displayName: 'Login',
+    iconName: 'solar:lock-keyhole-minimalistic-line-duotone',
+    route: '/authentication',
+    children: [
+      {
+        displayName: 'Login',
+        subItemIcon: true,
+        iconName: 'solar:round-alt-arrow-right-line-duotone',
+        route: '/authentication/login',
+      },
+    ],
   },
-
+  {
+    displayName: 'Register',
+    iconName: 'solar:user-plus-rounded-line-duotone',
+    route: '/authentication',
+    children: [
+      {
+        displayName: 'Register',
+        subItemIcon: true,
+        iconName: 'solar:round-alt-arrow-right-line-duotone',
+        route: '/authentication/register',
+      },
+    ],
+  },
+  /*
   {
     navCap: 'Ui Components',
     divider: true,
@@ -195,11 +217,6 @@ export const navItems: NavItem[] = [
   },
 
   {
-    divider: true,
-    navCap: 'Pages',
-  },
-
-  {
     navCap: 'Extra',
     divider: true,
   },
@@ -214,34 +231,5 @@ export const navItems: NavItem[] = [
     route: '/extra/sample-page',
   },
 
-  {
-    divider: true,
-    navCap: 'Auth',
-  },
-  {
-    displayName: 'Login',
-    iconName: 'solar:lock-keyhole-minimalistic-line-duotone',
-    route: '/authentication',
-    children: [
-      {
-        displayName: 'Login',
-        subItemIcon: true,
-        iconName: 'solar:round-alt-arrow-right-line-duotone',
-        route: '/authentication/login',
-      },
-    ],
-  },
-  {
-    displayName: 'Register',
-    iconName: 'solar:user-plus-rounded-line-duotone',
-    route: '/authentication',
-    children: [
-      {
-        displayName: 'Register',
-        subItemIcon: true,
-        iconName: 'solar:round-alt-arrow-right-line-duotone',
-        route: '/authentication/register',
-      },
-    ],
-  },
+*/
 ];
