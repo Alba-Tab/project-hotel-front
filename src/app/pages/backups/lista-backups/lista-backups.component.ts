@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, inject } from '@angular/core';
+import { Component, OnInit, ViewChild, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
@@ -49,6 +49,7 @@ export class ListaBackupsComponent implements OnInit {
   private backupService = inject(BackupService);
   private snackBar = inject(MatSnackBar);
   private dialog = inject(MatDialog);
+  private cdr = inject(ChangeDetectorRef);
 
   // Tabla
   displayedColumns: string[] = [
@@ -58,7 +59,6 @@ export class ListaBackupsComponent implements OnInit {
     'tenant_schema',
     'tipo_display',
     'estado',
-    'tamaño_mb',
     'duracion_segundos',
     'acciones'
   ];
@@ -187,6 +187,15 @@ export class ListaBackupsComponent implements OnInit {
     if (this.dataSource.paginator) {
       this.dataSource.paginator.firstPage();
     }
+  }
+
+  /**
+   * Detectar cambios en filtros (para forzar actualización visual)
+   */
+  onFiltroChange(): void {
+    // Forzar detección de cambios para actualizar la vista
+    console.log('Filtros actualizados:', this.filtros);
+    this.cdr.detectChanges();
   }
 
   /**
