@@ -90,6 +90,10 @@ export class TenantRegisterComponent implements OnInit {
         console.log('✅ Plan ID asignado al formulario');
       } else {
         console.error('❌ Plan ID inválido:', this.planSeleccionado?.planId);
+        this.mostrarError(
+          'Plan inválido. Por favor seleccione un plan nuevamente.'
+        );
+        setTimeout(() => this.router.navigate(['/principal']), 2000);
       }
 
       console.log(
@@ -102,6 +106,8 @@ export class TenantRegisterComponent implements OnInit {
       );
     } else {
       console.log('⚠️ No se encontró plan seleccionado en el state');
+      this.mostrarError('Debe seleccionar un plan antes de registrarse');
+      setTimeout(() => this.router.navigate(['/principal']), 2000);
     }
   }
 
@@ -114,27 +120,37 @@ export class TenantRegisterComponent implements OnInit {
       value: this.formulario.value,
     });
 
+    // VALIDACIÓN CRÍTICA: Verificar plan_id ANTES de validación general
+    const planIdControl = this.formulario.get('plan_id');
+    const planIdValue = planIdControl?.value;
+
+    console.log('🆔 Validación de plan_id:', {
+      value: planIdValue,
+      tipo: typeof planIdValue,
+      esNumero: !isNaN(Number(planIdValue)),
+      esNull: planIdValue === null,
+      esUndefined: planIdValue === undefined,
+    });
+
+    if (!planIdValue || planIdValue === null || isNaN(Number(planIdValue))) {
+      this.mostrarError('Debe seleccionar un plan de suscripción válido');
+      this.formulario.markAllAsTouched();
+      return;
+    }
+
     if (this.formulario.invalid) {
       this.formulario.markAllAsTouched();
-
-      // Verificar específicamente el plan_id
-      const planIdControl = this.formulario.get('plan_id');
-      console.log('🆔 Estado de plan_id:', {
-        value: planIdControl?.value,
-        valid: planIdControl?.valid,
-        errors: planIdControl?.errors,
-      });
-
-      if (!planIdControl?.value) {
-        this.mostrarError('Debe seleccionar un plan de suscripción');
-      } else {
-        this.mostrarError('Por favor complete todos los campos correctamente');
-      }
+      this.mostrarError('Por favor complete todos los campos correctamente');
       return;
     }
 
     this.enviando = true;
-    const datos: TenantForm = this.formulario.value;
+
+    // Construir objeto con plan_id como número explícito
+    const datos: TenantForm = {
+      ...this.formulario.value,
+      plan_id: Number(planIdValue),
+    };
 
     console.log('📦 Datos finales a enviar:', datos);
     console.log('🆔 Plan ID específico:', datos.plan_id);
