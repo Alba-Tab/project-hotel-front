@@ -54,10 +54,12 @@ export class CuentaFidelizacionDialogComponent {
 
   cargarUsuarios() {
     this.apiService.listar<any>('usuarios').subscribe({
-      next: (data) => {
-        this.usuarios = data;
+      next: (response) => {
+        this.usuarios = this.apiService.normalizarRespuestaArray(response);
       },
       error: (err) => {
+        console.error('Error al cargar usuarios:', err);
+        this.usuarios = [];
         this.snackBar.open('Error al cargar usuarios', 'Cerrar', {
           duration: 3000,
         });

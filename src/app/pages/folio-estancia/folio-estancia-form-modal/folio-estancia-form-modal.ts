@@ -74,13 +74,14 @@ export class FolioEstanciaFormModal implements OnInit {
 
   obtenerHuespedes(): void {
     this.cargandoHuespedes = true;
-    this.apiService.listar<any[]>('usuarios').subscribe({
-      next: (huespedes) => {
-        this.huespedes = huespedes || [];
+    this.apiService.listar<any>('usuarios').subscribe({
+      next: (response) => {
+        this.huespedes = this.apiService.normalizarRespuestaArray(response);
         this.cargandoHuespedes = false;
       },
       error: (error) => {
         console.error('Error al cargar huéspedes:', error);
+        this.huespedes = [];
         this.cargandoHuespedes = false;
       },
     });
@@ -88,9 +89,9 @@ export class FolioEstanciaFormModal implements OnInit {
 
   obtenerReservas(): void {
     this.cargandoReservas = true;
-    this.apiService.listar<any[]>('reservas').subscribe({
-      next: (reservas) => {
-        this.reservas = reservas || [];
+    this.apiService.listar<any>('reservas').subscribe({
+      next: (response) => {
+        this.reservas = this.apiService.normalizarRespuestaArray(response);
         this.cargandoReservas = false;
       },
       error: (error) => {

@@ -71,6 +71,8 @@ export class PagosFormModal implements OnInit {
     public dialogRef: MatDialogRef<PagosFormModal>,
     @Inject(MAT_DIALOG_DATA) public data: any
   ) {
+    console.log('🔍 PagosFormModal - Datos recibidos:', this.data);
+
     this.pagoForm = this.fb.group({
       monto: [0, [Validators.required, Validators.min(0.01)]],
       metodo: ['', Validators.required],
@@ -83,8 +85,34 @@ export class PagosFormModal implements OnInit {
   ngOnInit(): void {
     this.obtenerUsuarios();
 
+    // ✅ Modo edición: cargar datos del pago existente
+    if (this.data?.isEdit && this.data?.pago) {
+      console.log('✏️ MODO EDICIÓN - Cargando pago:', this.data.pago);
+      this.isEdit = true;
+      const pago = this.data.pago;
+
+      // Cargar datos del pago en el formulario
+      this.pagoForm.patchValue({
+        monto: pago.monto || 0,
+        metodo: pago.metodo || '',
+        referencia: pago.referencia || '',
+        folio_id: pago.folio || pago.folio_id || '',
+        monto_descuento: pago.monto_descuento || 0,
+      });
+
+      console.log('📝 Formulario cargado con valores:', this.pagoForm.value);
+
+      // Si tiene información del folio, cargarla
+      if (pago.folio || pago.folio_id) {
+        this.folioSeleccionado = {
+          id: pago.folio || pago.folio_id,
+          display: `Folio #${pago.folio || pago.folio_id}`,
+        };
+        this.folios = [this.folioSeleccionado];
+      }
+    }
     // ✅ Si viene con folio precargado desde folio-estancia
-    if (this.data?.folioPrecargado) {
+    else if (this.data?.folioPrecargado) {
       const folioPrecargado = this.data.folioPrecargado;
 
       // Simular usuario seleccionado
@@ -125,14 +153,16 @@ export class PagosFormModal implements OnInit {
   /** Cargar usuarios desde la API */
   obtenerUsuarios(): void {
     this.cargandoUsuarios = true;
-    this.apiService.listar<any[]>('usuarios').subscribe({
-      next: (usuarios) => {
-        this.usuarios = usuarios || [];
+    this.apiService.listar<any>('usuarios').subscribe({
+      next: (response) => {
+        this.usuarios = this.apiService.normalizarRespuestaArray(response);
         this.usuariosFiltrados = [...this.usuarios];
         this.cargandoUsuarios = false;
       },
       error: (error) => {
         console.error('Error al cargar usuarios:', error);
+        this.usuarios = [];
+        this.usuariosFiltrados = [];
         this.cargandoUsuarios = false;
       },
     });
@@ -368,5 +398,25 @@ export class PagosFormModal implements OnInit {
       folio_id: 'El folio',
     };
     return labels[nombreCampo] || nombreCampo;
+  }
+
+  /** Obtener título del modal */
+  getTitle(): string {
+    return this.isEdit ? 'Editar Pago' : 'Crear Pago';
+  }
+
+  /** Obtener texto del botón */
+  getButtonText(): string {
+    return this.isEdit ? 'Actualizar Pago' : 'Crear Pago';
+  }
+
+  /** Obtener icono del título */
+  getTitleIcon(): string {
+    return this.isEdit ? 'edit' : 'add';
+  }
+
+  /** Obtener icono del botón */
+  getButtonIcon(): string {
+    return this.isEdit ? 'save' : 'add';
   }
 }

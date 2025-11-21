@@ -78,8 +78,8 @@ export class CrearHotelComponent {
       const hotel: Hotel = this.hotelForm.value;
 
       const operation = this.isEditMode
-        ? this.apiService.actualizar('hoteles',this.hotelId!, hotel)
-        : this.apiService.crear('hoteles', hotel);
+        ? this.apiService.actualizar('hoteles/hoteles',this.hotelId!, hotel)
+        : this.apiService.crear('hoteles/hoteles', hotel);
 
       operation.subscribe({
         next: (response) => {

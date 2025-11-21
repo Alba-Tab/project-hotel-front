@@ -118,7 +118,6 @@
           <mat-label>Selecciona una habitación</mat-label>
           <mat-select
             formControlName="habitacion"
-            [disabled]="!reservaForm.get('hotel')?.value"
           >
             <mat-option *ngIf="cargandoHabitaciones" disabled
               >Cargando habitaciones...</mat-option

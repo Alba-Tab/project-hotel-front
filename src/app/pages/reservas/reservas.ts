@@ -63,8 +63,9 @@ export class Reservas implements OnInit {
 
   cargarDatos(): void {
     this.loading = true;
-    this.apiService.listar<any[]>('reservas').subscribe({
-      next: (reservas) => {
+    this.apiService.listar<any>('reservas').subscribe({
+      next: (response) => {
+        const reservas = this.apiService.normalizarRespuestaArray(response);
         this.reservas$.next(reservas);
         this.reservasFiltradas = reservas;
         this.loading = false;
@@ -172,30 +173,31 @@ export class Reservas implements OnInit {
   }
 
   abrirModalReportes(): void {
-  const dialogRef = this.dialog.open(Reportes, {
-    width: '800px',
-    maxHeight: '90vh',
-    panelClass: 'custom-dialog-container',
-    disableClose: false
-  });
+    const dialogRef = this.dialog.open(Reportes, {
+      width: '800px',
+      maxHeight: '90vh',
+      panelClass: 'custom-dialog-container',
+      disableClose: false,
+    });
 
-  dialogRef.afterClosed().subscribe((result) => {
-    if (result) {
-      console.log('Reporte generado exitosamente');
-    }
-  });
-}
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        console.log('Reporte generado exitosamente');
+      }
+    });
+  }
 
   // Métodos para Check-In/Check-Out
   puedeHacerCheckIn(reserva: any): boolean {
-    return (
-      reserva.estado?.toLowerCase() === 'confirmada' && !reserva.checkin
-    );
+    return reserva.estado?.toLowerCase() === 'confirmada' && !reserva.checkin;
   }
 
   puedeHacerCheckOut(reserva: any): boolean {
-    return reserva.checkin && reserva.checkin.fecha_checkin &&
-           (!reserva.checkout || !reserva.checkout.fecha_checkout);
+    return (
+      reserva.checkin &&
+      reserva.checkin.fecha_checkin &&
+      (!reserva.checkout || !reserva.checkout.fecha_checkout)
+    );
   }
 
   tieneCheckIn(reserva: any): boolean {
@@ -242,18 +244,18 @@ export class Reservas implements OnInit {
   realizarCheckIn(datos: any): void {
     console.log('🔄 Realizando Check-In con datos:', datos);
     this.loading = true;
-    
+
     // Crear FormData para enviar la foto
     const formData = new FormData();
     formData.append('reserva_id', datos.reserva_id);
     formData.append('fecha_checkin', datos.fecha_checkin);
     formData.append('hora_checkin', datos.hora_checkin);
     formData.append('observaciones', datos.observaciones || '');
-    
+
     if (datos.photo_checkin) {
       formData.append('photo_checkin', datos.photo_checkin);
     }
-    
+
     this.apiService.crear('checkinout/checkin', formData).subscribe({
       next: () => {
         console.log('✅ Check-In realizado correctamente');
@@ -264,7 +266,10 @@ export class Reservas implements OnInit {
       },
       error: (error) => {
         console.error('❌ Error al realizar check-in:', error);
-        const mensaje = error?.error?.detail || error?.error?.non_field_errors?.[0] || 'Error al realizar el check-in';
+        const mensaje =
+          error?.error?.detail ||
+          error?.error?.non_field_errors?.[0] ||
+          'Error al realizar el check-in';
         this.snackBar.open(mensaje, 'Cerrar', { duration: 4000 });
         this.loading = false;
       },

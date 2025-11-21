@@ -88,11 +88,23 @@ export class ReservasFormModal {
     this.obtenerHuespedes();
     this.obtenerHoteles();
 
+    // Deshabilitar habitación inicialmente si no hay hotel seleccionado
+    if (!this.reservaForm.get('hotel')?.value) {
+      this.reservaForm.get('habitacion')?.disable();
+    }
+
     // Escuchar cambios en el hotel para filtrar habitaciones
     this.reservaForm.get('hotel')?.valueChanges.subscribe((hotelId) => {
       this.filtrarHabitacionesPorHotel(hotelId);
       // Limpiar selección de habitación cuando cambia el hotel
       this.reservaForm.get('habitacion')?.setValue('');
+      
+      // Habilitar o deshabilitar el control de habitación según si hay hotel seleccionado
+      if (hotelId) {
+        this.reservaForm.get('habitacion')?.enable();
+      } else {
+        this.reservaForm.get('habitacion')?.disable();
+      }
     });
 
     if (this.isEdit && this.data?.reserva) {
@@ -152,13 +164,14 @@ export class ReservasFormModal {
     //const params = { inicio, fin }; // query params
     //console.log(params);
     this.cargandoHabitaciones = true;
-    this.apiService.listar<any[]>('habitaciones').subscribe({
-      next: (habitaciones) => {
-        this.habitaciones = habitaciones || [];
+    this.apiService.listar<any>('habitaciones').subscribe({
+      next: (response) => {
+        this.habitaciones = this.apiService.normalizarRespuestaArray(response);
         this.cargandoHabitaciones = false;
       },
       error: (error) => {
         console.error('Error al cargar habitaciones:', error);
+        this.habitaciones = [];
         this.cargandoHabitaciones = false;
       },
     });
@@ -167,13 +180,14 @@ export class ReservasFormModal {
   /** Cargar huéspedes desde la API */
   obtenerHuespedes(): void {
     this.cargandoHuespedes = true;
-    this.apiService.listar<any[]>('usuarios').subscribe({
-      next: (huespedes) => {
-        this.huespedes = huespedes || [];
+    this.apiService.listar<any>('usuarios').subscribe({
+      next: (response) => {
+        this.huespedes = this.apiService.normalizarRespuestaArray(response);
         this.cargandoHuespedes = false;
       },
       error: (error) => {
         console.error('Error al cargar huéspedes:', error);
+        this.huespedes = [];
         this.cargandoHuespedes = false;
       },
     });
@@ -182,13 +196,14 @@ export class ReservasFormModal {
   /** Cargar hoteles desde la API */
   obtenerHoteles(): void {
     this.cargandoHoteles = true;
-    this.apiService.listar<any[]>('hoteles').subscribe({
-      next: (hoteles) => {
-        this.hoteles = hoteles || [];
+    this.apiService.listar<any>('hoteles/hoteles').subscribe({
+      next: (response) => {
+        this.hoteles = this.apiService.normalizarRespuestaArray(response);
         this.cargandoHoteles = false;
       },
       error: (error) => {
         console.error('Error al cargar hoteles:', error);
+        this.hoteles = [];
         this.cargandoHoteles = false;
       },
     });
@@ -227,8 +242,14 @@ export class ReservasFormModal {
 
   /** Enviar formulario (crear/actualizar) */
   enviarFormulario(): void {
+    // Habilitar temporalmente el campo habitacion para validación
+    const habitacionDisabled = this.reservaForm.get('habitacion')?.disabled;
+    if (habitacionDisabled) {
+      this.reservaForm.get('habitacion')?.enable();
+    }
+
     if (this.reservaForm.valid) {
-      // incluir controles deshabilitados (total)
+      // incluir controles deshabilitados (total y habitacion si estaba deshabilitado)
       const raw = this.reservaForm.getRawValue();
 
       const payload = {
@@ -244,6 +265,11 @@ export class ReservasFormModal {
       this.dialogRef.close(payload);
     } else {
       this.marcarCamposTocados();
+      
+      // Restaurar el estado deshabilitado si era necesario
+      if (habitacionDisabled && !this.reservaForm.get('hotel')?.value) {
+        this.reservaForm.get('habitacion')?.disable();
+      }
     }
   }
 

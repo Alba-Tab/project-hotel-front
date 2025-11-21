@@ -104,4 +104,27 @@ export class ApiService {
 
     return httpParams;
   }
+
+  /**
+   * Normalizar respuesta de API que puede venir como array o objeto con 'results'/'data'
+   * 
+   * @param response - Respuesta de la API
+   * @returns Array normalizado
+   */
+  public normalizarRespuestaArray<T = any>(response: any): T[] {
+    if (Array.isArray(response)) {
+      return response;
+    }
+    
+    if (response?.results && Array.isArray(response.results)) {
+      return response.results;
+    }
+    
+    if (response?.data && Array.isArray(response.data)) {
+      return response.data;
+    }
+    
+    console.warn('Respuesta en formato inesperado (no es array):', response);
+    return [];
+  }
 }

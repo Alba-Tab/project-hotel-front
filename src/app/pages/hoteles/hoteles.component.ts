@@ -69,7 +69,8 @@ export class HotelesComponent {
 
   cargarHoteles() {
     this.apiService.listar('hoteles/hoteles/').subscribe({
-      next: (hoteles: any) => {
+      next: (response: any) => {
+        const hoteles = this.apiService.normalizarRespuestaArray(response);
         this.dataSource1 = hoteles.map((hotel:any) => ({
           ...hotel,
           nombre: hotel.nombre,
@@ -105,7 +106,7 @@ export class HotelesComponent {
   eliminarHotel(hotel: Hotel) {
     if (confirm('¿Estás seguro de eliminar este hotel?')) {
       if (hotel.id) {
-        this.apiService.eliminar('hoteles',hotel.id).subscribe({
+        this.apiService.eliminar('hoteles/hoteles',hotel.id).subscribe({
           next: () => {
             this.cargarHoteles(); // Recargar la lista
           },

@@ -5,7 +5,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { PagosService } from 'src/app/services/pagos_service';
 import { ApiService } from 'src/app/services/api.service';
-import { MaterialModule } from "src/app/material.module";
+import { MaterialModule } from 'src/app/material.module';
 import { PagosFormModal } from './pagos-form-modal/pagos-form-modal';
 
 import { ReportesPagos } from './reportes-pagos/reportes-pagos';
@@ -15,7 +15,7 @@ import { ReportesPagos } from './reportes-pagos/reportes-pagos';
   standalone: true,
   imports: [CommonModule, FormsModule, MaterialModule],
   templateUrl: './pagos.html',
-  styleUrls: ['./pagos.scss']
+  styleUrls: ['./pagos.scss'],
 })
 export class PagosComponent implements OnInit {
   pagos: any[] = [];
@@ -32,7 +32,7 @@ export class PagosComponent implements OnInit {
     'fecha_pago',
     'referencia',
     'folio_id',
-    'acciones'
+    'acciones',
   ];
 
   nuevoPago = {
@@ -41,7 +41,7 @@ export class PagosComponent implements OnInit {
     metodo: '',
     monto: 0,
     referencia: '',
-    folio_estancia: null
+    folio_estancia: null,
   };
 
   constructor(
@@ -73,7 +73,7 @@ export class PagosComponent implements OnInit {
   abrirModalCrear(): void {
     const dialogRef = this.dialog.open(PagosFormModal, {
       width: '600px',
-      data: { isEdit: false }
+      data: { isEdit: false },
     });
 
     dialogRef.afterClosed().subscribe((payload) => {
@@ -86,7 +86,7 @@ export class PagosComponent implements OnInit {
   abrirModalEditar(pago: any): void {
     const dialogRef = this.dialog.open(PagosFormModal, {
       width: '600px',
-      data: { isEdit: true, pago }
+      data: { isEdit: true, pago },
     });
 
     dialogRef.afterClosed().subscribe((payload) => {
@@ -97,26 +97,28 @@ export class PagosComponent implements OnInit {
   }
 
   abrirModalEliminar(pago: any): void {
-    const confirmacion = confirm(`¿Estás seguro de eliminar el pago #${pago.id}?`);
+    const confirmacion = confirm(
+      `¿Estás seguro de eliminar el pago #${pago.id}?`
+    );
     if (confirmacion) {
       this.eliminarPago(pago.id);
     }
   }
 
   abrirModalReportes(): void {
-  const dialogRef = this.dialog.open(ReportesPagos, {
-    width: '750px',
-    maxHeight: '90vh',
-    panelClass: 'custom-dialog-container',
-    disableClose: false
-  });
+    const dialogRef = this.dialog.open(ReportesPagos, {
+      width: '750px',
+      maxHeight: '90vh',
+      panelClass: 'custom-dialog-container',
+      disableClose: false,
+    });
 
-  dialogRef.afterClosed().subscribe((result) => {
-    if (result) {
-      console.log('Reporte de pagos generado exitosamente');
-    }
-  });
-}
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        console.log('Reporte de pagos generado exitosamente');
+      }
+    });
+  }
 
   getEstadoColor(pago: any): string {
     switch (pago.estado?.toLowerCase()) {
@@ -138,7 +140,11 @@ export class PagosComponent implements OnInit {
     if (!fechaISO) return new Date();
 
     // Si ya tiene información de zona horaria, crear la fecha directamente
-    if (fechaISO.includes('Z') || fechaISO.includes('+') || fechaISO.includes('-')) {
+    if (
+      fechaISO.includes('Z') ||
+      fechaISO.includes('+') ||
+      fechaISO.includes('-')
+    ) {
       return new Date(fechaISO);
     }
 
@@ -152,16 +158,16 @@ export class PagosComponent implements OnInit {
     this.apiServices.crear('pagos', pagoData).subscribe({
       next: () => {
         this.snackBar.open('Pago creado correctamente', 'Cerrar', {
-          duration: 3000
+          duration: 3000,
         });
         this.loadPagos();
       },
       error: (err) => {
         console.error(err);
         this.snackBar.open('Error al crear el pago', 'Cerrar', {
-          duration: 3000
+          duration: 3000,
         });
-      }
+      },
     });
   }
 
@@ -169,16 +175,16 @@ export class PagosComponent implements OnInit {
     this.apiServices.actualizar('pagos', id, payload).subscribe({
       next: () => {
         this.snackBar.open('Pago actualizado correctamente', 'Cerrar', {
-          duration: 3000
+          duration: 3000,
         });
         this.loadPagos();
       },
       error: (err) => {
         console.error(err);
         this.snackBar.open('Error al actualizar el pago', 'Cerrar', {
-          duration: 3000
+          duration: 3000,
         });
-      }
+      },
     });
   }
 
@@ -186,16 +192,16 @@ export class PagosComponent implements OnInit {
     this.apiServices.eliminar('pagos', id).subscribe({
       next: () => {
         this.snackBar.open('Pago eliminado correctamente', 'Cerrar', {
-          duration: 3000
+          duration: 3000,
         });
         this.loadPagos();
       },
       error: (err) => {
         console.error(err);
         this.snackBar.open('Error al eliminar el pago', 'Cerrar', {
-          duration: 3000
+          duration: 3000,
         });
-      }
+      },
     });
   }
 }

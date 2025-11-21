@@ -33,6 +33,35 @@ export class ListaRecomendacionesComponent implements OnInit {
 
   ngOnInit(): void {
     this.cargarRecomendaciones();
+    this.cargarHistorialReciente();
+  }
+
+  /**
+   * Cargar catálogo de habitaciones
+   */
+  cargarHabitaciones(): void {
+    this.apiService.listar('habitaciones/').subscribe({
+      next: (response: any) => {
+        const habArray = this.apiService.normalizarRespuestaArray(response);
+        habArray.forEach((hab: any) => {
+          this.habitacionesMap.set(hab.id, hab);
+        });
+        console.log('🏨 Habitaciones cargadas:', this.habitacionesMap.size);
+        console.log('🔑 IDs de habitaciones disponibles:', Array.from(this.habitacionesMap.keys()));
+
+        // Mostrar algunas habitaciones de ejemplo
+        const primerasCinco = habArray.slice(0, 5);
+        console.log('📋 Primeras 5 habitaciones:', primerasCinco.map((h: any) => ({
+          id: h.id,
+          numero: h.numero,
+          descripcion: h.descripcion,
+          precio: h.precio_noche
+        })));
+      },
+      error: (error: any) => {
+        console.error('❌ Error al cargar habitaciones:', error);
+      }
+    });
   }
 
   /**
