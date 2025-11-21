@@ -14,16 +14,31 @@
           <h1 class="header-title m-0">Sistema de Gestión Hotelera</h1>
         </div>
 
-        <!-- Botón de Iniciar Sesión -->
-        <a
-          [routerLink]="['/authentication/login']"
-          mat-raised-button
-          color="primary"
-          class="login-button"
-        >
-          <mat-icon class="m-r-8">login</mat-icon>
-          Iniciar Sesión
-        </a>
+        <div class="d-flex align-items-center gap-3">
+          <!-- Botón de Guía de Instalación -->
+          <a
+            href="https://www.youtube.com/watch?v=X8yFaAc4uGw&list=PLe6r52zQxY2W6BdTPB0CxyVeFfoh6qBh5"
+            target="_blank"
+            rel="noopener noreferrer"
+            mat-stroked-button
+            color="accent"
+            class="guide-button"
+          >
+            <mat-icon class="m-r-8">play_circle</mat-icon>
+            Guía de Instalación
+          </a>
+
+          <!-- Botón de Iniciar Sesión -->
+          <a
+            [routerLink]="['/authentication/login']"
+            mat-raised-button
+            color="primary"
+            class="login-button"
+          >
+            <mat-icon class="m-r-8">login</mat-icon>
+            Iniciar Sesión
+          </a>
+        </div>
       </div>
     </div>
   </header>
