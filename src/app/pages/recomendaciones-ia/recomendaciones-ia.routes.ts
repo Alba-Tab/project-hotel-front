@@ -16,13 +16,7 @@ export const RecomendacionesIARoutes: Routes = [
             (m) => m.ListaRecomendacionesComponent
           )
       },
-      {
-        path: 'historial',
-        loadComponent: () =>
-          import('./historial-recomendaciones/historial-recomendaciones.component').then(
-            (m) => m.HistorialRecomendacionesComponent
-          )
-      }
+      
     ]
   }
 ];
