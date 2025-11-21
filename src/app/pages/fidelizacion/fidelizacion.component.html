@@ -1,0 +1,211 @@
+<mat-card class="cardWithShadow">
+  <mat-card-content>
+    <mat-card-title>Gestión de Fidelización</mat-card-title>
+
+    <mat-tab-group>
+      <!-- Pestaña de Programas -->
+      <mat-tab label="Programas de Fidelización">
+        <div class="tab-content">
+          <div class="action-buttons m-b-16 m-t-16">
+            <button
+              mat-raised-button
+              color="primary"
+              (click)="agregarPrograma()"
+            >
+              <mat-icon>add</mat-icon>
+              Agregar Programa
+            </button>
+          </div>
+
+          <div class="table-responsive">
+            <table mat-table [dataSource]="programas()" class="w-100">
+              <ng-container matColumnDef="nombre">
+                <th mat-header-cell *matHeaderCellDef class="f-w-600 f-s-14">
+                  Nombre
+                </th>
+                <td mat-cell *matCellDef="let programa">
+                  {{ programa.nombre }}
+                </td>
+              </ng-container>
+
+              <ng-container matColumnDef="descripcion">
+                <th mat-header-cell *matHeaderCellDef class="f-w-600 f-s-14">
+                  Descripción
+                </th>
+                <td mat-cell *matCellDef="let programa">
+                  {{ programa.descripcion }}
+                </td>
+              </ng-container>
+
+              <ng-container matColumnDef="descuento_maximo">
+                <th mat-header-cell *matHeaderCellDef class="f-w-600 f-s-14">
+                  Descuento Máximo
+                </th>
+                <td mat-cell *matCellDef="let programa">
+                  {{ programa.descuento_maximo }}%
+                </td>
+              </ng-container>
+
+              <ng-container matColumnDef="puntos_por_dolar">
+                <th mat-header-cell *matHeaderCellDef class="f-w-600 f-s-14">
+                  Puntos por $
+                </th>
+                <td mat-cell *matCellDef="let programa">
+                  {{ programa.puntos_por_dolar_descuento }}
+                </td>
+              </ng-container>
+
+              <ng-container matColumnDef="activo">
+                <th mat-header-cell *matHeaderCellDef class="f-w-600 f-s-14">
+                  Estado
+                </th>
+                <td mat-cell *matCellDef="let programa">
+                  <span
+                    [class]="programa.activo ? 'badge-success' : 'badge-error'"
+                  >
+                    {{ programa.activo ? "Activo" : "Inactivo" }}
+                  </span>
+                </td>
+              </ng-container>
+
+              <ng-container matColumnDef="acciones">
+                <th mat-header-cell *matHeaderCellDef class="f-w-600 f-s-14">
+                  Acciones
+                </th>
+                <td mat-cell *matCellDef="let programa">
+                  <button
+                    mat-icon-button
+                    color="accent"
+                    (click)="editarPrograma(programa)"
+                    matTooltip="Editar"
+                  >
+                    <mat-icon>edit</mat-icon>
+                  </button>
+                  <button
+                    mat-icon-button
+                    color="warn"
+                    (click)="eliminarPrograma(programa.id)"
+                    matTooltip="Eliminar"
+                  >
+                    <mat-icon>delete</mat-icon>
+                  </button>
+                </td>
+              </ng-container>
+
+              <tr
+                mat-header-row
+                *matHeaderRowDef="displayedColumnsProgramas"
+              ></tr>
+              <tr
+                mat-row
+                *matRowDef="let row; columns: displayedColumnsProgramas"
+              ></tr>
+            </table>
+          </div>
+        </div>
+      </mat-tab>
+
+      <!-- Pestaña de Cuentas de Fidelización -->
+      <mat-tab label="Cuentas de Usuarios">
+        <div class="tab-content">
+          <div class="action-buttons m-b-16 m-t-16">
+            <button mat-raised-button color="primary" (click)="agregarCuenta()">
+              <mat-icon>add</mat-icon>
+              Crear Cuenta de Fidelización
+            </button>
+          </div>
+
+          <div class="table-responsive">
+            <table mat-table [dataSource]="cuentas()" class="w-100">
+              <ng-container matColumnDef="cliente">
+                <th mat-header-cell *matHeaderCellDef class="f-w-600 f-s-14">
+                  Cliente
+                </th>
+                <td mat-cell *matCellDef="let cuenta">
+                  {{ cuenta.cliente_info?.first_name }}
+                  {{ cuenta.cliente_info?.last_name }}
+                  <br />
+                  <small class="text-muted">{{
+                    cuenta.cliente_info?.email
+                  }}</small>
+                </td>
+              </ng-container>
+
+              <ng-container matColumnDef="programa">
+                <th mat-header-cell *matHeaderCellDef class="f-w-600 f-s-14">
+                  Programa
+                </th>
+                <td mat-cell *matCellDef="let cuenta">
+                  {{ cuenta.programa_info?.nombre }}
+                </td>
+              </ng-container>
+
+              <ng-container matColumnDef="puntos">
+                <th mat-header-cell *matHeaderCellDef class="f-w-600 f-s-14">
+                  Puntos Acumulados
+                </th>
+                <td mat-cell *matCellDef="let cuenta">
+                  <span class="badge-info"
+                    >{{ cuenta.puntos_acumulados }} pts</span
+                  >
+                </td>
+              </ng-container>
+
+              <ng-container matColumnDef="descuento_disponible">
+                <th mat-header-cell *matHeaderCellDef class="f-w-600 f-s-14">
+                  Descuento Disponible
+                </th>
+                <td mat-cell *matCellDef="let cuenta">
+                  <span class="badge-success"
+                    >${{ cuenta.descuento_disponible | number : "1.2-2" }}</span
+                  >
+                </td>
+              </ng-container>
+
+              <ng-container matColumnDef="acciones">
+                <th mat-header-cell *matHeaderCellDef class="f-w-600 f-s-14">
+                  Acciones
+                </th>
+                <td mat-cell *matCellDef="let cuenta">
+                  <button
+                    mat-icon-button
+                    color="primary"
+                    (click)="acumularPuntos(cuenta)"
+                    matTooltip="Acumular Puntos"
+                  >
+                    <mat-icon>add_circle</mat-icon>
+                  </button>
+                  <button
+                    mat-icon-button
+                    color="accent"
+                    (click)="canjearPuntos(cuenta)"
+                    matTooltip="Canjear Puntos"
+                  >
+                    <mat-icon>redeem</mat-icon>
+                  </button>
+                  <button
+                    mat-icon-button
+                    color="warn"
+                    (click)="eliminarCuenta(cuenta.id)"
+                    matTooltip="Eliminar"
+                  >
+                    <mat-icon>delete</mat-icon>
+                  </button>
+                </td>
+              </ng-container>
+
+              <tr
+                mat-header-row
+                *matHeaderRowDef="displayedColumnsCuentas"
+              ></tr>
+              <tr
+                mat-row
+                *matRowDef="let row; columns: displayedColumnsCuentas"
+              ></tr>
+            </table>
+          </div>
+        </div>
+      </mat-tab>
+    </mat-tab-group>
+  </mat-card-content>
+</mat-card>

@@ -2,15 +2,43 @@
   <!-- Header Simple -->
   <header class="simple-header">
     <div class="container-fluid p-y-24">
-      <div class="d-flex align-items-center justify-content-center">
-        <img
-          src="./assets/images/logos/logo-empresa.svg"
-          class="header-logo m-r-16"
-          alt="Sistema de Gestión Hotelera"
-          width="100"
-          height="100"
-        />
-        <h1 class="header-title m-0">Sistema de Gestión Hotelera</h1>
+      <div class="d-flex align-items-center justify-content-between">
+        <div class="d-flex align-items-center">
+          <img
+            src="./assets/images/logos/logo-empresa.svg"
+            class="header-logo m-r-16"
+            alt="Sistema de Gestión Hotelera"
+            width="100"
+            height="100"
+          />
+          <h1 class="header-title m-0">Sistema de Gestión Hotelera</h1>
+        </div>
+
+        <div class="d-flex align-items-center gap-3">
+          <!-- Botón de Guía de Instalación -->
+          <a
+            href="https://www.youtube.com/watch?v=X8yFaAc4uGw&list=PLe6r52zQxY2W6BdTPB0CxyVeFfoh6qBh5"
+            target="_blank"
+            rel="noopener noreferrer"
+            mat-stroked-button
+            color="accent"
+            class="guide-button"
+          >
+            <mat-icon class="m-r-8">play_circle</mat-icon>
+            Guía de Instalación
+          </a>
+
+          <!-- Botón de Iniciar Sesión -->
+          <a
+            [routerLink]="['/authentication/login']"
+            mat-raised-button
+            color="primary"
+            class="login-button"
+          >
+            <mat-icon class="m-r-8">login</mat-icon>
+            Iniciar Sesión
+          </a>
+        </div>
       </div>
     </div>
   </header>
@@ -76,63 +104,47 @@
             </p>
           </div>
 
+          <!-- Estado de Carga -->
+          @if(cargando) {
+          <div class="text-center p-y-64">
+            <mat-spinner diameter="64" color="primary"></mat-spinner>
+            <p class="mat-body-1 text-muted m-t-24">Cargando planes...</p>
+          </div>
+          } @else if(error) {
+          <div class="text-center p-y-64">
+            <mat-icon class="icon-48 text-danger m-b-16"
+              >error_outline</mat-icon
+            >
+            <p class="mat-body-1 text-muted m-b-24">
+              No se pudieron cargar los planes de suscripción
+            </p>
+            <button mat-raised-button color="primary" (click)="cargarPlanes()">
+              <mat-icon>refresh</mat-icon>
+              Reintentar
+            </button>
+          </div>
+          } @else if(planes.length === 0) {
+          <div class="text-center p-y-64">
+            <mat-icon class="icon-48 text-muted m-b-16">inbox</mat-icon>
+            <p class="mat-body-1 text-muted">
+              No hay planes disponibles en este momento
+            </p>
+          </div>
+          } @else {
+          <!-- Tarjetas de Planes -->
           <div class="row justify-content-center">
-            @for(plan of plans; track plan.name) {
+            @for(plan of planes; track plan.nombre; let i = $index) {
             <div class="col-lg-4 col-md-6 m-b-24">
-              <mat-card
-                class="cardWithShadow h-100 position-relative"
-                [ngClass]="{ 'highlighted-plan': plan.highlighted }"
-              >
-                @if(plan.highlighted) {
-                <div class="ribbon bg-primary text-white">
-                  <span class="f-s-12 f-w-600">MÁS POPULAR</span>
-                </div>
-                }
-
-                <mat-card-content class="p-32">
-                  <div class="text-center">
-                    <h3 class="mat-headline-6 m-b-16">{{ plan.name }}</h3>
-                    <div class="m-b-24">
-                      <span
-                        class="mat-headline-3 f-w-700"
-                        [style.color]="'var(--mat-sys-' + plan.color + ')'"
-                      >
-                        ${{ plan.price }}
-                      </span>
-                      <span class="mat-body-1 text-muted"
-                        >/ {{ plan.period }}</span
-                      >
-                    </div>
-                  </div>
-
-                  <div class="m-b-24">
-                    @for(feature of plan.features; track feature) {
-                    <div class="d-flex align-items-start m-b-12">
-                      <mat-icon
-                        [color]="plan.color"
-                        class="icon-20 m-r-8"
-                        style="margin-top: 2px"
-                      >
-                        check_circle
-                      </mat-icon>
-                      <span class="mat-body-2">{{ feature }}</span>
-                    </div>
-                    }
-                  </div>
-
-                  <button
-                    mat-flat-button
-                    [color]="plan.highlighted ? 'primary' : 'accent'"
-                    class="w-100"
-                    (click)="goToRegister()"
-                  >
-                    Suscribirse
-                  </button>
-                </mat-card-content>
-              </mat-card>
+              <app-subscription-card
+                [plan]="plan"
+                [highlighted]="esPlanDestacado(i)"
+                [color]="obtenerColorPlan(i)"
+                (varianteSeleccionada)="onVarianteSeleccionada($event)"
+              ></app-subscription-card>
             </div>
             }
           </div>
+          }
         </div>
       </div>
     </div>

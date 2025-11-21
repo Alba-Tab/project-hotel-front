@@ -1,0 +1,205 @@
+<div class="check-in-out-modal">
+  <h2 mat-dialog-title class="d-flex align-items-center gap-2">
+    <mat-icon>{{ isCheckOut ? 'logout' : 'login' }}</mat-icon>
+    <span>{{ isCheckOut ? 'Check-Out' : 'Check-In' }}</span>
+  </h2>
+
+  <mat-dialog-content>
+    <div class="reserva-info mb-3 p-3 bg-light rounded">
+      <h6 class="mb-2"><strong>Información de la Reserva</strong></h6>
+      <div class="row">
+        <div class="col-md-6">
+          <p class="mb-1">
+            <strong>Huésped:</strong> {{ reserva.nombre_huesped }}
+          </p>
+          <p class="mb-1">
+            <strong>Habitación:</strong> {{ reserva.nro_habitacion }}
+          </p>
+        </div>
+        <div class="col-md-6">
+          <p class="mb-1">
+            <strong>Entrada:</strong> {{ reserva.fecha_entrada | date:'short' }}
+          </p>
+          <p class="mb-1">
+            <strong>Salida:</strong> {{ reserva.fecha_salida | date:'short' }}
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <form [formGroup]="form">
+      <!-- Check-In Fields -->
+      <div class="row mb-3">
+        <div class="col-md-6">
+          <mat-form-field appearance="outline" class="w-100">
+            <mat-label>Fecha de Check-In</mat-label>
+            <input
+              matInput
+              [matDatepicker]="checkinDatePicker"
+              formControlName="fecha_checkin"
+              placeholder="Seleccionar fecha"
+            />
+            <mat-datepicker-toggle
+              matIconSuffix
+              [for]="checkinDatePicker"
+            ></mat-datepicker-toggle>
+            <mat-datepicker #checkinDatePicker></mat-datepicker>
+            <mat-error *ngIf="form.get('fecha_checkin')?.hasError('required')">
+              La fecha de check-in es requerida
+            </mat-error>
+          </mat-form-field>
+        </div>
+        <div class="col-md-6">
+          <mat-form-field appearance="outline" class="w-100">
+            <mat-label>Hora de Check-In</mat-label>
+            <input
+              matInput
+              type="time"
+              formControlName="hora_checkin"
+              placeholder="00:00"
+            />
+            <mat-icon matPrefix>access_time</mat-icon>
+            <mat-error *ngIf="form.get('hora_checkin')?.hasError('required')">
+              La hora de check-in es requerida
+            </mat-error>
+          </mat-form-field>
+        </div>
+      </div>
+
+      <!-- Check-Out Fields (solo si isCheckOut es true) -->
+      <div *ngIf="isCheckOut" class="row mb-3">
+        <div class="col-md-6">
+          <mat-form-field appearance="outline" class="w-100">
+            <mat-label>Fecha de Check-Out</mat-label>
+            <input
+              matInput
+              [matDatepicker]="checkoutDatePicker"
+              formControlName="fecha_checkout"
+              placeholder="Seleccionar fecha"
+            />
+            <mat-datepicker-toggle
+              matIconSuffix
+              [for]="checkoutDatePicker"
+            ></mat-datepicker-toggle>
+            <mat-datepicker #checkoutDatePicker></mat-datepicker>
+            <mat-error *ngIf="form.get('fecha_checkout')?.hasError('required')">
+              La fecha de check-out es requerida
+            </mat-error>
+          </mat-form-field>
+        </div>
+        <div class="col-md-6">
+          <mat-form-field appearance="outline" class="w-100">
+            <mat-label>Hora de Check-Out</mat-label>
+            <input
+              matInput
+              type="time"
+              formControlName="hora_checkout"
+              placeholder="00:00"
+            />
+            <mat-icon matPrefix>access_time</mat-icon>
+            <mat-error *ngIf="form.get('hora_checkout')?.hasError('required')">
+              La hora de check-out es requerida
+            </mat-error>
+          </mat-form-field>
+        </div>
+      </div>
+
+      <!-- Captura de Foto (solo para Check-In) -->
+      <div *ngIf="!isCheckOut" class="camera-section mb-3">
+        <h6 class="mb-2"><strong>Verificación Facial</strong></h6>
+
+        <!-- Botón para abrir cámara -->
+        <div *ngIf="!isCameraOpen && !photoPreviewUrl" class="text-center">
+          <button
+            mat-raised-button
+            color="accent"
+            (click)="openCamera()"
+            type="button"
+          >
+            <mat-icon>camera_alt</mat-icon>
+            Abrir Cámara
+          </button>
+          <p class="text-muted mt-2 mb-0" style="font-size: 0.85rem">
+            <mat-icon style="font-size: 16px; vertical-align: middle"
+              >info</mat-icon
+            >
+            Se requiere una foto para verificación facial
+          </p>
+        </div>
+
+        <!-- Video de cámara -->
+        <div *ngIf="isCameraOpen" class="camera-preview text-center">
+          <video
+            #videoElement
+            autoplay
+            playsinline
+            class="w-100 rounded mb-2"
+            style="max-width: 400px"
+          ></video>
+          <canvas #canvasElement style="display: none"></canvas>
+          <div class="d-flex gap-2 justify-content-center">
+            <button
+              mat-raised-button
+              color="primary"
+              (click)="capturePhoto()"
+              type="button"
+            >
+              <mat-icon>photo_camera</mat-icon>
+              Capturar Foto
+            </button>
+            <button mat-button (click)="closeCamera()" type="button">
+              <mat-icon>close</mat-icon>
+              Cerrar
+            </button>
+          </div>
+        </div>
+
+        <!-- Preview de foto capturada -->
+        <div *ngIf="photoPreviewUrl" class="photo-preview text-center">
+          <img
+            [src]="photoPreviewUrl"
+            alt="Foto capturada"
+            class="rounded mb-2"
+            style="max-width: 300px; width: 100%"
+          />
+          <div class="d-flex gap-2 justify-content-center">
+            <button
+              mat-button
+              color="accent"
+              (click)="retakePhoto()"
+              type="button"
+            >
+              <mat-icon>refresh</mat-icon>
+              Tomar otra foto
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Observaciones -->
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Observaciones</mat-label>
+        <textarea
+          matInput
+          formControlName="observaciones"
+          rows="4"
+          placeholder="Ingrese observaciones (opcional)"
+        ></textarea>
+        <mat-icon matPrefix>note</mat-icon>
+      </mat-form-field>
+    </form>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end" class="gap-2">
+    <button mat-button (click)="onCancel()">Cancelar</button>
+    <button
+      mat-raised-button
+      color="primary"
+      (click)="onSubmit()"
+      [disabled]="!form.valid || (!isCheckOut && !photoCapture)"
+    >
+      <mat-icon class="me-1">{{ isCheckOut ? 'logout' : 'login' }}</mat-icon>
+      {{ isCheckOut ? 'Confirmar Check-Out' : 'Confirmar Check-In' }}
+    </button>
+  </mat-dialog-actions>
+</div>

@@ -1,0 +1,182 @@
+::ng-deep .mat-mdc-dialog-container {
+  --mdc-dialog-container-shape: 16px;
+}
+
+h2[mat-dialog-title] {
+  display: flex;
+  align-items: center;
+  color: var(--mat-sys-primary);
+}
+
+mat-dialog-content {
+  max-height: 70vh;
+  overflow-y: auto;
+}
+
+// Plan Actual
+.plan-actual-card {
+  padding: 16px;
+  background: rgba(var(--mat-sys-primary-rgb), 0.05);
+  border: 1px solid rgba(var(--mat-sys-primary-rgb), 0.2);
+  border-radius: 8px;
+
+  .plan-actual-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+}
+
+// Uso Actual
+.uso-actual-alert {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px;
+  background: rgba(33, 150, 243, 0.08);
+  border-radius: 8px;
+  border-left: 3px solid var(--mat-sys-primary);
+
+  mat-icon {
+    flex-shrink: 0;
+    color: var(--mat-sys-primary);
+  }
+}
+
+// Grid de Planes
+.planes-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+}
+
+.plan-card {
+  transition: all 0.3s ease;
+  cursor: pointer;
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+  }
+
+  &.selected {
+    border: 2px solid var(--mat-sys-primary);
+    box-shadow: 0 4px 12px rgba(var(--mat-sys-primary-rgb), 0.3);
+  }
+
+  mat-card-header {
+    mat-card-title {
+      font-size: 18px;
+      font-weight: 600;
+    }
+
+    mat-card-subtitle {
+      margin-top: 8px;
+      font-size: 13px;
+
+      .gap-8 {
+        gap: 8px;
+      }
+    }
+  }
+
+  mat-card-content {
+    padding-top: 16px;
+  }
+}
+
+// Variantes
+.variantes-container {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.variante-button {
+  width: 100%;
+  padding: 12px;
+  height: auto;
+  transition: all 0.2s ease;
+
+  &.selected {
+    background: rgba(var(--mat-sys-primary-rgb), 0.1);
+    border-width: 2px;
+  }
+
+  &.actual {
+    background: rgba(var(--mat-sys-primary-rgb), 0.05);
+  }
+
+  .variante-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+
+    .variante-tipo {
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    .variante-precio {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--mat-sys-primary);
+    }
+
+    .chip-actual {
+      font-size: 11px;
+      height: 24px;
+      padding: 0 8px;
+    }
+  }
+}
+
+// Selección Info
+.seleccion-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+  background: rgba(76, 175, 80, 0.1);
+  border: 1px solid rgba(76, 175, 80, 0.3);
+  border-radius: 8px;
+
+  mat-icon {
+    font-size: 24px;
+    width: 24px;
+    height: 24px;
+  }
+}
+
+// Actions
+mat-dialog-actions {
+  padding: 16px 24px;
+  gap: 12px;
+
+  button {
+    min-width: 120px;
+
+    mat-icon {
+      margin-right: 8px;
+    }
+
+    .spinner-inline {
+      display: inline-block;
+      margin-right: 8px;
+    }
+  }
+}
+
+// Iconos
+.icon-16 {
+  font-size: 16px;
+  width: 16px;
+  height: 16px;
+}
+
+.icon-20 {
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
+}

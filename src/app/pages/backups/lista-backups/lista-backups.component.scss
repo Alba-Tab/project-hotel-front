@@ -1,0 +1,32 @@
+.filtros-container {
+  background: #f5f5f5;
+  padding: 1rem;
+  border-radius: 8px;
+  margin-bottom: 1.5rem;
+}
+
+.table-responsive {
+  overflow-x: auto;
+}
+
+mat-chip {
+  font-size: 0.75rem;
+  min-height: 24px;
+  padding: 4px 8px;
+}
+
+.estado-ok {
+  color: #4caf50;
+}
+
+.estado-error {
+  color: #f44336;
+}
+
+.estado-progreso {
+  color: #ff9800;
+}
+
+button[mat-icon-button]:disabled {
+  opacity: 0.4;
+}

@@ -1,0 +1,221 @@
+.reportes-dialog {
+  width: 700px;
+  min-height: 500px;
+}
+
+.dialog-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #1976d2;
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 0;
+
+  mat-icon {
+    font-size: 22px;
+  }
+}
+
+.dialog-content {
+  padding: 20px;
+}
+
+.parametros-form {
+  display: flex;
+  gap: 30px;
+  min-height: 400px;
+}
+
+.parametros-section {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.columnas-section {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  border-left: 1px solid #e0e0e0;
+  padding-left: 20px;
+}
+
+.section-title {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+  padding-bottom: 8px;
+  border-bottom: 2px solid #1976d2;
+}
+
+.fechas-group {
+  display: flex;
+  gap: 12px;
+
+  .fecha-field {
+    flex: 1;
+  }
+}
+
+.full-width {
+  width: 100%;
+}
+
+.tipo-section {
+  h4 {
+    margin: 0 0 8px 0;
+    font-size: 13px;
+    font-weight: 600;
+    color: #555;
+  }
+
+  .mat-mdc-radio-group {
+    display: flex;
+    gap: 16px;
+  }
+
+  .tipo-radio {
+    font-size: 14px;
+  }
+}
+
+.columnas-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 300px;
+  overflow-y: auto;
+
+  .columna-checkbox {
+    font-size: 14px;
+
+    .mat-mdc-checkbox-label {
+      font-size: 14px;
+    }
+  }
+}
+
+.dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  padding: 16px 20px;
+  border-top: 1px solid #e0e0e0;
+  background-color: #f9f9f9;
+
+  button {
+    min-width: 80px;
+
+    &.mat-mdc-raised-button {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+  }
+}
+
+.spinner-btn {
+  width: 16px !important;
+  height: 16px !important;
+}
+
+/* Responsivo */
+@media (max-width: 768px) {
+  .reportes-dialog {
+    width: 95vw;
+    max-width: 95vw;
+  }
+
+  .parametros-form {
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .columnas-section {
+    border-left: none;
+    border-top: 1px solid #e0e0e0;
+    padding-left: 0;
+    padding-top: 20px;
+  }
+
+  .fechas-group {
+    flex-direction: column;
+    gap: 12px;
+  }
+}
+
+/* Scroll personalizado */
+.columnas-list::-webkit-scrollbar {
+  width: 4px;
+}
+
+.columnas-list::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 2px;
+}
+
+.columnas-list::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 2px;
+}
+
+.columnas-list::-webkit-scrollbar-thumb:hover {
+  background: #a1a1a1;
+}
+
+
+/* Sección de Email */
+.email-section {
+  border-top: 1px solid #e0e0e0;
+  padding-top: 16px;
+  margin-top: 8px;
+
+  .email-checkbox {
+    margin-bottom: 16px;
+
+    strong {
+      color: #1976d2;
+    }
+  }
+
+  .email-fields {
+    padding-left: 24px;
+    border-left: 3px solid #1976d2;
+    background-color: #f8f9fa;
+    padding: 16px;
+    border-radius: 4px;
+
+    mat-form-field {
+      margin-bottom: 12px;
+
+      &:last-child {
+        margin-bottom: 0;
+      }
+    }
+
+    mat-icon[matIconPrefix] {
+      color: #1976d2;
+      margin-right: 8px;
+    }
+  }
+}
+
+/* Animación para campos de email */
+.email-fields {
+  animation: slideIn 0.3s ease-in-out;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

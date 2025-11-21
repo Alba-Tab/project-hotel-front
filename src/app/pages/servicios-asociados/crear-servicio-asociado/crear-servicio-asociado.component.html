@@ -1,0 +1,208 @@
+<h2 mat-dialog-title>
+  {{
+    isEditMode ? "Editar Servicio Asociado" : "Crear Nuevo Servicio Asociado"
+  }}
+</h2>
+
+<mat-dialog-content>
+  <form [formGroup]="servicioForm" (ngSubmit)="onSubmit()">
+    <div class="row">
+      <!-- Folio Estancia -->
+      <div class="col-12">
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Folio Estancia</mat-label>
+          <mat-select formControlName="folioestancia">
+            @for (folio of foliosEstancia; track folio.id) {
+            <mat-option [value]="folio.id">
+              Folio #{{ folio.id }} - Huésped: {{ folio.huesped_nombre }} -
+              Estado: {{ folio.estado }}
+            </mat-option>
+            }
+          </mat-select>
+          @if (servicioForm.get('folioestancia')?.hasError('required') &&
+          servicioForm.get('folioestancia')?.touched) {
+          <mat-error>El folio de estancia es requerido</mat-error>
+          } @if (servicioForm.get('folioestancia')?.disabled &&
+          data?.huesped_nombre) {
+          <mat-hint>
+            📋 Folio precargado para: <strong>{{ data.huesped_nombre }}</strong>
+          </mat-hint>
+          }
+        </mat-form-field>
+      </div>
+    </div>
+
+    <div class="row">
+      <!-- Servicio -->
+      <div class="col-12">
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Servicio</mat-label>
+          <mat-select formControlName="servicio">
+            @for (servicio of servicios; track servicio.id) {
+            <mat-option [value]="servicio.id">
+              {{ servicio.nombre }} - ${{ servicio.precio }}
+            </mat-option>
+            }
+          </mat-select>
+          @if (servicioForm.get('servicio')?.hasError('required') &&
+          servicioForm.get('servicio')?.touched) {
+          <mat-error>El servicio es requerido</mat-error>
+          }
+        </mat-form-field>
+      </div>
+    </div>
+
+    <div class="row">
+      <!-- Cantidad -->
+      <div class="col-12 col-md-4">
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Cantidad</mat-label>
+          <input
+            matInput
+            formControlName="cantidad"
+            type="number"
+            placeholder="1"
+            min="1"
+          />
+          <mat-error *ngIf="servicioForm.get('cantidad')?.hasError('required')">
+            La cantidad es requerida
+          </mat-error>
+          <mat-error *ngIf="servicioForm.get('cantidad')?.hasError('min')">
+            La cantidad debe ser mayor a 0
+          </mat-error>
+        </mat-form-field>
+      </div>
+
+      <!-- Precio Unitario -->
+      <div class="col-12 col-md-4">
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Precio Unitario</mat-label>
+          <input
+            matInput
+            formControlName="precio_unitario"
+            type="number"
+            step="0.01"
+            placeholder="25.50"
+          />
+          <mat-error
+            *ngIf="servicioForm.get('precio_unitario')?.hasError('required')"
+          >
+            El precio unitario es requerido
+          </mat-error>
+          <mat-error
+            *ngIf="servicioForm.get('precio_unitario')?.hasError('min')"
+          >
+            El precio debe ser mayor o igual a 0
+          </mat-error>
+        </mat-form-field>
+      </div>
+
+      <!-- Precio Total (calculado pero modificable) -->
+      <div class="col-12 col-md-4">
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Precio Total</mat-label>
+          <input
+            matInput
+            formControlName="monto_total"
+            type="number"
+            step="0.01"
+            placeholder="0.00"
+          />
+          <mat-hint>Calculado automáticamente, pero modificable</mat-hint>
+        </mat-form-field>
+      </div>
+    </div>
+
+    <div class="row">
+      <!-- Fecha -->
+      <div class="col-12 col-md-6">
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Fecha del Servicio</mat-label>
+          <input
+            matInput
+            [matDatepicker]="picker"
+            formControlName="fecha"
+            placeholder="dd/mm/yyyy"
+          />
+          <mat-datepicker-toggle
+            matSuffix
+            [for]="picker"
+          ></mat-datepicker-toggle>
+          <mat-datepicker #picker></mat-datepicker>
+          @if (servicioForm.get('fecha')?.hasError('required') &&
+          servicioForm.get('fecha')?.touched) {
+          <mat-error>La fecha es requerida</mat-error>
+          }
+        </mat-form-field>
+      </div>
+
+      <!-- Hora -->
+      <div class="col-12 col-md-6">
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Hora del Servicio</mat-label>
+          <input
+            matInput
+            formControlName="hora"
+            type="time"
+            placeholder="14:30"
+          />
+          @if (servicioForm.get('hora')?.hasError('required') &&
+          servicioForm.get('hora')?.touched) {
+          <mat-error>La hora es requerida</mat-error>
+          } @if (servicioForm.get('hora')?.hasError('pattern')) {
+          <mat-error>Formato de hora inválido (HH:MM)</mat-error>
+          }
+        </mat-form-field>
+      </div>
+    </div>
+
+    <div class="row">
+      <!-- Estado -->
+      <div class="col-12 col-md-6">
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Estado</mat-label>
+          <mat-select formControlName="estado">
+            @for (estado of estados; track estado.value) {
+            <mat-option [value]="estado.value">
+              {{ estado.viewValue }}
+            </mat-option>
+            }
+          </mat-select>
+          @if (servicioForm.get('estado')?.hasError('required') &&
+          servicioForm.get('estado')?.touched) {
+          <mat-error>El estado es requerido</mat-error>
+          }
+        </mat-form-field>
+      </div>
+    </div>
+
+    <div class="row">
+      <!-- Observaciones -->
+      <div class="col-12">
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Observaciones</mat-label>
+          <textarea
+            matInput
+            formControlName="observaciones"
+            rows="3"
+            placeholder="Ingrese observaciones adicionales..."
+          ></textarea>
+        </mat-form-field>
+      </div>
+    </div>
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="cancelar()" [disabled]="enviando">
+    Cancelar
+  </button>
+  <button
+    mat-raised-button
+    color="primary"
+    (click)="onSubmit()"
+    [disabled]="enviando || servicioForm.invalid"
+  >
+    {{ enviando ? "Guardando..." : isEditMode ? "Actualizar" : "Crear" }}
+  </button>
+</mat-dialog-actions>

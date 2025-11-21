@@ -12,6 +12,7 @@ import { HotelService } from '../../services/hotel.service';
 import { Hotel } from '../../interfaces/hotel.interface';
 import { MatDialogModule, MatDialog } from '@angular/material/dialog';
 import { CrearHotelComponent } from './crear-hotel/crear-hotel.component';
+import { ApiService } from 'src/app/services/api.service';
 
 
 
@@ -40,6 +41,7 @@ export class HotelesComponent {
 
   constructor(
     private hotelService: HotelService,
+    private apiService: ApiService,
     private router: Router,
     private dialog: MatDialog,
   ) {}
@@ -66,9 +68,10 @@ export class HotelesComponent {
   }
 
   cargarHoteles() {
-    this.hotelService.getHoteles().subscribe({
-      next: (hoteles) => {
-        this.dataSource1 = hoteles.map(hotel => ({
+    this.apiService.listar('hoteles/hoteles/').subscribe({
+      next: (response: any) => {
+        const hoteles = this.apiService.normalizarRespuestaArray(response);
+        this.dataSource1 = hoteles.map((hotel:any) => ({
           ...hotel,
           nombre: hotel.nombre,
           direccion: hotel.direccion,
@@ -103,7 +106,7 @@ export class HotelesComponent {
   eliminarHotel(hotel: Hotel) {
     if (confirm('¿Estás seguro de eliminar este hotel?')) {
       if (hotel.id) {
-        this.hotelService.deleteHotel(hotel.id).subscribe({
+        this.apiService.eliminar('hoteles/hoteles',hotel.id).subscribe({
           next: () => {
             this.cargarHoteles(); // Recargar la lista
           },

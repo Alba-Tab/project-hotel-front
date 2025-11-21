@@ -1,7 +1,33 @@
 /* You can add global styles to this file, and also import other style files */
 
 html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+body {
+  margin: 0;
+  font-family: var(--font-family, Roboto), "Helvetica Neue", sans-serif;
+  font-size: var(--font-size-base, 14px);
+}
+
+/* 🎨 Variables CSS personalizables por configuración de apariencia */
+:root {
+  /* Valores por defecto (se sobrescriben dinámicamente) */
+  --mat-sys-primary: #00a1ff;
+  --mat-sys-secondary: #16cdc7;
+  --mat-sys-background: #f8fafd;
+  --font-family: 'Inter';
+  --font-size-base: 14px;
+}
+
+/* 🌙 Tema oscuro */
+body.dark-theme {
+  background-color: #1a1a1a;
+  color: #ffffff;
+}
+
+/* ☀️ Tema claro */
+body.light-theme {
+  background-color: var(--mat-sys-background);
+  color: #000000;
+}
 
 /* 🎨 Estilos para Snackbars de errores */
 .error-snackbar {

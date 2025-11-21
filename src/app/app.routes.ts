@@ -6,16 +6,25 @@ import { authGuard } from './guards/auth.guard';
 
 import { TenantRegisterComponent } from './pages/tenant-register/tenant-register.component';
 import { MainPageComponent } from './pages/main-page/main-page.component';
+
 export const routes: Routes = [
+  // Ruta raíz - redirige a la página principal de suscripciones
+  {
+    path: '',
+    redirectTo: 'principal',
+    pathMatch: 'full',
+  },
+
+  // Rutas públicas SIN protección (BlankComponent)
   {
     path: '',
     component: BlankComponent,
     children: [
       {
-        path: '',
-        component: MainPageComponent, // ✅ Página principal como inicio
-        pathMatch: 'full',
+        path: 'principal',
+        component: MainPageComponent,
       },
+
       {
         path: 'authentication',
         loadChildren: () =>
@@ -29,20 +38,24 @@ export const routes: Routes = [
       },
     ],
   },
+
+  // Rutas protegidas CON autenticación (FullComponent)
   {
-    path: 'dashboard',
+    path: '',
     component: FullComponent,
-    canActivate: [authGuard], // ← Agregar esto
+    canActivate: [authGuard],
     children: [
-      {
-        path: '',
-        redirectTo: '/dashboard',
-        pathMatch: 'full',
-      },
       {
         path: 'dashboard',
         loadChildren: () =>
           import('./pages/pages.routes').then((m) => m.PagesRoutes),
+      },
+      {
+        path: 'recomendaciones-ia',
+        loadChildren: () =>
+          import('./pages/recomendaciones-ia/recomendaciones-ia.routes').then(
+            (m) => m.RecomendacionesIARoutes
+          ),
       },
       {
         path: 'ui-components',
@@ -50,6 +63,11 @@ export const routes: Routes = [
           import('./pages/ui-components/ui-components.routes').then(
             (m) => m.UiComponentsRoutes
           ),
+      },
+      {
+        path: 'usuarios',
+        loadComponent: () =>
+          import('./pages/usuarios/usuarios').then((m) => m.Usuarios),
       },
       {
         path: 'hoteles',
@@ -60,50 +78,95 @@ export const routes: Routes = [
       },
       {
         path: 'habitaciones',
-        loadComponent: () =>
-          import('./pages/habitaciones/habitaciones.component').then(
-            (m) => m.HabitacionesComponent
+        loadChildren: () =>
+          import('./pages/habitaciones/habitaciones.routes').then(
+            (m) => m.HabitacionesRoutes
           ),
-        // data: {
-        //   title: 'Habitaciones',
-        //   urls: [
-        //     { title: 'Dashboard', url: '/dashboard' },
-        //     { title: 'Habitaciones' },
-        //   ],
-        // },
       },
-      // {
-      //   path: '',
-      //   component: BlankComponent,
-      //   children: [
-      //     {
-      //       path: 'hoteles',
-      //       loadChildren: () =>
-      //         import('./pages/hoteles/hoteles.routes').then(
-      //           (m) => m.HotelesRoutes
-      //         ),
-      //     },
-      //   ],
-      // },
+      {
+        path: 'reservas',
+        loadComponent: () =>
+          import('./pages/reservas/reservas').then((m) => m.Reservas),
+      },
+      {
+        path: 'pagos',
+        loadComponent: () =>
+          import('./pages/pagos/pagos.component').then((m) => m.PagosComponent),
+      },
+      {
+        path: 'auditoria',
+        loadComponent: () =>
+          import('./pages/auditoria/auditoria.component').then(
+            (m) => m.AuditoriaComponent
+          ),
+      },
+      {
+        path: 'fidelizacion',
+        loadComponent: () =>
+          import('./pages/fidelizacion/fidelizacion.component').then(
+            (m) => m.FidelizacionComponent
+          ),
+      },
+      {
+        path: 'configuracion-apariencia',
+        loadComponent: () =>
+          import('./pages/configuracion-apariencia/configuracion-apariencia').then(
+            (m) => m.ConfiguracionApariencia
+          ),
+      },
+      {
+        path: 'roles-permisos',
+        loadComponent: () =>
+          import('./pages/roles-permisos/roles-permisos').then(
+            (m) => m.RolesPermisos
+          ),
+      },
       {
         path: 'extra',
         loadChildren: () =>
           import('./pages/extra/extra.routes').then((m) => m.ExtraRoutes),
       },
+      {
+        path: 'servicios',
+        loadComponent: () =>
+          import('./pages/servicios/servicios.component').then(
+            (m) => m.ServiciosComponent
+          ),
+      },
+      {
+        path: 'servicios-asociados',
+        loadComponent: () =>
+          import(
+            './pages/servicios-asociados/servicios-asociados.component'
+          ).then((m) => m.ServiciosAsociadosComponent),
+      },
+      {
+        path: 'folio-estancia',
+        loadComponent: () =>
+          import('./pages/folio-estancia/folio-estancia').then(
+            (m) => m.FolioEstanciaComponent
+          ),
+      },
+      {
+        path: 'suscripcion',
+        loadComponent: () =>
+          import('./pages/suscripcion/suscripcion.component').then(
+            (m) => m.SuscripcionComponent
+          ),
+      },
+      {
+        path: 'backups',
+        loadChildren: () =>
+          import('./pages/backups/backups.routes').then(
+            (m) => m.BackupsRoutes
+          ),
+      },
     ],
   },
 
+  // Ruta catch-all para 404
   {
     path: '**',
     redirectTo: 'authentication/error',
   },
-
-
-
-  {
-  path: 'servicios',
-  loadComponent: () =>
-    import('./pages/servicios/servicios.component').then((m) => m.ServiciosComponent),
-},
-
 ];

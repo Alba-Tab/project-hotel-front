@@ -1,0 +1,186 @@
+<mat-card class="cardWithShadow">
+  <mat-card-header>
+    <mat-card-title>
+      <div class="d-flex align-items-center">
+        <button mat-icon-button (click)="cancelar()" class="me-2">
+          <mat-icon>arrow_back</mat-icon>
+        </button>
+        <h4 class="m-0">🔧 Crear Nuevo Backup</h4>
+      </div>
+    </mat-card-title>
+  </mat-card-header>
+
+  <mat-card-content>
+    <form (ngSubmit)="crearBackup()" #backupForm="ngForm">
+
+      <!-- Barra de progreso -->
+      <mat-progress-bar
+        *ngIf="creando"
+        mode="determinate"
+        [value]="progreso"
+        class="mb-4">
+      </mat-progress-bar>
+
+      <!-- TIPO DE BACKUP -->
+      <div class="section mb-4">
+        <h5 class="mb-3">Tipo de Backup</h5>
+
+        <mat-radio-group [(ngModel)]="tipoBackup" name="tipoBackup" [disabled]="creando">
+          <div class="row">
+            <!-- Backup Completo -->
+            <div class="col-md-6 mb-3">
+              <mat-card class="tipo-card" [class.selected]="tipoBackup === 'full'">
+                <mat-card-content>
+                  <mat-radio-button value="full" class="w-100">
+                    <div class="tipo-content">
+                      <mat-icon class="tipo-icon">storage</mat-icon>
+                      <h6 class="mt-2 mb-1">Backup del tenant Completo</h6>
+                      <p class="text-muted small mb-0">
+                        Respalda toda la base de datos del tenants.
+                      </p>
+                    </div>
+                  </mat-radio-button>
+                </mat-card-content>
+              </mat-card>
+            </div>
+
+            <!-- Backup por Tenant
+            <div class="col-md-6 mb-3">
+              <mat-card class="tipo-card" [class.selected]="tipoBackup === 'tenant'">
+                <mat-card-content>
+                  <mat-radio-button value="tenant" class="w-100">
+                    <div class="tipo-content">
+                      <mat-icon class="tipo-icon">business</mat-icon>
+                      <h6 class="mt-2 mb-1">Backup por Tenant</h6>
+                      <p class="text-muted small mb-0">
+                        Respalda un tenant de forma individual.
+                      </p>
+                    </div>
+                  </mat-radio-button>
+                </mat-card-content>
+              </mat-card>
+            </div> -->
+          </div>
+        </mat-radio-group>
+      </div>
+
+      <!-- SCHEMA (solo si es tenant) - 🔒 INPUT BLOQUEADO -->
+      <div class="section mb-4" *ngIf="tipoBackup === 'tenant'">
+        <h5 class="mb-3">🏢 Nombre del Schema (Detectado Automáticamente)</h5>
+
+        <mat-form-field appearance="outline" class="w-100">
+          <!-- <mat-label>Nombre del Schema</mat-label>      comentado hasta nuevo aviso -->
+          <input
+            matInput
+            [(ngModel)]="schemaName"
+            name="schemaName"
+            placeholder="Se detecta automáticamente desde la URL"
+            readonly
+            disabled
+            class="tenant-input-blocked">
+          <mat-icon matPrefix>domain</mat-icon>
+          <mat-hint>
+            <span *ngIf="schemaName" class="text-success">
+              ✅ Tenant detectado automáticamente: <strong>{{ schemaName }}</strong>
+            </span>
+            <span *ngIf="!schemaName" class="text-warning">
+              ⚠️ No se detectó tenant. Por favor, inicia sesión.
+            </span>
+          </mat-hint>
+        </mat-form-field>
+
+        <!-- Mensaje informativo si hay tenant -->
+        <div class="alert alert-info mb-0" role="alert" *ngIf="schemaName">
+          <mat-icon class="align-middle me-2">info</mat-icon>
+          <span class="align-middle">
+            Se creará un backup del tenant <strong>{{ schemaName }}</strong> automáticamente.
+
+          </span>
+        </div>
+
+        <!-- Advertencia si no hay tenant -->
+        <div class="alert alert-warning mb-0" role="alert" *ngIf="!schemaName">
+          <mat-icon class="align-middle me-2">warning</mat-icon>
+          <span class="align-middle">
+            Para crear un backup de tenant, debes iniciar sesión con un usuario asignado a un tenant.
+            <br>
+            El tenant se detecta automáticamente desde tu sesión.
+          </span>
+        </div>
+      </div>
+
+      <!-- FRECUENCIA -->
+      <div class="section mb-4">
+        <h5 class="mb-3">⏰ Frecuencia del Backup</h5>
+
+        <mat-form-field appearance="outline" class="w-100">
+          <!-- <mat-label>Tipo de Ejecución</mat-label> -->
+          <mat-select [(ngModel)]="tipoFrecuencia" name="tipoFrecuencia" required [disabled]="creando">
+            <mat-option *ngFor="let tipo of tiposFrecuencia" [value]="tipo.value">
+              {{ tipo.label }}
+            </mat-option>
+          </mat-select>
+          <!-- <mat-hint>Selecciona cómo se ejecutará este backup</mat-hint>-->
+        </mat-form-field>
+      </div>
+
+      <!-- RESUMEN -->
+      <div class="section mb-4">
+       <!--- <h5 class="mb-3">📋 Resumen</h5>   -->
+
+        <mat-card class="resumen-card">
+          <mat-card-content>
+            <div class="row">
+              <div class="col-md-4">
+                <p class="mb-1"><strong>Tipo:</strong></p>
+                <p class="text-muted">
+                  {{ tipoBackup === 'full' ? 'Backup Completo' : 'Backup por Tenant' }}
+                </p>
+              </div>
+              <div class="col-md-4" *ngIf="tipoBackup === 'tenant'">
+                <p class="mb-1"><strong>Tenant:</strong></p>
+                <p class="text-muted" [class.text-warning]="!schemaName">
+                  {{ schemaName || '⚠️ No detectado' }}
+                </p>
+              </div>
+              <div class="col-md-4">
+                <p class="mb-1"><strong>Frecuencia:</strong></p>
+                <p class="text-muted">
+                  {{ getFrecuenciaLabel() }}
+                </p>
+              </div>
+            </div>
+
+            <div class="alert alert-info mt-3 mb-0" role="alert">
+              <mat-icon class="align-middle me-2">info</mat-icon>
+              <span class="align-middle">
+                Este proceso puede tardar varios minutos dependiendo del tamaño de la base de datos.
+              </span>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      </div>
+
+      <!-- BOTONES -->
+      <div class="d-flex gap-2 justify-content-end">
+        <button
+          mat-raised-button
+          type="button"
+          (click)="cancelar()"
+          [disabled]="creando">
+          <mat-icon>close</mat-icon>
+          Cancelar
+        </button>
+
+        <button
+          mat-raised-button
+          color="primary"
+          type="submit"
+          [disabled]="creando || !backupForm.valid || (tipoBackup === 'tenant' && !schemaName)">
+          <mat-icon>{{ creando ? 'hourglass_empty' : 'backup' }}</mat-icon>
+          {{ creando ? 'Creando Backup...' : 'Crear Backup' }}
+        </button>
+      </div>
+    </form>
+  </mat-card-content>
+</mat-card>

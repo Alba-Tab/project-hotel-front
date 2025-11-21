@@ -1,0 +1,184 @@
+<div class="estadisticas-container">
+  <div class="d-flex align-items-center justify-content-between mb-4">
+    <h4 class="m-0">📊 Estadísticas de Backups</h4>
+    <button mat-raised-button color="primary" (click)="refrescar()">
+      <mat-icon>refresh</mat-icon>
+      Actualizar
+    </button>
+  </div>
+
+  <!-- LOADING -->
+  <div *ngIf="cargando" class="text-center py-5">
+    <mat-spinner diameter="50" class="mx-auto"></mat-spinner>
+    <p class="mt-3">Cargando estadísticas...</p>
+  </div>
+
+  <!-- CONTENIDO -->
+  <div *ngIf="!cargando && estadisticas">
+
+    <!-- RESUMEN GENERAL -->
+    <div class="row mb-4">
+      <div class="col-md-3">
+        <mat-card class="stat-card">
+          <mat-card-content>
+            <div class="stat-icon-container bg-primary">
+              <mat-icon>folder</mat-icon>
+            </div>
+            <h3 class="stat-number">{{ estadisticas.base_datos.total }}</h3>
+            <p class="stat-label">Total Backups</p>
+          </mat-card-content>
+        </mat-card>
+      </div>
+
+      <div class="col-md-3">
+        <mat-card class="stat-card">
+          <mat-card-content>
+            <div class="stat-icon-container bg-success">
+              <mat-icon>check_circle</mat-icon>
+            </div>
+            <h3 class="stat-number">{{ estadisticas.base_datos.exitosos }}</h3>
+            <p class="stat-label">Exitosos</p>
+          </mat-card-content>
+        </mat-card>
+      </div>
+
+      <div class="col-md-3">
+        <mat-card class="stat-card">
+          <mat-card-content>
+            <div class="stat-icon-container bg-danger">
+              <mat-icon>error</mat-icon>
+            </div>
+            <h3 class="stat-number">{{ estadisticas.base_datos.fallidos }}</h3>
+            <p class="stat-label">Fallidos</p>
+          </mat-card-content>
+        </mat-card>
+      </div>
+
+      <div class="col-md-3">
+        <mat-card class="stat-card">
+          <mat-card-content>
+            <div class="stat-icon-container bg-info">
+              <mat-icon>percent</mat-icon>
+            </div>
+            <h3 class="stat-number">{{ calcularPorcentajeExito() }}%</h3>
+            <p class="stat-label">Tasa de Éxito</p>
+          </mat-card-content>
+        </mat-card>
+      </div>
+    </div>
+
+    <!-- BACKUPS COMPLETOS -->
+    <div class="row mb-4">
+      <div class="col-md-6">
+        <mat-card class="cardWithShadow">
+          <mat-card-header>
+            <mat-card-title>
+              <mat-icon class="me-2 align-middle">storage</mat-icon>
+              <span class="align-middle">Backups Completos</span>
+            </mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <div class="stat-detail">
+              <div class="d-flex justify-content-between mb-2">
+                <span class="text-muted">Total de archivos:</span>
+                <strong>{{ estadisticas.full.total_backups }}</strong>
+              </div>
+              <mat-divider class="my-2"></mat-divider>
+
+              <div class="d-flex justify-content-between mb-2">
+                <span class="text-muted">Espacio utilizado:</span>
+                <strong>{{ formatearTamano(estadisticas.full.total_size) }}</strong>
+              </div>
+              <mat-divider class="my-2"></mat-divider>
+
+              <div class="d-flex justify-content-between mb-2">
+                <span class="text-muted">Más antiguo:</span>
+                <strong>{{ formatearFecha(estadisticas.full.oldest) }}</strong>
+              </div>
+              <mat-divider class="my-2"></mat-divider>
+
+              <div class="d-flex justify-content-between">
+                <span class="text-muted">Más reciente:</span>
+                <strong>{{ formatearFecha(estadisticas.full.newest) }}</strong>
+              </div>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      </div>
+
+      <!-- BACKUPS POR TENANT -->
+      <div class="col-md-6">
+        <mat-card class="cardWithShadow">
+          <mat-card-header>
+            <mat-card-title>
+              <mat-icon class="me-2 align-middle">business</mat-icon>
+              <span class="align-middle">Backups por Tenant</span>
+            </mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <div class="stat-detail">
+              <div class="d-flex justify-content-between mb-2">
+                <span class="text-muted">Total de archivos:</span>
+                <strong>{{ estadisticas.tenant.total_backups }}</strong>
+              </div>
+              <mat-divider class="my-2"></mat-divider>
+
+              <div class="d-flex justify-content-between mb-2">
+                <span class="text-muted">Espacio utilizado:</span>
+                <strong>{{ formatearTamano(estadisticas.tenant.total_size) }}</strong>
+              </div>
+              <mat-divider class="my-2"></mat-divider>
+
+              <div class="d-flex justify-content-between mb-2">
+                <span class="text-muted">Más antiguo:</span>
+                <strong>{{ formatearFecha(estadisticas.tenant.oldest) }}</strong>
+              </div>
+              <mat-divider class="my-2"></mat-divider>
+
+              <div class="d-flex justify-content-between">
+                <span class="text-muted">Más reciente:</span>
+                <strong>{{ formatearFecha(estadisticas.tenant.newest) }}</strong>
+              </div>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      </div>
+    </div>
+
+    <!-- CONFIGURACIÓN -->
+    <mat-card class="cardWithShadow" *ngIf="configuracion">
+      <mat-card-header>
+        <mat-card-title>
+          <mat-icon class="me-2 align-middle">settings</mat-icon>
+          <span class="align-middle">Configuración de Backups</span>
+        </mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="row">
+          <div class="col-md-3">
+            <p class="mb-1"><strong>Estado:</strong></p>
+            <mat-chip [color]="configuracion.enabled ? 'primary' : 'warn'">
+              {{ configuracion.enabled ? 'Habilitado' : 'Deshabilitado' }}
+            </mat-chip>
+          </div>
+
+          <div class="col-md-3">
+            <p class="mb-1"><strong>Frecuencia:</strong></p>
+            <p class="text-muted">{{ configuracion.frequency }}</p>
+          </div>
+
+          <div class="col-md-3">
+            <p class="mb-1"><strong>Hora programada:</strong></p>
+            <p class="text-muted">{{ configuracion.time }}</p>
+          </div>
+
+          <div class="col-md-3">
+            <p class="mb-1"><strong>Retención:</strong></p>
+            <p class="text-muted">{{ configuracion.retention_days }} días</p>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+  </div>
+</div>

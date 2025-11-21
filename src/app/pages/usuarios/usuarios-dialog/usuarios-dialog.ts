@@ -36,16 +36,23 @@ export class UsuariosDialog implements OnInit {
   // Signals para estado reactivo
   loading = signal(false);
   loadingRoles = signal(true);
+  loadingHoteles = signal(true);
   isEditMode = signal(false);
 
-  // Datos de roles
+  // Datos de roles y hoteles
   rolesDisponibles = signal<any[]>([]);
+  hotelesDisponibles = signal<any[]>([]);
 
   usuarioForm!: FormGroup;
+
+  // Propiedades para foto
+  photoFile: File | null = null;
+  photoPreviewUrl: string | null = null;
 
   ngOnInit() {
     this.initForm();
     this.loadRoles();
+    this.loadHoteles();
     this.loadUserData();
   }
 
@@ -59,6 +66,7 @@ export class UsuariosDialog implements OnInit {
       last_name: ['', [Validators.required, Validators.minLength(2)]],
       email: ['', [Validators.required, Validators.email]],
       groups: ['', [Validators.required]], // Campo para grupo/rol (será un array con un elemento)
+      hotel: ['', [Validators.required]], // Campo para hotel
       password: ['', [Validators.minLength(6)]] // Solo requerido en creación
     });
   }
@@ -83,6 +91,25 @@ export class UsuariosDialog implements OnInit {
   }
 
   /**
+   * Cargar lista de hoteles disponibles desde el backend
+   */
+  private async loadHoteles() {
+    try {
+      console.log('🔄 Cargando hoteles disponibles...');
+      this.loadingHoteles.set(true);
+
+      const response = await firstValueFrom(this.apiService.listar<any>('hoteles/hoteles'));
+      console.log('✅ Hoteles cargados:', response);
+
+      this.hotelesDisponibles.set(response);
+    } catch (error) {
+      console.error('❌ Error al cargar hoteles:', error);
+    } finally {
+      this.loadingHoteles.set(false);
+    }
+  }
+
+  /**
    * Cargar datos del usuario si está en modo edición
    */
   private loadUserData() {
@@ -96,8 +123,14 @@ export class UsuariosDialog implements OnInit {
         first_name: this.data.usuario.first_name,
         last_name: this.data.usuario.last_name,
         email: this.data.usuario.email,
-        groups: this.data.usuario.groups?.[0]?.id || '' // Tomar el primer grupo si existe
+        groups: this.data.usuario.groups?.[0]?.id || '', // Tomar el primer grupo si existe
+        hotel: this.data.usuario.hotel || '' // Asignar hotel si existe
       });
+
+      // Cargar foto existente si hay
+      if (this.data.usuario.photo_url) {
+        this.photoPreviewUrl = this.data.usuario.photo_url;
+      }
 
       // En modo edición, la contraseña es opcional
       this.usuarioForm.get('password')?.clearValidators();
@@ -162,6 +195,7 @@ export class UsuariosDialog implements OnInit {
       'last_name': 'Apellido',
       'email': 'Email',
       'groups': 'Rol',
+      'hotel': 'Hotel',
       'password': 'Contraseña'
     };
     return displayNames[fieldName] || fieldName;
@@ -187,6 +221,11 @@ export class UsuariosDialog implements OnInit {
         delete formData.groups; // Remover groups del envío
       }
 
+      // Añadir foto si existe
+      if (this.photoFile) {
+        formData.photo = this.photoFile;
+      }
+
       console.log('📤 Enviando datos:', formData);
 
       // Emitir datos al componente padre
@@ -204,6 +243,31 @@ export class UsuariosDialog implements OnInit {
       });
       console.log('❌ Formulario inválido');
     }
+  }
+
+  /**
+   * Manejar selección de foto
+   */
+  onPhotoSelected(event: any): void {
+    const file = event.target.files[0];
+    if (file) {
+      this.photoFile = file;
+
+      // Crear preview
+      const reader = new FileReader();
+      reader.onload = (e: any) => {
+        this.photoPreviewUrl = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+  }
+
+  /**
+   * Remover foto seleccionada
+   */
+  removePhoto(): void {
+    this.photoFile = null;
+    this.photoPreviewUrl = null;
   }
 
   /**

@@ -1,11 +1,19 @@
-<div class="blank-layout-container justify-content-center align-items-center bg-light">
-  <div class="position-relative row w-100 h-100 bg-gredient justify-content-center">
+<div
+  class="blank-layout-container justify-content-center align-items-center bg-light"
+>
+  <div
+    class="position-relative row w-100 h-100 bg-gredient justify-content-center"
+  >
     <div class="col-lg-4 d-flex align-items-center">
       <mat-card class="cardWithShadow boxed-auth">
         <mat-card-content class="p-32">
           <div class="text-center">
             <a [routerLink]="['/dashboard']">
-              <img src="./assets/images/logos/logo.svg" class="align-middle m-2" alt="logo" />
+              <img
+                src="./assets/images/logos/logo.svg"
+                class="align-middle m-2"
+                alt="logo"
+              />
             </a>
           </div>
 
@@ -13,15 +21,28 @@
             <div class="col-6">
               <button mat-stroked-button class="w-100">
                 <div class="d-flex align-items-center">
-                  <img src="/assets/images/svgs/google-icon.svg" alt="google" width="16" class="m-r-8" />
+                  <img
+                    src="/assets/images/svgs/google-icon.svg"
+                    alt="google"
+                    width="16"
+                    class="m-r-8"
+                  />
                   <span class="d-none d-lg-block">Sign in with Google</span>
                 </div>
               </button>
             </div>
             <div class="col-6">
-              <button mat-stroked-button class="w-100 d-flex align-items-center">
+              <button
+                mat-stroked-button
+                class="w-100 d-flex align-items-center"
+              >
                 <div class="d-flex align-items-center">
-                  <img src="/assets/images/svgs/facebook-icon.svg" alt="facebook" width="40" class="m-r-4" />
+                  <img
+                    src="/assets/images/svgs/facebook-icon.svg"
+                    alt="facebook"
+                    width="40"
+                    class="m-r-4"
+                  />
                   <span class="d-none d-lg-block">Sign in with FB</span>
                 </div>
               </button>
@@ -31,62 +52,99 @@
           <div class="or-border m-t-30">or sign in with</div>
 
           <form [formGroup]="form" (ngSubmit)="submit()" class="m-t-30">
-
             <!-- Mensaje de error -->
             @if (errorMessage()) {
-              <div class="alert alert-danger m-b-16">
-                {{ errorMessage() }}
-              </div>
+            <div class="alert alert-danger m-b-16">
+              {{ errorMessage() }}
+            </div>
             }
 
-            <mat-label class="mat-subtitle-2 f-s-14 f-w-600 m-b-12 d-block">Username</mat-label>
+            <!-- Campo de Código de Empresa (Tenant) -->
+            <mat-label class="mat-subtitle-2 f-s-14 f-w-600 m-b-12 d-block"
+              >Código de Empresa</mat-label
+            >
             <mat-form-field appearance="outline" class="w-100" color="primary">
-              <input matInput
-                     formControlName="username"
-                     placeholder="Ingrese su usuario"
-                     [class.is-invalid]="f.username.invalid && f.username.touched" />
+              <input
+                matInput
+                formControlName="tenant_code"
+                placeholder="Ingrese el código de su empresa"
+                [class.is-invalid]="
+                  f.tenant_code.invalid && f.tenant_code.touched
+                "
+              />
+              <mat-icon matPrefix>business</mat-icon>
+              @if (f.tenant_code.invalid && f.tenant_code.touched) {
+              <mat-error>
+                Código de empresa es requerido (mínimo 2 caracteres)
+              </mat-error>
+              }
+            </mat-form-field>
+
+            <mat-label class="mat-subtitle-2 f-s-14 f-w-600 m-b-12 d-block"
+              >Username</mat-label
+            >
+            <mat-form-field appearance="outline" class="w-100" color="primary">
+              <input
+                matInput
+                formControlName="username"
+                placeholder="Ingrese su usuario"
+                [class.is-invalid]="f.username.invalid && f.username.touched"
+              />
               @if (f.username.invalid && f.username.touched) {
-                <mat-error>
-                  Username es requerido (mínimo 3 caracteres)
-                </mat-error>
+              <mat-error>
+                Username es requerido (mínimo 3 caracteres)
+              </mat-error>
               }
             </mat-form-field>
 
             <!-- password -->
-            <mat-label class="mat-subtitle-2 f-s-14 f-w-600 m-b-12 d-block">Password</mat-label>
+            <mat-label class="mat-subtitle-2 f-s-14 f-w-600 m-b-12 d-block"
+              >Password</mat-label
+            >
             <mat-form-field appearance="outline" class="w-100" color="primary">
-              <input matInput
-                     type="password"
-                     formControlName="password"
-                     placeholder="Ingrese su contraseña"
-                     [class.is-invalid]="f.password.invalid && f.password.touched" />
+              <input
+                matInput
+                type="password"
+                formControlName="password"
+                placeholder="Ingrese su contraseña"
+                [class.is-invalid]="f.password.invalid && f.password.touched"
+              />
               @if (f.password.invalid && f.password.touched) {
-                <mat-error>
-                  Contraseña es requerida
-                </mat-error>
+              <mat-error> Contraseña es requerida </mat-error>
               }
             </mat-form-field>
 
             <div class="d-flex align-items-center m-b-12">
               <mat-checkbox color="primary">Remember this Device</mat-checkbox>
-              <a [routerLink]="['/']" class="text-primary f-w-600 text-decoration-none m-l-auto f-s-14">Forgot Password ?</a>
+              <a
+                [routerLink]="['/']"
+                class="text-primary f-w-600 text-decoration-none m-l-auto f-s-14"
+                >Forgot Password ?</a
+              >
             </div>
 
-            <button type="submit"
-                    mat-flat-button
-                    color="primary"
-                    class="w-100"
-                    [disabled]="loading() || form.invalid">
+            <button
+              type="submit"
+              mat-flat-button
+              color="primary"
+              class="w-100"
+              [disabled]="loading() || form.invalid"
+            >
               @if (loading()) {
-                <mat-spinner diameter="20" class="m-r-8"></mat-spinner>
+              <mat-spinner diameter="20" class="m-r-8"></mat-spinner>
               }
-              {{ loading() ? 'Iniciando sesión...' : 'Sign In' }}
+              {{ loading() ? "Iniciando sesión..." : "Sign In" }}
             </button>
           </form>
 
-          <span class="d-block f-w-500 text-center m-t-24">New to MaterialM?
-            <a [routerLink]="['/authentication/register']" class="text-decoration-none text-primary f-w-500 f-s-14">
-              Create an account</a>
+          <span class="d-block f-w-500 text-center m-t-24"
+            >New to MaterialM?
+            <a
+              [routerLink]="['/authentication/register']"
+              class="text-decoration-none text-primary f-w-500 f-s-14"
+            >
+              Create an account</a
+            >
           </span>
         </mat-card-content>
       </mat-card>

@@ -10,6 +10,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDialogModule, MatDialog } from '@angular/material/dialog';
 import { ApiService } from '../../services/api.service';
 import { UsuariosDialog } from './usuarios-dialog/usuarios-dialog';
+import { UsuariosDetalleDialog } from './usuarios-detalle-dialog/usuarios-detalle-dialog';
 import { firstValueFrom } from 'rxjs';
 
 @Component({
@@ -23,10 +24,10 @@ import { firstValueFrom } from 'rxjs';
     MatIconModule,
     MatSnackBarModule,
     MatTooltipModule,
-    MatDialogModule
+    MatDialogModule,
   ],
   templateUrl: './usuarios.html',
-  styleUrl: './usuarios.scss'
+  styleUrl: './usuarios.scss',
 })
 export class Usuarios implements OnInit {
   private apiService = inject(ApiService);
@@ -45,28 +46,36 @@ export class Usuarios implements OnInit {
   selectedUser = signal<any | null>(null);
   operationLoading = signal(false);
 
-  displayedColumns: string[] = ['id', 'username', 'first_name', 'last_name', 'email', 'groups', 'acciones'];
+  displayedColumns: string[] = [
+    'id',
+    'username',
+    'first_name',
+    'last_name',
+    'email',
+    'groups',
+    'acciones',
+  ];
 
   ngOnInit() {
     this.obtenerPermisosUsuarioActual();
     this.cargarUsuarios();
 
-  //   // 🧪 PRUEBA: Incrementar contador cada 2 segundos para verificar reactividad
-  //   setInterval(() => {
-  //     this.testCounter.update(count => count + 1);
-  //     console.log('🧪 Contador actualizado:', this.testCounter());
-  //   }, 2000);
+    //   // 🧪 PRUEBA: Incrementar contador cada 2 segundos para verificar reactividad
+    //   setInterval(() => {
+    //     this.testCounter.update(count => count + 1);
+    //     console.log('🧪 Contador actualizado:', this.testCounter());
+    //   }, 2000);
 
-  //   // 🧪 PRUEBA: Agregar permisos de prueba cada 3 segundos
-  //   setTimeout(() => {
-  //     this.usuarioPermisos.set(['add_user', 'change_user']);
-  //     console.log('🧪 Permisos añadidos:', this.usuarioPermisos());
-  //   }, 3000);
+    //   // 🧪 PRUEBA: Agregar permisos de prueba cada 3 segundos
+    //   setTimeout(() => {
+    //     this.usuarioPermisos.set(['add_user', 'change_user']);
+    //     console.log('🧪 Permisos añadidos:', this.usuarioPermisos());
+    //   }, 3000);
 
-  //   setTimeout(() => {
-  //     this.usuarioPermisos.update(perms => [...perms, 'delete_user']);
-  //     console.log('🧪 Permiso delete añadido:', this.usuarioPermisos());
-  //   }, 6000);
+    //   setTimeout(() => {
+    //     this.usuarioPermisos.update(perms => [...perms, 'delete_user']);
+    //     console.log('🧪 Permiso delete añadido:', this.usuarioPermisos());
+    //   }, 6000);
   }
 
   /**
@@ -75,13 +84,15 @@ export class Usuarios implements OnInit {
 
   async obtenerPermisosUsuarioActual() {
     try {
-      console.log('🔄 Obteniendo permisos del usuario actual...')
-      const response = await firstValueFrom(this.apiService.listar<any>('usuarios/me'))
-      console.log('✅ Datos obtenidos del usuario actual:', response)
-      this.usuarioPermisos.set(response.permissions || [])
-      console.log('🔐 Permisos del usuario actual:', this.usuarioPermisos())
+      console.log('🔄 Obteniendo permisos del usuario actual...');
+      const response = await firstValueFrom(
+        this.apiService.listar<any>('usuarios/me')
+      );
+      console.log('✅ Datos obtenidos del usuario actual:', response);
+      this.usuarioPermisos.set(response.permissions || []);
+      console.log('🔐 Permisos del usuario actual:', this.usuarioPermisos());
     } catch (error) {
-      console.error('❌ Error al obtener permisos del usuario actual:', error)
+      console.error('❌ Error al obtener permisos del usuario actual:', error);
     } finally {
       this.loading.set(false);
     }
@@ -93,7 +104,9 @@ export class Usuarios implements OnInit {
       this.loading.set(true);
       this.error.set(null);
 
-      const response = await firstValueFrom(this.apiService.listar<any>('usuarios'));
+      const response = await firstValueFrom(
+        this.apiService.listar<any>('usuarios')
+      );
       console.log('✅ Usuarios cargados:', response);
 
       this.usuarios.set(response);
@@ -115,11 +128,35 @@ export class Usuarios implements OnInit {
       console.log('🔄 Creando usuario:', userData);
       this.operationLoading.set(true);
 
-      const response = await firstValueFrom(this.apiService.crear<any>('usuarios', userData));
+      // Crear FormData si hay foto
+      let dataToSend: any;
+      if (userData.photo instanceof File) {
+        const formData = new FormData();
+        Object.keys(userData).forEach((key) => {
+          if (key === 'photo') {
+            formData.append(key, userData[key]);
+          } else if (key === 'group_ids' && Array.isArray(userData[key])) {
+            userData[key].forEach((id: number) =>
+              formData.append('group_ids', id.toString())
+            );
+          } else if (userData[key] !== null && userData[key] !== undefined) {
+            formData.append(key, userData[key]);
+          }
+        });
+        dataToSend = formData;
+      } else {
+        // Si no hay foto, remover el campo del objeto
+        const { photo, ...dataWithoutPhoto } = userData;
+        dataToSend = dataWithoutPhoto;
+      }
+
+      const response = await firstValueFrom(
+        this.apiService.crear<any>('usuarios', dataToSend)
+      );
       console.log('✅ Usuario creado:', response);
 
       // Actualizar la lista local agregando el nuevo usuario
-      this.usuarios.update(users => [...users, response]);
+      this.usuarios.update((users) => [...users, response]);
       this.showMessage('Usuario creado correctamente');
 
       return response;
@@ -140,12 +177,36 @@ export class Usuarios implements OnInit {
       console.log('🔄 Editando usuario:', id, userData);
       this.operationLoading.set(true);
 
-      const response = await firstValueFrom(this.apiService.actualizar<any>('usuarios', id, userData));
+      // Crear FormData si hay foto
+      let dataToSend: any;
+      if (userData.photo instanceof File) {
+        const formData = new FormData();
+        Object.keys(userData).forEach((key) => {
+          if (key === 'photo') {
+            formData.append(key, userData[key]);
+          } else if (key === 'group_ids' && Array.isArray(userData[key])) {
+            userData[key].forEach((id: number) =>
+              formData.append('group_ids', id.toString())
+            );
+          } else if (userData[key] !== null && userData[key] !== undefined) {
+            formData.append(key, userData[key]);
+          }
+        });
+        dataToSend = formData;
+      } else {
+        // Si no hay foto nueva, remover el campo photo del objeto
+        const { photo, ...dataWithoutPhoto } = userData;
+        dataToSend = dataWithoutPhoto;
+      }
+
+      const response = await firstValueFrom(
+        this.apiService.actualizar<any>('usuarios', id, dataToSend)
+      );
       console.log('✅ Usuario editado:', response);
 
       // Actualizar la lista local
-      this.usuarios.update(users =>
-        users.map(user => user.id === id ? { ...user, ...response } : user)
+      this.usuarios.update((users) =>
+        users.map((user) => (user.id === id ? { ...user, ...response } : user))
       );
       this.showMessage('Usuario editado correctamente');
 
@@ -171,9 +232,8 @@ export class Usuarios implements OnInit {
       console.log('✅ Usuario eliminado:', id);
 
       // Actualizar la lista local removiendo el usuario
-      this.usuarios.update(users => users.filter(user => user.id !== id));
+      this.usuarios.update((users) => users.filter((user) => user.id !== id));
       this.showMessage('Usuario eliminado correctamente');
-
     } catch (error) {
       console.error('❌ Error al eliminar usuario:', error);
       this.showMessage('Error al eliminar usuario', 'error');
@@ -191,7 +251,9 @@ export class Usuarios implements OnInit {
       console.log('🔄 Obteniendo usuario:', id);
       this.operationLoading.set(true);
 
-      const response = await firstValueFrom(this.apiService.obtener<any>('usuarios', id));
+      const response = await firstValueFrom(
+        this.apiService.obtener<any>('usuarios', id)
+      );
       console.log('✅ Usuario obtenido:', response);
 
       this.selectedUser.set(response);
@@ -211,7 +273,7 @@ export class Usuarios implements OnInit {
   private showMessage(message: string, type: 'success' | 'error' = 'success') {
     this.snackBar.open(message, 'Cerrar', {
       duration: 3000,
-      panelClass: type === 'error' ? ['error-snackbar'] : ['success-snackbar']
+      panelClass: type === 'error' ? ['error-snackbar'] : ['success-snackbar'],
     });
   }
 
@@ -224,7 +286,7 @@ export class Usuarios implements OnInit {
     const dialogRef = this.dialog.open(UsuariosDialog, {
       width: '500px',
       data: { usuario: null }, // null = modo creación
-      disableClose: true
+      disableClose: true,
     });
 
     dialogRef.afterClosed().subscribe(async (result) => {
@@ -242,7 +304,7 @@ export class Usuarios implements OnInit {
     const dialogRef = this.dialog.open(UsuariosDialog, {
       width: '500px',
       data: { usuario }, // pasar usuario = modo edición
-      disableClose: true
+      disableClose: true,
     });
 
     dialogRef.afterClosed().subscribe(async (result) => {
@@ -263,8 +325,21 @@ export class Usuarios implements OnInit {
     }
   }
 
-  onVerDetalles(usuario: any) {
+  async onVerDetalles(usuario: any) {
     console.log('👀 Ver detalles:', usuario);
-    this.obtenerUsuario(usuario.id);
+
+    try {
+      // Obtener datos completos del usuario
+      const usuarioCompleto = await this.obtenerUsuario(usuario.id);
+
+      // Abrir dialog con los detalles
+      this.dialog.open(UsuariosDetalleDialog, {
+        width: '600px',
+        data: { usuario: usuarioCompleto },
+        disableClose: false,
+      });
+    } catch (error) {
+      console.error('Error al obtener detalles del usuario:', error);
+    }
   }
 }
