@@ -84,6 +84,27 @@
       }
     </mat-form-field>
 
+    <!-- Hotel Field -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Hotel</mat-label>
+      @if (loadingHoteles()) {
+      <mat-select formControlName="hotel" [disabled]="true">
+        <mat-option value="">Cargando hoteles...</mat-option>
+      </mat-select>
+      } @else {
+      <mat-select formControlName="hotel" placeholder="Seleccione un hotel">
+        <mat-option value="">-- Seleccionar Hotel --</mat-option>
+        @for (hotel of hotelesDisponibles(); track hotel.id) {
+        <mat-option [value]="hotel.id"> {{ hotel.nombre }} </mat-option>
+        }
+      </mat-select>
+      }
+      <mat-icon matSuffix>hotel</mat-icon>
+      @if (hasError('hotel')) {
+      <mat-error>{{ getErrorMessage('hotel') }}</mat-error>
+      }
+    </mat-form-field>
+
     <!-- Password Field -->
     <mat-form-field appearance="outline" class="full-width">
       <mat-label

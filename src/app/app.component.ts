@@ -22,12 +22,9 @@ export class AppComponent implements OnInit {
   }
 
   private cargarConfiguracionInicial() {
-    // Obtener hotelId del usuario autenticado
-    const hotelId = this.configuracionService.obtenerHotelIdActual();
+    console.log('🎨 Cargando configuración de apariencia del hotel del usuario autenticado...');
 
-    console.log('🎨 Cargando configuración de apariencia para hotel:', hotelId);
-
-    this.configuracionService.cargarConfiguracion(hotelId).subscribe({
+    this.configuracionService.cargarConfiguracion().subscribe({
       next: (config) => {
         console.log(
           '✅ Configuración de apariencia aplicada al inicio:',
