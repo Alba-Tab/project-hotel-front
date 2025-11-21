@@ -56,48 +56,51 @@ export class CrearBackupComponent implements OnInit {
   ];
 
   ngOnInit(): void {
-    // 🎯 Capturar el tenant automáticamente al cargar el componente
-    this.capturarTenantDesdeURL();
+    // 🎯 Cargar el tenant desde el usuario logueado
+    this.cargarTenantDesdeLogin();
   }
 
   /**
-   * 🔍 Captura el subdominio (tenant) de la URL actual
-   * Ejemplo: noelhotel.localhost:4200 → schemaName = "noelhotel"
+   * 🔍 Obtiene el tenant_schema del usuario logueado (guardado en localStorage)
    */
-  capturarTenantDesdeURL(): void {
-    const hostname = window.location.hostname;
+  cargarTenantDesdeLogin(): void {
+    try {
+      const userStr = localStorage.getItem('user');
 
-    console.log('🌐 URL completa:', window.location.href);
-    console.log('🏠 Hostname:', hostname);
+      console.log('🔍 Buscando tenant en localStorage...');
 
-    // Extraer el subdominio (todo antes del primer punto)
-    const partes = hostname.split('.');
+      if (userStr) {
+        const user = JSON.parse(userStr);
 
-    if (partes.length > 1) {
-      // Si hay subdominios (ej: noelhotel.localhost)
-      const subdominio = partes[0];
+        if (user && user.tenant_schema) {
+          this.schemaName = user.tenant_schema;
+          console.log('✅ Tenant cargado desde login:', this.schemaName);
 
-      // Validar que no sea 'localhost' o 'www' o IPs
-      if (subdominio !== 'localhost' &&
-          subdominio !== 'www' &&
-          subdominio !== '127' &&
-          !subdominio.match(/^\d+$/)) { // No es un número (IP)
-        this.schemaName = subdominio;
-        console.log('✅ Tenant capturado:', this.schemaName);
-
-        // Mostrar notificación de éxito
-        this.snackBar.open(`✅ Tenant detectado: ${this.schemaName}`, 'Cerrar', {
-          duration: 3000,
-          panelClass: ['success-snackbar']
-        });
+          // Mostrar notificación de éxito
+          this.snackBar.open(`✅ Tenant detectado automáticamente: ${this.schemaName}`, 'Cerrar', {
+            duration: 3000,
+            panelClass: ['success-snackbar']
+          });
+        } else {
+          this.schemaName = '';
+          console.log('⚠️ Usuario sin tenant_schema');
+        }
       } else {
         this.schemaName = '';
-        console.log('⚠️ No se detectó tenant válido (es localhost directo)');
+        console.log('⚠️ No hay usuario logueado');
+
+        this.snackBar.open(
+          '⚠️ Debes iniciar sesión para crear backups',
+          'Cerrar',
+          {
+            duration: 5000,
+            panelClass: ['warning-snackbar']
+          }
+        );
       }
-    } else {
-      // Si solo es 'localhost' o una IP sin subdominios
+    } catch (error) {
+      console.error('❌ Error al cargar tenant:', error);
       this.schemaName = '';
-      console.log('⚠️ URL sin subdominios (localhost o IP directa)');
     }
   }
 
@@ -115,7 +118,7 @@ export class CrearBackupComponent implements OnInit {
     // Validación adicional para tenant
     if (this.tipoBackup === 'tenant' && !this.schemaName) {
       this.snackBar.open(
-        '⚠️ No se detectó un tenant. Accede desde un subdominio (ej: noelhotel.localhost:4200)',
+        '⚠️ No se pudo detectar el tenant. Por favor, inicia sesión nuevamente.',
         'Cerrar',
         {
           duration: 5000,
