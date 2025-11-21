@@ -43,12 +43,13 @@ export class ConfiguracionAparienciaService {
 
   /**
    * 1️⃣ CARGAR configuración desde backend
+   * Ahora usa el endpoint /mi-hotel/ que obtiene automáticamente el hotel del usuario autenticado
    */
-  cargarConfiguracion(hotelId: number): Observable<ConfiguracionAparienciaData | null> {
+  cargarConfiguracion(): Observable<ConfiguracionAparienciaData | null> {
     this.cargandoSignal.set(true);
     this.errorSignal.set(null);
 
-    return this.apiService.obtener<ConfiguracionAparienciaData>('configuracion-apariencia', hotelId)
+    return this.apiService.listar<ConfiguracionAparienciaData>('configuracion-apariencia/mi-hotel')
       .pipe(
         tap(config => {
           // ✅ Al recibir datos, actualizar el signal
@@ -59,7 +60,7 @@ export class ConfiguracionAparienciaService {
           console.error('Error:', error);
 
           // 🔥 Si falla, aplicar valores por defecto
-          const configPorDefecto = this.obtenerConfiguracionPorDefecto(hotelId);
+          const configPorDefecto = this.obtenerConfiguracionPorDefecto();
           this.configuracionSignal.set(configPorDefecto);
 
           return of(configPorDefecto);
@@ -74,7 +75,8 @@ export class ConfiguracionAparienciaService {
   /**
    * 📋 OBTENER configuración por defecto
    */
-  private obtenerConfiguracionPorDefecto(hotelId: number): ConfiguracionAparienciaData {
+  private obtenerConfiguracionPorDefecto(): ConfiguracionAparienciaData {
+    const hotelId = this.obtenerHotelIdActual();
     return {
       hotel: hotelId,
       color_primario: '#00a1ff',
@@ -107,12 +109,14 @@ export class ConfiguracionAparienciaService {
 
   /**
    * 2️⃣ GUARDAR configuración en backend
+   * Ahora usa el endpoint /mi-hotel/ que identifica automáticamente el hotel del usuario
    */
-  guardarConfiguracion(hotelId: number, datos: Partial<ConfiguracionAparienciaData>): Observable<ConfiguracionAparienciaData | null> {
+  guardarConfiguracion(datos: Partial<ConfiguracionAparienciaData>): Observable<ConfiguracionAparienciaData | null> {
     this.cargandoSignal.set(true);
     this.errorSignal.set(null);
 
-    return this.apiService.actualizar<ConfiguracionAparienciaData>('configuracion-apariencia/hotel', hotelId, datos)
+    // Usar el endpoint genérico de actualización sin ID
+    return this.apiService.crear<ConfiguracionAparienciaData>('configuracion-apariencia/mi-hotel', datos)
       .pipe(
         tap(config => {
           // ✅ Al guardar, actualizar el signal con los nuevos datos

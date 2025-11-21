@@ -97,8 +97,7 @@ export class ConfiguracionApariencia implements OnInit {
 
   // 📡 CARGAR CONFIGURACIÓN INICIAL
   private cargarConfiguracion(): void {
-    const id = this.hotelId();
-    this.configuracionService.cargarConfiguracion(id).subscribe({
+    this.configuracionService.cargarConfiguracion().subscribe({
       next: () => {
         console.log('✅ Configuración cargada');
       },
@@ -155,10 +154,9 @@ export class ConfiguracionApariencia implements OnInit {
     }
 
     this.guardando.set(true);
-    const hotelId = this.hotelId();
     const datos = this.formulario.value;
 
-    this.configuracionService.guardarConfiguracion(hotelId, datos).subscribe({
+    this.configuracionService.guardarConfiguracion(datos).subscribe({
       next: (config) => {
         console.log('✅ Configuración guardada:', config);
         this.mostrarMensaje('Configuración guardada correctamente', 'success');
