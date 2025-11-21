@@ -1,0 +1,149 @@
+<div mat-dialog-title class="d-flex align-items-center">
+  <mat-icon class="text-primary me-2">visibility</mat-icon>
+  <span>Detalles del Usuario</span>
+</div>
+
+<mat-dialog-content class="dialog-content">
+  @if (usuario) {
+  <div class="user-details-container">
+    <!-- Foto de perfil -->
+    <div class="photo-section text-center mb-4">
+      @if (usuario.photo_url) {
+      <img
+        [src]="usuario.photo_url"
+        [alt]="usuario.username"
+        class="profile-photo rounded-circle"
+      />
+      } @else {
+      <div class="no-photo-placeholder rounded-circle">
+        <mat-icon class="large-icon">account_circle</mat-icon>
+      </div>
+      }
+    </div>
+
+    <!-- Información del usuario -->
+    <div class="info-section">
+      <div class="info-row">
+        <div class="info-label">
+          <mat-icon>badge</mat-icon>
+          <strong>ID:</strong>
+        </div>
+        <div class="info-value">{{ usuario.id }}</div>
+      </div>
+
+      <div class="info-row">
+        <div class="info-label">
+          <mat-icon>account_circle</mat-icon>
+          <strong>Username:</strong>
+        </div>
+        <div class="info-value">{{ usuario.username }}</div>
+      </div>
+
+      <div class="info-row">
+        <div class="info-label">
+          <mat-icon>person</mat-icon>
+          <strong>Nombre completo:</strong>
+        </div>
+        <div class="info-value">
+          {{ usuario.first_name }} {{ usuario.last_name }}
+        </div>
+      </div>
+
+      <div class="info-row">
+        <div class="info-label">
+          <mat-icon>email</mat-icon>
+          <strong>Email:</strong>
+        </div>
+        <div class="info-value">{{ usuario.email }}</div>
+      </div>
+
+      <div class="info-row">
+        <div class="info-label">
+          <mat-icon>hotel</mat-icon>
+          <strong>Hotel:</strong>
+        </div>
+        <div class="info-value">{{ usuario.hotel_name || 'No asignado' }}</div>
+      </div>
+
+      <div class="info-row">
+        <div class="info-label">
+          <mat-icon>security</mat-icon>
+          <strong>Roles:</strong>
+        </div>
+        <div class="info-value">
+          @if (usuario.groups && usuario.groups.length > 0) {
+          <div class="roles-chips">
+            @for (group of usuario.groups; track group.id) {
+            <mat-chip class="role-chip">{{ group.name }}</mat-chip>
+            }
+          </div>
+          } @else {
+          <span class="no-data">Sin roles asignados</span>
+          }
+        </div>
+      </div>
+
+      @if (usuario.permissions && usuario.permissions.length > 0) {
+      <div class="info-row">
+        <div class="info-label">
+          <mat-icon>verified_user</mat-icon>
+          <strong>Permisos:</strong>
+        </div>
+        <div class="info-value">
+          <div class="permissions-list">
+            {{ usuario.permissions.length }} permisos asignados
+          </div>
+        </div>
+      </div>
+      } @if (usuario.date_joined) {
+      <div class="info-row">
+        <div class="info-label">
+          <mat-icon>calendar_today</mat-icon>
+          <strong>Fecha de registro:</strong>
+        </div>
+        <div class="info-value">
+          {{ usuario.date_joined | date: 'dd/MM/yyyy HH:mm' }}
+        </div>
+      </div>
+      } @if (usuario.last_login) {
+      <div class="info-row">
+        <div class="info-label">
+          <mat-icon>login</mat-icon>
+          <strong>Último acceso:</strong>
+        </div>
+        <div class="info-value">
+          {{ usuario.last_login | date: 'dd/MM/yyyy HH:mm' }}
+        </div>
+      </div>
+      }
+
+      <div class="info-row">
+        <div class="info-label">
+          <mat-icon
+            >{{ usuario.is_active ? 'check_circle' : 'cancel' }}</mat-icon
+          >
+          <strong>Estado:</strong>
+        </div>
+        <div class="info-value">
+          <span
+            [class]="usuario.is_active ? 'status-active' : 'status-inactive'"
+          >
+            {{ usuario.is_active ? 'Activo' : 'Inactivo' }}
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+  } @else {
+  <div class="text-center p-4">
+    <p>No se encontraron detalles del usuario</p>
+  </div>
+  }
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-raised-button color="primary" (click)="onClose()">
+    <mat-icon>close</mat-icon>
+    Cerrar
+  </button>
+</mat-dialog-actions>

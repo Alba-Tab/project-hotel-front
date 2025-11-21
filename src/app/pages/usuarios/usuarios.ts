@@ -10,6 +10,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDialogModule, MatDialog } from '@angular/material/dialog';
 import { ApiService } from '../../services/api.service';
 import { UsuariosDialog } from './usuarios-dialog/usuarios-dialog';
+import { UsuariosDetalleDialog } from './usuarios-detalle-dialog/usuarios-detalle-dialog';
 import { firstValueFrom } from 'rxjs';
 
 @Component({
@@ -324,8 +325,21 @@ export class Usuarios implements OnInit {
     }
   }
 
-  onVerDetalles(usuario: any) {
+  async onVerDetalles(usuario: any) {
     console.log('👀 Ver detalles:', usuario);
-    this.obtenerUsuario(usuario.id);
+
+    try {
+      // Obtener datos completos del usuario
+      const usuarioCompleto = await this.obtenerUsuario(usuario.id);
+
+      // Abrir dialog con los detalles
+      this.dialog.open(UsuariosDetalleDialog, {
+        width: '600px',
+        data: { usuario: usuarioCompleto },
+        disableClose: false,
+      });
+    } catch (error) {
+      console.error('Error al obtener detalles del usuario:', error);
+    }
   }
 }

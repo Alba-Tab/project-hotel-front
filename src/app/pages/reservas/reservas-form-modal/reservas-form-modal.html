@@ -69,20 +69,40 @@
         </mat-form-field>
       </div>
 
-      <!-- Huésped -->
+      <!-- Huésped con Autocomplete -->
       <div class="col-12 col-md-6 mb-4">
         <mat-form-field appearance="outline" class="w-100">
           <mat-label>Huésped</mat-label>
-          <mat-select formControlName="huesped">
-            <mat-option *ngIf="cargandoHuespedes" disabled
-              >Cargando huéspedes...</mat-option
+          <input
+            type="text"
+            matInput
+            [formControl]="huespedControl"
+            [matAutocomplete]="autoHuesped"
+            placeholder="Buscar huésped por nombre o email"
+          />
+          <mat-icon matSuffix>person</mat-icon>
+          <mat-autocomplete
+            #autoHuesped="matAutocomplete"
+            [displayWith]="displayHuesped.bind(this)"
+            (optionSelected)="reservaForm.get('huesped')?.setValue($event.option.value)"
+          >
+            <mat-option *ngIf="cargandoHuespedes" disabled>
+              Cargando huéspedes...
+            </mat-option>
+            <mat-option
+              *ngFor="let huesped of huespedesFiltrados"
+              [value]="huesped.id"
             >
-            <mat-option *ngFor="let huesped of huespedes" [value]="huesped.id">
               {{ huesped.first_name }} {{ huesped.last_name }} - {{
               huesped.email }}
             </mat-option>
-          </mat-select>
-          <mat-icon matSuffix>person</mat-icon>
+            <mat-option
+              *ngIf="!cargandoHuespedes && huespedesFiltrados.length === 0"
+              disabled
+            >
+              No se encontraron huéspedes
+            </mat-option>
+          </mat-autocomplete>
           <mat-error
             *ngIf="reservaForm.get('huesped')?.touched && reservaForm.get('huesped')?.invalid"
           >
@@ -116,9 +136,7 @@
       <div class="col-12 mb-4">
         <mat-form-field appearance="outline" class="w-100">
           <mat-label>Selecciona una habitación</mat-label>
-          <mat-select
-            formControlName="habitacion"
-          >
+          <mat-select formControlName="habitacion">
             <mat-option *ngIf="cargandoHabitaciones" disabled
               >Cargando habitaciones...</mat-option
             >
@@ -138,8 +156,8 @@
               *ngFor="let hab of habitacionesFiltradas"
               [value]="hab.id"
             >
-              Habitación {{ hab.numero }} — {{ hab.precio_noche |
-              currency:'USD' }}/noche ({{ hab.tipo | titlecase }})
+              Habitación {{ hab.numero }} — {{ hab.precio_noche | currency:'USD'
+              }}/noche ({{ hab.tipo | titlecase }})
             </mat-option>
           </mat-select>
           <mat-icon matSuffix>bed</mat-icon>
@@ -157,7 +175,9 @@
           <mat-label>Total (USD)</mat-label>
           <input matInput type="number" formControlName="total" readonly />
           <mat-icon matSuffix>attach_money</mat-icon>
-          <mat-hint>Este valor de las noches por el precio de la habitacion.</mat-hint>
+          <mat-hint
+            >Este valor de las noches por el precio de la habitacion.</mat-hint
+          >
         </mat-form-field>
       </div>
     </div>

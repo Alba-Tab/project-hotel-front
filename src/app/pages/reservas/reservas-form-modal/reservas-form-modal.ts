@@ -5,6 +5,7 @@ import {
   FormGroup,
   Validators,
   ReactiveFormsModule,
+  FormControl,
 } from '@angular/forms';
 import {
   MatDialogModule,
@@ -16,6 +17,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import {
   MatNativeDateModule,
@@ -38,6 +40,7 @@ import { ApiService } from 'src/app/services/api.service';
     MatFormFieldModule,
     MatInputModule,
     MatSelectModule,
+    MatAutocompleteModule,
     MatDatepickerModule,
     MatNativeDateModule,
   ],
@@ -55,10 +58,12 @@ export class ReservasFormModal {
   habitaciones: any[] = [];
   habitacionesFiltradas: any[] = [];
   huespedes: any[] = [];
+  huespedesFiltrados: any[] = [];
   hoteles: any[] = [];
   cargandoHabitaciones = false;
   cargandoHuespedes = false;
   cargandoHoteles = false;
+  huespedControl = new FormControl('');
 
   constructor(
     private fb: FormBuilder,
@@ -88,6 +93,11 @@ export class ReservasFormModal {
     this.obtenerHuespedes();
     this.obtenerHoteles();
 
+    // Configurar filtrado de huéspedes
+    this.huespedControl.valueChanges.subscribe((valor) => {
+      this.filtrarHuespedes(valor);
+    });
+
     // Deshabilitar habitación inicialmente si no hay hotel seleccionado
     if (!this.reservaForm.get('hotel')?.value) {
       this.reservaForm.get('habitacion')?.disable();
@@ -98,7 +108,7 @@ export class ReservasFormModal {
       this.filtrarHabitacionesPorHotel(hotelId);
       // Limpiar selección de habitación cuando cambia el hotel
       this.reservaForm.get('habitacion')?.setValue('');
-      
+
       // Habilitar o deshabilitar el control de habitación según si hay hotel seleccionado
       if (hotelId) {
         this.reservaForm.get('habitacion')?.enable();
@@ -117,6 +127,11 @@ export class ReservasFormModal {
         hotel: this.data.reserva.hotel,
         habitacion: this.data.reserva.habitacion,
       });
+
+      // Sincronizar el control de búsqueda de huésped con el valor seleccionado
+      if (this.data.reserva.huesped) {
+        this.huespedControl.setValue(this.data.reserva.huesped);
+      }
 
       // ['habitacion', 'fecha_entrada', 'fecha_salida'].forEach((campo) => {
       //   this.reservaForm
@@ -183,14 +198,45 @@ export class ReservasFormModal {
     this.apiService.listar<any>('usuarios').subscribe({
       next: (response) => {
         this.huespedes = this.apiService.normalizarRespuestaArray(response);
+        this.huespedesFiltrados = this.huespedes;
         this.cargandoHuespedes = false;
       },
       error: (error) => {
         console.error('Error al cargar huéspedes:', error);
         this.huespedes = [];
+        this.huespedesFiltrados = [];
         this.cargandoHuespedes = false;
       },
     });
+  }
+
+  /** Filtrar huéspedes por búsqueda */
+  filtrarHuespedes(valorBusqueda: string | any): void {
+    if (!valorBusqueda || typeof valorBusqueda !== 'string') {
+      this.huespedesFiltrados = this.huespedes;
+      return;
+    }
+
+    const busqueda = valorBusqueda.toLowerCase().trim();
+    this.huespedesFiltrados = this.huespedes.filter((huesped) => {
+      const nombre = `${huesped.first_name} ${huesped.last_name}`.toLowerCase();
+      const email = huesped.email?.toLowerCase() || '';
+      const username = huesped.username?.toLowerCase() || '';
+      return (
+        nombre.includes(busqueda) ||
+        email.includes(busqueda) ||
+        username.includes(busqueda)
+      );
+    });
+  }
+
+  /** Mostrar texto del huésped en el input */
+  displayHuesped(huespedId: number): string {
+    if (!huespedId) return '';
+    const huesped = this.huespedes.find((h) => h.id === huespedId);
+    return huesped
+      ? `${huesped.first_name} ${huesped.last_name} - ${huesped.email}`
+      : '';
   }
 
   /** Cargar hoteles desde la API */
@@ -265,7 +311,7 @@ export class ReservasFormModal {
       this.dialogRef.close(payload);
     } else {
       this.marcarCamposTocados();
-      
+
       // Restaurar el estado deshabilitado si era necesario
       if (habitacionDisabled && !this.reservaForm.get('hotel')?.value) {
         this.reservaForm.get('habitacion')?.disable();

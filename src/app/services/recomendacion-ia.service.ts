@@ -12,11 +12,11 @@ import {
   RechazarRecomendacionesResponse,
   HistorialRecomendacionesResponse,
   FiltrosHistorial,
-  EstadisticasRecomendaciones
+  EstadisticasRecomendaciones,
 } from '../interfaces/recomendacion-ia.interface';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class RecomendacionIAService {
   private apiService = inject(ApiService);
@@ -26,19 +26,22 @@ export class RecomendacionIAService {
     return this.apiService.listar<ListaRecomendacionesResponse>(this.endpoint);
   }
 
-
-  generarRecomendaciones(datos: GenerarRecomendacionesRequest = {}): Observable<GenerarRecomendacionesResponse> {
-    return this.apiService.crear<GenerarRecomendacionesResponse>(`${this.endpoint}/generar`, datos);
+  generarRecomendaciones(
+    datos: GenerarRecomendacionesRequest = {}
+  ): Observable<GenerarRecomendacionesResponse> {
+    return this.apiService.crear<GenerarRecomendacionesResponse>(
+      `${this.endpoint}/generar`,
+      datos
+    );
   }
 
-
   obtenerEstadisticas(): Observable<EstadisticasRecomendaciones> {
-    return this.apiService.listar<EstadisticasRecomendaciones>(`${this.endpoint}/estadisticas`);
+    return this.apiService.listar<EstadisticasRecomendaciones>(
+      `${this.endpoint}/estadisticas`
+    );
   }
 
   entrenarIA(tipo: string) {
-    return this.apiService.crear(`${this.endpoint}/entrenar`, { tipo
-    });
-}
-
+    return this.apiService.crear(`${this.endpoint}/entrenar`, { tipo });
+  }
 }

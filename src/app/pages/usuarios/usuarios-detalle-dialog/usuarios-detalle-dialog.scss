@@ -1,0 +1,137 @@
+.dialog-content {
+  min-width: 500px;
+  max-width: 600px;
+  padding: 24px 24px 16px;
+}
+
+.user-details-container {
+  display: flex;
+  flex-direction: column;
+}
+
+.photo-section {
+  margin-bottom: 24px;
+
+  .profile-photo {
+    width: 150px;
+    height: 150px;
+    object-fit: cover;
+    border: 3px solid #e0e0e0;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  .no-photo-placeholder {
+    width: 150px;
+    height: 150px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #f5f5f5;
+    border: 3px solid #e0e0e0;
+
+    .large-icon {
+      font-size: 100px;
+      width: 100px;
+      height: 100px;
+      color: #999;
+    }
+  }
+}
+
+.info-section {
+  .info-row {
+    display: flex;
+    padding: 12px 0;
+    border-bottom: 1px solid #f0f0f0;
+    gap: 16px;
+
+    &:last-child {
+      border-bottom: none;
+    }
+
+    .info-label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      min-width: 180px;
+      color: #666;
+      font-size: 14px;
+
+      mat-icon {
+        font-size: 20px;
+        width: 20px;
+        height: 20px;
+        color: #5d87ff;
+      }
+
+      strong {
+        font-weight: 500;
+      }
+    }
+
+    .info-value {
+      flex: 1;
+      color: #333;
+      font-size: 14px;
+      word-break: break-word;
+    }
+  }
+}
+
+.roles-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+
+  .role-chip {
+    background-color: #e3f2fd;
+    color: #1976d2;
+    font-size: 12px;
+    font-weight: 500;
+    padding: 4px 12px;
+    height: 28px;
+  }
+}
+
+.no-data {
+  color: #999;
+  font-style: italic;
+}
+
+.status-active {
+  color: #4caf50;
+  font-weight: 600;
+}
+
+.status-inactive {
+  color: #f44336;
+  font-weight: 600;
+}
+
+.permissions-list {
+  color: #666;
+  font-size: 13px;
+}
+
+mat-dialog-actions {
+  padding: 16px 24px;
+  margin: 0;
+}
+
+// Responsive
+@media (max-width: 768px) {
+  .dialog-content {
+    min-width: auto;
+    width: 100%;
+  }
+
+  .info-section .info-row {
+    flex-direction: column;
+    gap: 8px;
+
+    .info-label {
+      min-width: auto;
+    }
+  }
+}
