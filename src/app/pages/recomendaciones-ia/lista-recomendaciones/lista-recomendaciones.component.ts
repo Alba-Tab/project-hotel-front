@@ -41,12 +41,22 @@ export class ListaRecomendacionesComponent implements OnInit {
 
     this.recomendacionService.listarRecomendaciones().subscribe({
       next: (response: any) => {
-        this.recomendaciones = Array.isArray(response)
-          ? response
-          : response.recomendaciones || [];
+        // Manejar diferentes formatos de respuesta del backend
+        if (Array.isArray(response)) {
+          this.recomendaciones = response;
+        } else if (response && Array.isArray(response.recomendaciones)) {
+          this.recomendaciones = response.recomendaciones;
+        } else if (response && Array.isArray(response.results)) {
+          this.recomendaciones = response.results;
+        } else {
+          this.recomendaciones = [];
+        }
+
+        console.log(`Cargadas ${this.recomendaciones.length} recomendaciones`);
         this.cargando = false;
       },
-      error: () => {
+      error: (error) => {
+        console.error('Error cargando recomendaciones:', error);
         this.snackBar.open('❌ Error al cargar recomendaciones', 'Cerrar', {
           duration: 3000,
           panelClass: ['error-snackbar'],
@@ -67,21 +77,40 @@ export class ListaRecomendacionesComponent implements OnInit {
     });
 
     this.recomendacionService.generarRecomendaciones().subscribe({
-      next: (resp) => {
-        this.snackBar.open(
-          '✨ Recomendaciones generadas correctamente',
-          'Cerrar',
-          {
-            duration: 3000,
-            panelClass: ['success-snackbar'],
-          }
-        );
+      next: (resp: any) => {
+        const total = resp?.total_generadas || 0;
+        const errores = resp?.errores || [];
+
+        if (errores.length > 0) {
+          console.warn('Errores al generar recomendaciones:', errores);
+          this.snackBar.open(
+            `⚠️ Generadas con errores (${total} exitosas)`,
+            'Cerrar',
+            {
+              duration: 4000,
+              panelClass: ['warning-snackbar'],
+            }
+          );
+        } else {
+          this.snackBar.open(
+            `✨ ${total} recomendaciones generadas correctamente`,
+            'Cerrar',
+            {
+              duration: 3000,
+              panelClass: ['success-snackbar'],
+            }
+          );
+        }
+
         this.generando = false;
         this.cargarRecomendaciones();
       },
-      error: () => {
-        this.snackBar.open('❌ Error al generar recomendaciones', 'Cerrar', {
-          duration: 3000,
+      error: (error) => {
+        console.error('Error generando recomendaciones:', error);
+        const mensaje =
+          error?.error?.error || 'Error al generar recomendaciones';
+        this.snackBar.open(`❌ ${mensaje}`, 'Cerrar', {
+          duration: 4000,
           panelClass: ['error-snackbar'],
         });
         this.generando = false;
@@ -90,49 +119,107 @@ export class ListaRecomendacionesComponent implements OnInit {
   }
 
   /**
-   * Entrenar modelo IA manualmente
+   * Entrenar modelo IA manualmente (secuencial)
    */
-  entrenarIA(): void {
+  async entrenarIA(): Promise<void> {
     this.entrenando = true;
-
-    this.snackBar.open('🔄 Entrenando IA para todos los tipos...', 'Cerrar', {
-      duration: 2000,
-    });
 
     // Obtener todos los tipos de las recomendaciones actuales
     const tipos = Array.from(
-      new Set(this.recomendaciones.map((r) => r.habitacion_detalle.tipo))
+      new Set(this.recomendaciones.map((r) => r.habitacion_detalle?.tipo))
+    ).filter((tipo) => tipo); // Filtrar undefined/null
+
+    if (tipos.length === 0) {
+      this.snackBar.open(
+        '⚠️ No hay tipos de habitación para entrenar',
+        'Cerrar',
+        {
+          duration: 3000,
+          panelClass: ['warning-snackbar'],
+        }
+      );
+      this.entrenando = false;
+      return;
+    }
+
+    this.snackBar.open(
+      `🔄 Entrenando IA para ${tipos.length} tipos...`,
+      'Cerrar',
+      {
+        duration: 2000,
+      }
     );
 
-    let completados = 0;
+    let exitosos = 0;
+    let fallidos = 0;
+    const resultados: string[] = [];
 
-    tipos.forEach((tipo) => {
-      this.recomendacionService.entrenarIA(tipo).subscribe({
-        next: () => {
-          completados++;
+    // Entrenar secuencialmente cada tipo
+    for (const tipo of tipos) {
+      try {
+        const response = await this.recomendacionService
+          .entrenarIA(tipo)
+          .toPromise();
 
-          if (completados === tipos.length) {
-            this.snackBar.open(
-              `🤖 Modelos entrenados correctamente`,
-              'Cerrar',
-              {
-                duration: 4000,
-                panelClass: ['success-snackbar'],
-              }
+        // Validar respuesta del backend
+        if (response && typeof response === 'object') {
+          const resp = response as any;
+
+          if (resp.exito) {
+            exitosos++;
+            resultados.push(
+              `✅ ${tipo}: ${resp.mensaje} (${resp.confianza?.toFixed(2)}%)`
             );
-            this.entrenando = false;
-            this.cargarRecomendaciones();
+          } else {
+            fallidos++;
+            resultados.push(`⚠️ ${tipo}: ${resp.mensaje}`);
           }
-        },
-        error: () => {
-          this.snackBar.open(`❌ Error entrenando tipo ${tipo}`, 'Cerrar', {
-            duration: 3000,
-            panelClass: ['error-snackbar'],
-          });
-          this.entrenando = false;
-        },
-      });
-    });
+        } else {
+          exitosos++;
+          resultados.push(`✅ ${tipo}: Entrenado`);
+        }
+      } catch (error: any) {
+        fallidos++;
+        const mensaje =
+          error?.error?.error || error?.message || 'Error desconocido';
+        resultados.push(`❌ ${tipo}: ${mensaje}`);
+      }
+    }
+
+    // Mostrar resumen
+    console.log('Resultados de entrenamiento:', resultados);
+
+    if (exitosos > 0 && fallidos === 0) {
+      this.snackBar.open(
+        `🤖 Todos los modelos entrenados (${exitosos}/${tipos.length})`,
+        'Cerrar',
+        {
+          duration: 4000,
+          panelClass: ['success-snackbar'],
+        }
+      );
+    } else if (exitosos > 0) {
+      this.snackBar.open(
+        `⚠️ Entrenamiento parcial (${exitosos} exitosos, ${fallidos} fallidos)`,
+        'Cerrar',
+        {
+          duration: 5000,
+          panelClass: ['warning-snackbar'],
+        }
+      );
+    } else {
+      this.snackBar.open(
+        `❌ Error al entrenar modelos. Verifica que haya suficientes datos históricos.`,
+        'Cerrar',
+        {
+          duration: 5000,
+          panelClass: ['error-snackbar'],
+        }
+      );
+    }
+
+    this.entrenando = false;
+    this.cargarRecomendaciones();
   }
 
   /**

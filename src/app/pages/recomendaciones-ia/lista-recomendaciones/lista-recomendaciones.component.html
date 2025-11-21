@@ -35,11 +35,22 @@
 
     <!-- Si no hay recomendaciones -->
     <div *ngIf="recomendaciones.length === 0" class="sin-recomendaciones">
-      <mat-icon>lightbulb_outline</mat-icon>
-      <p>No hay recomendaciones disponibles</p>
-      <button mat-raised-button color="primary" (click)="generarRecomendaciones()">
-        Generar Recomendaciones
-      </button>
+      <mat-icon style="font-size: 48px; width: 48px; height: 48px; color: #666;">lightbulb_outline</mat-icon>
+      <h3 style="margin-top: 16px; margin-bottom: 8px;">No hay recomendaciones disponibles</h3>
+      <p style="color: #666; margin-bottom: 24px;">
+        Para empezar, primero entrena el modelo de IA con tus datos históricos,<br>
+        luego genera las recomendaciones de precios.
+      </p>
+      <div style="display: flex; gap: 12px; justify-content: center;">
+        <button mat-stroked-button color="primary" (click)="entrenarIA()" [disabled]="entrenando">
+          <mat-icon>psychology</mat-icon>
+          {{ entrenando ? 'Entrenando...' : '1. Entrenar IA' }}
+        </button>
+        <button mat-raised-button color="primary" (click)="generarRecomendaciones()" [disabled]="generando">
+          <mat-icon>auto_awesome</mat-icon>
+          {{ generando ? 'Generando...' : '2. Generar Recomendaciones' }}
+        </button>
+      </div>
     </div>
 
     <!-- Tabla principal -->
