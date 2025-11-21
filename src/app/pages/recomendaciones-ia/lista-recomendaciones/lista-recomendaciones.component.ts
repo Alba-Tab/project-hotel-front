@@ -80,8 +80,8 @@ export class ListaRecomendacionesComponent implements OnInit {
    */
   cargarHabitaciones(): void {
     this.apiService.listar('habitaciones/').subscribe({
-      next: (habitaciones: any) => {
-        const habArray = Array.isArray(habitaciones) ? habitaciones : [];
+      next: (response: any) => {
+        const habArray = this.apiService.normalizarRespuestaArray(response);
         habArray.forEach((hab: any) => {
           this.habitacionesMap.set(hab.id, hab);
         });

@@ -67,7 +67,8 @@ export class HabitacionesComponent implements OnInit {
 
      cargarHabitaciones() {
        this.apiService.listar('habitaciones/').subscribe({
-         next: (habitaciones: any) => {
+         next: (response: any) => {
+           const habitaciones = this.apiService.normalizarRespuestaArray(response);
            this.datos = habitaciones.map((habitacion: any) => ({
              ...habitacion,
              numero: habitacion.numero,

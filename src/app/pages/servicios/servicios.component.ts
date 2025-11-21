@@ -23,10 +23,10 @@ import { firstValueFrom } from 'rxjs';
     MatIconModule,
     MatSnackBarModule,
     MatTooltipModule,
-    MatDialogModule
+    MatDialogModule,
   ],
   templateUrl: './servicios.component.html',
-  styleUrl: './servicios.component.scss'
+  styleUrl: './servicios.component.scss',
 })
 export class ServiciosComponent implements OnInit {
   private apiService = inject(ApiService);
@@ -40,7 +40,14 @@ export class ServiciosComponent implements OnInit {
   selectedService = signal<any | null>(null);
   operationLoading = signal(false);
 
-  displayedColumns: string[] = ['id', 'nombre', 'descripcion', 'precio', 'tipo', 'acciones'];
+  displayedColumns: string[] = [
+    'id',
+    'nombre',
+    'descripcion',
+    'precio',
+    'tipo',
+    'acciones',
+  ];
 
   ngOnInit() {
     this.cargarServicios();
@@ -55,10 +62,13 @@ export class ServiciosComponent implements OnInit {
       this.loading.set(true);
       this.error.set(null);
 
-      const response = await firstValueFrom(this.apiService.listar<any>('servicios'));
+      const response = await firstValueFrom(
+        this.apiService.listar<any>('servicios')
+      );
       console.log('✅ Servicios cargados:', response);
 
-      this.servicios.set(response);
+      const servicios = this.apiService.normalizarRespuestaArray(response);
+      this.servicios.set(servicios);
       this.showMessage('Servicios cargados correctamente');
     } catch (error) {
       console.error('❌ Error al cargar servicios:', error);
@@ -77,11 +87,13 @@ export class ServiciosComponent implements OnInit {
       console.log('🔄 Creando servicio:', servicioData);
       this.operationLoading.set(true);
 
-      const response = await firstValueFrom(this.apiService.crear<any>('servicios', servicioData));
+      const response = await firstValueFrom(
+        this.apiService.crear<any>('servicios', servicioData)
+      );
       console.log('✅ Servicio creado:', response);
 
       // Actualizar la lista local agregando el nuevo servicio
-      this.servicios.update(services => [...services, response]);
+      this.servicios.update((services) => [...services, response]);
       this.showMessage('Servicio creado correctamente');
 
       return response;
@@ -102,12 +114,16 @@ export class ServiciosComponent implements OnInit {
       console.log('🔄 Editando servicio:', id, servicioData);
       this.operationLoading.set(true);
 
-      const response = await firstValueFrom(this.apiService.actualizar<any>('servicios', id, servicioData));
+      const response = await firstValueFrom(
+        this.apiService.actualizar<any>('servicios', id, servicioData)
+      );
       console.log('✅ Servicio editado:', response);
 
       // Actualizar la lista local
-      this.servicios.update(services =>
-        services.map(service => service.id === id ? { ...service, ...response } : service)
+      this.servicios.update((services) =>
+        services.map((service) =>
+          service.id === id ? { ...service, ...response } : service
+        )
       );
       this.showMessage('Servicio editado correctamente');
 
@@ -133,9 +149,10 @@ export class ServiciosComponent implements OnInit {
       console.log('✅ Servicio eliminado:', id);
 
       // Actualizar la lista local removiendo el servicio
-      this.servicios.update(services => services.filter(service => service.id !== id));
+      this.servicios.update((services) =>
+        services.filter((service) => service.id !== id)
+      );
       this.showMessage('Servicio eliminado correctamente');
-
     } catch (error) {
       console.error('❌ Error al eliminar servicio:', error);
       this.showMessage('Error al eliminar servicio', 'error');
@@ -153,7 +170,9 @@ export class ServiciosComponent implements OnInit {
       console.log('🔄 Obteniendo servicio:', id);
       this.operationLoading.set(true);
 
-      const response = await firstValueFrom(this.apiService.obtener<any>('servicios', id));
+      const response = await firstValueFrom(
+        this.apiService.obtener<any>('servicios', id)
+      );
       console.log('✅ Servicio obtenido:', response);
 
       this.selectedService.set(response);
@@ -173,7 +192,7 @@ export class ServiciosComponent implements OnInit {
   private showMessage(message: string, type: 'success' | 'error' = 'success') {
     this.snackBar.open(message, 'Cerrar', {
       duration: 3000,
-      panelClass: type === 'error' ? ['error-snackbar'] : ['success-snackbar']
+      panelClass: type === 'error' ? ['error-snackbar'] : ['success-snackbar'],
     });
   }
 
@@ -186,7 +205,7 @@ export class ServiciosComponent implements OnInit {
     const dialogRef = this.dialog.open(ServiciosDialog, {
       width: '500px',
       data: { servicio: null }, // null = modo creación
-      disableClose: true
+      disableClose: true,
     });
 
     dialogRef.afterClosed().subscribe(async (result) => {
@@ -202,7 +221,7 @@ export class ServiciosComponent implements OnInit {
     const dialogRef = this.dialog.open(ServiciosDialog, {
       width: '500px',
       data: { servicio }, // pasar servicio = modo edición
-      disableClose: true
+      disableClose: true,
     });
 
     dialogRef.afterClosed().subscribe(async (result) => {
@@ -224,5 +243,3 @@ export class ServiciosComponent implements OnInit {
     this.obtenerServicio(servicio.id);
   }
 }
-
-

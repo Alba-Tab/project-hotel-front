@@ -192,19 +192,28 @@ export class CrearServicioAsociadoComponent implements OnInit {
 
   cargarServicios() {
     this.apiService.listar<any>('servicios').subscribe({
-      next: (data) => (this.servicios = data),
-      error: (err) => console.error('Error al cargar servicios:', err),
+      next: (response) => {
+        this.servicios = this.apiService.normalizarRespuestaArray(response);
+      },
+      error: (err) => {
+        console.error('Error al cargar servicios:', err);
+        this.servicios = [];
+      },
     });
   }
 
   cargarFoliosEstancia() {
     this.apiService.listar<any>('folioestancias').subscribe({
-      next: (data) => {
-        this.foliosEstancia = (data || []).filter(
+      next: (response) => {
+        const data = this.apiService.normalizarRespuestaArray(response);
+        this.foliosEstancia = data.filter(
           (f: any) => f.estado?.toLowerCase() !== 'pagado'
         );
       },
-      error: (err) => console.error('Error al cargar folios:', err),
+      error: (err) => {
+        console.error('Error al cargar folios:', err);
+        this.foliosEstancia = [];
+      },
     });
   }
 
