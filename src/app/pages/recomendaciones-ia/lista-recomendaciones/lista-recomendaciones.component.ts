@@ -1,4 +1,3 @@
-
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RecomendacionIA } from '../../../interfaces/recomendacion-ia.interface';
@@ -16,13 +15,12 @@ import { MatIconModule } from '@angular/material/icon';
     MatSnackBarModule,
     MatButtonModule,
     MatProgressSpinnerModule,
-    MatIconModule
+    MatIconModule,
   ],
   templateUrl: './lista-recomendaciones.component.html',
-  styleUrl: './lista-recomendaciones.component.scss'
+  styleUrl: './lista-recomendaciones.component.scss',
 })
 export class ListaRecomendacionesComponent implements OnInit {
-
   private recomendacionService = inject(RecomendacionIAService);
   private snackBar = inject(MatSnackBar);
 
@@ -33,35 +31,6 @@ export class ListaRecomendacionesComponent implements OnInit {
 
   ngOnInit(): void {
     this.cargarRecomendaciones();
-    this.cargarHistorialReciente();
-  }
-
-  /**
-   * Cargar catálogo de habitaciones
-   */
-  cargarHabitaciones(): void {
-    this.apiService.listar('habitaciones/').subscribe({
-      next: (response: any) => {
-        const habArray = this.apiService.normalizarRespuestaArray(response);
-        habArray.forEach((hab: any) => {
-          this.habitacionesMap.set(hab.id, hab);
-        });
-        console.log('🏨 Habitaciones cargadas:', this.habitacionesMap.size);
-        console.log('🔑 IDs de habitaciones disponibles:', Array.from(this.habitacionesMap.keys()));
-
-        // Mostrar algunas habitaciones de ejemplo
-        const primerasCinco = habArray.slice(0, 5);
-        console.log('📋 Primeras 5 habitaciones:', primerasCinco.map((h: any) => ({
-          id: h.id,
-          numero: h.numero,
-          descripcion: h.descripcion,
-          precio: h.precio_noche
-        })));
-      },
-      error: (error: any) => {
-        console.error('❌ Error al cargar habitaciones:', error);
-      }
-    });
   }
 
   /**
@@ -74,16 +43,16 @@ export class ListaRecomendacionesComponent implements OnInit {
       next: (response: any) => {
         this.recomendaciones = Array.isArray(response)
           ? response
-          : (response.recomendaciones || []);
+          : response.recomendaciones || [];
         this.cargando = false;
       },
       error: () => {
         this.snackBar.open('❌ Error al cargar recomendaciones', 'Cerrar', {
           duration: 3000,
-          panelClass: ['error-snackbar']
+          panelClass: ['error-snackbar'],
         });
         this.cargando = false;
-      }
+      },
     });
   }
 
@@ -94,25 +63,29 @@ export class ListaRecomendacionesComponent implements OnInit {
     this.generando = true;
 
     this.snackBar.open('⏳ Generando recomendaciones...', 'Cerrar', {
-      duration: 3000
+      duration: 3000,
     });
 
     this.recomendacionService.generarRecomendaciones().subscribe({
       next: (resp) => {
-        this.snackBar.open('✨ Recomendaciones generadas correctamente', 'Cerrar', {
-          duration: 3000,
-          panelClass: ['success-snackbar']
-        });
+        this.snackBar.open(
+          '✨ Recomendaciones generadas correctamente',
+          'Cerrar',
+          {
+            duration: 3000,
+            panelClass: ['success-snackbar'],
+          }
+        );
         this.generando = false;
         this.cargarRecomendaciones();
       },
       error: () => {
         this.snackBar.open('❌ Error al generar recomendaciones', 'Cerrar', {
           duration: 3000,
-          panelClass: ['error-snackbar']
+          panelClass: ['error-snackbar'],
         });
         this.generando = false;
-      }
+      },
     });
   }
 
@@ -122,25 +95,31 @@ export class ListaRecomendacionesComponent implements OnInit {
   entrenarIA(): void {
     this.entrenando = true;
 
-    this.snackBar.open('🔄 Entrenando IA para todos los tipos...', 'Cerrar', { duration: 2000 });
+    this.snackBar.open('🔄 Entrenando IA para todos los tipos...', 'Cerrar', {
+      duration: 2000,
+    });
 
     // Obtener todos los tipos de las recomendaciones actuales
     const tipos = Array.from(
-      new Set(this.recomendaciones.map(r => r.habitacion_detalle.tipo))
+      new Set(this.recomendaciones.map((r) => r.habitacion_detalle.tipo))
     );
 
     let completados = 0;
 
-    tipos.forEach(tipo => {
+    tipos.forEach((tipo) => {
       this.recomendacionService.entrenarIA(tipo).subscribe({
         next: () => {
           completados++;
 
           if (completados === tipos.length) {
-            this.snackBar.open(`🤖 Modelos entrenados correctamente`, 'Cerrar', {
-              duration: 4000,
-              panelClass: ['success-snackbar']
-            });
+            this.snackBar.open(
+              `🤖 Modelos entrenados correctamente`,
+              'Cerrar',
+              {
+                duration: 4000,
+                panelClass: ['success-snackbar'],
+              }
+            );
             this.entrenando = false;
             this.cargarRecomendaciones();
           }
@@ -148,14 +127,13 @@ export class ListaRecomendacionesComponent implements OnInit {
         error: () => {
           this.snackBar.open(`❌ Error entrenando tipo ${tipo}`, 'Cerrar', {
             duration: 3000,
-            panelClass: ['error-snackbar']
+            panelClass: ['error-snackbar'],
           });
           this.entrenando = false;
-        }
+        },
       });
     });
   }
-
 
   /**
    * Formato de valores
