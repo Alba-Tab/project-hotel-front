@@ -1,17 +1,30 @@
-
 <mat-card class="cardWithShadow">
   <mat-card-content>
-    <mat-card-title>Habitaciones</mat-card-title>
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <mat-card-title>Habitaciones</mat-card-title>
+      <div class="d-flex gap-2">
+        <button mat-raised-button color="accent" (click)="abrirModalReportes()">
+          <mat-icon>assessment</mat-icon>
+          <span>Generar Reporte</span>
+        </button>
+        <button mat-raised-button color="primary" (click)="abrirModal()">
+          <mat-icon>add</mat-icon>
+          <span>Crear Habitación</span>
+        </button>
+      </div>
+    </div>
 
     <div class="table-responsive">
       <table mat-table [dataSource]="datos" class="w-100">
         <!-- Position Column -->
         <ng-container matColumnDef="numero">
-          <th mat-header-cell *matHeaderCellDef class="f-w-600 f-s-14 p-l-0"> Numero </th>
+          <th mat-header-cell *matHeaderCellDef class="f-w-600 f-s-14 p-l-0">
+            Numero
+          </th>
           <td mat-cell *matCellDef="let element" class="p-l-0">
             <div class="d-flex align-items-center">
               <div class="m-l-16">
-                <h6 class="f-s-14 f-w-600"> {{ element.numero }} </h6>
+                <h6 class="f-s-14 f-w-600">{{ element.numero }}</h6>
               </div>
             </div>
           </td>
@@ -19,9 +32,21 @@
 
         <!-- Name Column -->
         <ng-container matColumnDef="descripcion">
-          <th mat-header-cell *matHeaderCellDef class="f-w-600 f-s-14"> Descripcion </th>
+          <th mat-header-cell *matHeaderCellDef class="f-w-600 f-s-14">
+            Descripcion
+          </th>
           <td mat-cell *matCellDef="let element">
             <span class="text-dark f-w-600">{{ element.descripcion }} </span>
+          </td>
+        </ng-container>
+
+        <!-- Name Column -->
+        <ng-container matColumnDef="Hotel">
+          <th mat-header-cell *matHeaderCellDef class="f-w-600 f-s-14">
+            Hotel
+          </th>
+          <td mat-cell *matCellDef="let element">
+            <span class="text-dark f-w-600">{{ element.nombre_hotel }} </span>
           </td>
         </ng-container>
 
@@ -42,8 +67,10 @@
             Precio noche
           </th>
           <td mat-cell *matCellDef="let element">
-            <span class="bg-light-error text-error rounded f-w-600 p-6 p-y-4 f-s-12">
-              {{ element.precio_noche | titlecase}}
+            <span
+              class="bg-light-error text-error rounded f-w-600 p-6 p-y-4 f-s-12"
+            >
+              {{ element.precio_noche | titlecase }}
             </span>
           </td>
         </ng-container>
@@ -63,7 +90,11 @@
         <ng-container matColumnDef="budget">
           <th mat-header-cell *matHeaderCellDef class="f-w-600 f-s-14"></th>
           <td mat-cell *matCellDef="let element">
-            <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="Example icon-button with a menu">
+            <button
+              mat-icon-button
+              [matMenuTriggerFor]="menu"
+              aria-label="Example icon-button with a menu"
+            >
               <mat-icon>more_vert</mat-icon>
             </button>
             <mat-menu #menu="matMenu">
@@ -79,14 +110,7 @@
 
         <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
         <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
-
       </table>
-
-      <button mat-raised-button color="primary" (click)="abrirModal()">
-        <mat-icon>add</mat-icon>
-        <span>Crear Habitación</span>
-      </button>
-
     </div>
   </mat-card-content>
 </mat-card>

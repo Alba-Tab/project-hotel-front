@@ -1,15 +1,16 @@
 import { Injectable, inject, signal } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpParams, HttpHeaders } from '@angular/common/http';
 import { Observable, firstValueFrom } from 'rxjs';
 import { environment } from '../../environments/environment';
+import { TenantDomainService } from './tenant-domain.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ApiService {
   private http = inject(HttpClient);
-  private urlBase = environment.apiUrl; // 'http://localhost:3000/api'
-
+  // private urlBase = environment.apiUrl; // 'http://localhost:3000/api'
+  private urlBase = inject(TenantDomainService).getTenantApiUrl();
 
   /**
    * GET - Listar todos los registros
@@ -23,7 +24,7 @@ export class ApiService {
    * GET - Obtener un registro por ID
    */
   obtener<T>(endpoint: string, id: string | number): Observable<T> {
-    return this.http.get<T>(`${this.urlBase}/${endpoint}/${id}/`);
+    return this.http.get<T>(`${this.urlBase}/${endpoint}/${id}`);
   }
 
   /**
@@ -68,6 +69,22 @@ export class ApiService {
     }
 
     return this.http.post<T>(`${this.urlBase}/${endpoint}/`, formData);
+  }
+
+  /**
+   * POST - Generar reporte
+   */
+  generarReporte(endpoint: string, config: any): Observable<Blob> {
+    return this.http.post(`${this.urlBase}/${endpoint}`, config, {
+      responseType: 'blob',
+    });
+  }
+
+  /**
+   * GET - Obtener detalle del folio por ID
+   */
+  obtenerDetalleFolio(id: number): Observable<any> {
+    return this.http.get<any>(`${this.urlBase}/folioestancias/${id}/detalle-folio/`);
   }
 
   /**

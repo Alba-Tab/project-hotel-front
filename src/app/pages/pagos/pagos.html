@@ -1,0 +1,160 @@
+<!-- Contenedor principal -->
+<div class="container-fluid">
+  <!-- Header -->
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h2 class="f-w-600 mb-1">Gestión de Pagos</h2>
+      <p class="text-muted mb-0">Administra los pagos registrados</p>
+    </div>
+    <button
+      mat-raised-button
+      color="accent"
+      (click)="abrirModalReportes()"
+      class="d-flex align-items-center gap-2"
+    >
+      <mat-icon>assessment</mat-icon>
+      Generar Reporte
+    </button>
+    <button
+      mat-raised-button
+      color="primary"
+      (click)="abrirModalCrear()"
+      class="d-flex align-items-center gap-2"
+    >
+      <mat-icon>add</mat-icon>
+      Agregar Pago
+    </button>
+  </div>
+
+  <!-- Loading -->
+  <div *ngIf="loading" class="text-center p-4">
+    <mat-spinner diameter="50"></mat-spinner>
+    <p class="mt-2 text-muted">Cargando pagos...</p>
+  </div>
+
+  <!-- Tabla -->
+  <mat-card *ngIf="!loading">
+    <mat-card-content class="p-0">
+      <div class="table-responsive">
+        <table mat-table [dataSource]="pagosFiltrados" class="w-100">
+          <!-- ID -->
+          <ng-container matColumnDef="id">
+            <th mat-header-cell *matHeaderCellDef class="f-w-600">ID</th>
+            <td mat-cell *matCellDef="let p">{{ p.id }}</td>
+          </ng-container>
+
+          <!-- Estado -->
+          <ng-container matColumnDef="estado">
+            <th mat-header-cell *matHeaderCellDef class="f-w-600">Estado</th>
+            <td mat-cell *matCellDef="let p">
+              <mat-chip [color]="getEstadoColor(p)">
+                {{ p.estado | titlecase }}
+              </mat-chip>
+            </td>
+          </ng-container>
+
+          <!-- Monto -->
+          <ng-container matColumnDef="monto">
+            <th mat-header-cell *matHeaderCellDef class="f-w-600">Monto</th>
+            <td mat-cell *matCellDef="let p">
+              <div class="d-flex align-items-center">
+                <mat-icon class="me-2 text-success">attach_money</mat-icon>
+                <span class="f-w-600">{{ p.monto | currency:'USD' }}</span>
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Método -->
+          <ng-container matColumnDef="metodo">
+            <th mat-header-cell *matHeaderCellDef class="f-w-600">Método</th>
+            <td mat-cell *matCellDef="let p">
+              <div class="d-flex align-items-center">
+                <mat-icon class="me-2">credit_card</mat-icon>
+                <span>{{ p.metodo | titlecase }}</span>
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Fecha de Pago -->
+          <ng-container matColumnDef="fecha_pago">
+            <th mat-header-cell *matHeaderCellDef class="f-w-600">Fecha Pago</th>
+            <td mat-cell *matCellDef="let p">
+              <div class="d-flex align-items-center">
+                <mat-icon class="me-2">event</mat-icon>
+                <span>{{ convertirFechaUTC(p.fecha_pago) | date:'short' }}</span>
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Referencia -->
+          <ng-container matColumnDef="referencia">
+            <th mat-header-cell *matHeaderCellDef class="f-w-600">Referencia</th>
+            <td mat-cell *matCellDef="let p">
+              <div class="d-flex align-items-center">
+                <mat-icon class="me-2">confirmation_number</mat-icon>
+                <span>{{ p.referencia || '—' }}</span>
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Folio ID -->
+          <ng-container matColumnDef="folio_id">
+            <th mat-header-cell *matHeaderCellDef class="f-w-600">Folio</th>
+            <td mat-cell *matCellDef="let p">
+              <div class="d-flex align-items-center">
+                <mat-icon class="me-2">folder</mat-icon>
+                <span>{{ p.folio_id || '—' }}</span>
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Acciones -->
+          <ng-container matColumnDef="acciones">
+            <th mat-header-cell *matHeaderCellDef class="f-w-600 text-center">
+              Acciones
+            </th>
+            <td mat-cell *matCellDef="let p" class="text-center">
+              <div class="d-flex justify-content-center gap-1">
+                <button
+                  mat-icon-button
+                  color="primary"
+                  matTooltip="Editar pago"
+                  (click)="abrirModalEditar(p)"
+                >
+                  <mat-icon>edit</mat-icon>
+                </button>
+                <button
+                  mat-icon-button
+                  color="warn"
+                  matTooltip="Eliminar pago"
+                  (click)="abrirModalEliminar(p)"
+                >
+                  <mat-icon>delete</mat-icon>
+                </button>
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Definir columnas usando columnasTabla -->
+          <tr mat-header-row *matHeaderRowDef="columnasTabla"></tr>
+          <tr mat-row *matRowDef="let row; columns: columnasTabla;"></tr>
+        </table>
+
+        <!-- Sin datos -->
+        <div *ngIf="pagosFiltrados.length === 0" class="text-center p-5">
+          <mat-icon
+            class="mb-2"
+            style="font-size: 48px; height: 48px; width: 48px"
+            >payment</mat-icon
+          >
+          <h5 class="mb-2">No hay pagos registrados</h5>
+          <p class="mb-3">Comienza agregando tu primer pago</p>
+          <button mat-raised-button color="primary" (click)="abrirModalCrear()">
+            <mat-icon class="me-1">add</mat-icon>
+            Agregar Pago
+          </button>
+        </div>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div>

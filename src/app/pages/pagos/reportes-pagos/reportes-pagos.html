@@ -1,0 +1,146 @@
+<div class="reportes-dialog">
+  <h2 mat-dialog-title class="dialog-title">
+    <mat-icon>receipt</mat-icon>
+    Parámetros de Reporte - Pagos
+  </h2>
+
+  <mat-dialog-content class="dialog-content">
+    <form [formGroup]="parametrosForm" class="parametros-form">
+
+      <!-- Sección Izquierda: Parámetros -->
+      <div class="parametros-section">
+        <h3 class="section-title">Parámetros</h3>
+
+        <!-- Fechas -->
+        <div class="fechas-group">
+          <mat-form-field appearance="outline" class="fecha-field">
+            <mat-label>Fecha Inicio</mat-label>
+            <input matInput [matDatepicker]="pickerInicio" formControlName="fechaInicio" required>
+            <mat-datepicker-toggle matIconSuffix [for]="pickerInicio"></mat-datepicker-toggle>
+            <mat-datepicker #pickerInicio></mat-datepicker>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="fecha-field">
+            <mat-label>Fecha Fin</mat-label>
+            <input matInput [matDatepicker]="pickerFin" formControlName="fechaFin" required>
+            <mat-datepicker-toggle matIconSuffix [for]="pickerFin"></mat-datepicker-toggle>
+            <mat-datepicker #pickerFin></mat-datepicker>
+          </mat-form-field>
+        </div>
+
+        <!-- Estado -->
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Estado</mat-label>
+          <mat-select formControlName="estado">
+            <mat-option *ngFor="let estado of estadosDisponibles" [value]="estado.value">
+              {{estado.label}}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <!-- Método de Pago -->
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Método de Pago</mat-label>
+          <mat-select formControlName="metodo">
+            <mat-option *ngFor="let metodo of metodosDisponibles" [value]="metodo.value">
+              {{metodo.label}}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <!-- Rango de Montos -->
+        <div class="montos-group">
+          <mat-form-field appearance="outline" class="monto-field">
+            <mat-label>Monto Mínimo</mat-label>
+            <input matInput type="number" formControlName="montoMinimo" min="0" step="0.01">
+            <span matTextPrefix>$&nbsp;</span>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="monto-field">
+            <mat-label>Monto Máximo</mat-label>
+            <input matInput type="number" formControlName="montoMaximo" min="0" step="0.01">
+            <span matTextPrefix>$&nbsp;</span>
+          </mat-form-field>
+        </div>
+
+        <!-- Formato -->
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Formato</mat-label>
+          <mat-select formControlName="formato">
+            <mat-option *ngFor="let formato of formatosDisponibles" [value]="formato.value">
+              {{formato.label}}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+                <!-- Envío por Email -->
+        <div class="email-section">
+          <mat-checkbox
+            formControlName="enviarPorEmail"
+            (change)="onEnviarEmailChange()"
+            class="email-checkbox">
+            <strong>Enviar por Email</strong>
+          </mat-checkbox>
+
+          <div *ngIf="parametrosForm.get('enviarPorEmail')?.value" class="email-fields">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Email Destinatario</mat-label>
+              <input matInput type="email" formControlName="emailDestinatario" required>
+              <mat-icon matIconPrefix>email</mat-icon>
+              <mat-error>Ingrese un email válido</mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Asunto</mat-label>
+              <input matInput formControlName="asuntoEmail" required>
+              <mat-icon matIconPrefix>subject</mat-icon>
+              <mat-error>El asunto es requerido</mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Mensaje (opcional)</mat-label>
+              <textarea matInput formControlName="mensajeEmail" rows="3"
+                        placeholder="Mensaje personalizado para el email..."></textarea>
+              <mat-icon matIconPrefix>message</mat-icon>
+            </mat-form-field>
+          </div>
+        </div>
+
+        </div>
+
+
+
+      <!-- Sección Derecha: Columnas -->
+      <div class="columnas-section">
+        <h3 class="section-title">Columnas a Incluir</h3>
+
+        <div class="columnas-list">
+          <mat-checkbox *ngFor="let columna of columnasDisponibles"
+                        [(ngModel)]="columna.selected"
+                        [ngModelOptions]="{standalone: true}"
+                        class="columna-checkbox">
+            {{columna.label}}
+          </mat-checkbox>
+        </div>
+      </div>
+
+    </form>
+  </mat-dialog-content>
+
+  <mat-dialog-actions class="dialog-actions">
+    <button mat-button (click)="cancelar()" [disabled]="generando">
+      Cancelar
+    </button>
+
+    <button mat-raised-button
+            color="primary"
+            (click)="generarReporte()"
+            [disabled]="parametrosForm.invalid || generando">
+
+      <mat-spinner *ngIf="generando" diameter="16" class="spinner-btn"></mat-spinner>
+      <mat-icon *ngIf="!generando">download</mat-icon>
+
+      {{ generando ? 'Generando...' : 'OK' }}
+    </button>
+  </mat-dialog-actions>
+</div>

@@ -1,0 +1,165 @@
+<div mat-dialog-title class="d-flex align-items-center pb-3">
+  <mat-icon class="text-primary me-2">visibility</mat-icon>
+  <span>Detalle del Folio de Estancia</span>
+</div>
+
+<div mat-dialog-content class="pt-4 pb-3">
+  <!-- Loading -->
+  <div *ngIf="cargando" class="text-center py-4">
+    <mat-spinner diameter="40"></mat-spinner>
+    <p class="mt-2">Cargando detalle del folio...</p>
+  </div>
+
+  <!-- Contenido del folio -->
+  <div *ngIf="!cargando && folio" class="folio-details">
+    <!-- Información básica -->
+    <div class="info-section mb-4">
+      <h4 class="mb-3">
+        <mat-icon class="me-2" style="vertical-align: middle">info</mat-icon>
+        Información General
+      </h4>
+
+      <div class="row mb-3">
+        <div class="col-md-6">
+          <div class="info-item">
+            <strong>Folio ID:</strong>
+            <span class="ms-2">#{{ folio.id }}</span>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="info-item">
+            <strong>Estado:</strong>
+            <span
+              class="badge ms-2"
+              [ngClass]="{
+              'bg-warning': folio.estado?.toLowerCase() === 'pendiente',
+              'bg-success': folio.estado?.toLowerCase() === 'pagado',
+              'bg-info': folio.estado?.toLowerCase() === 'parcial',
+              'bg-danger': folio.estado?.toLowerCase() === 'cancelado'
+            }"
+              >{{ folio.estado }}</span
+            >
+          </div>
+        </div>
+      </div>
+
+      <div class="row mb-3">
+        <div class="col-md-6">
+          <div class="info-item">
+            <strong>Huésped:</strong>
+            <span class="ms-2">{{ folio.huesped_nombre }}</span>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="info-item">
+            <strong>Hotel:</strong>
+            <span class="ms-2">{{ folio.hotel_nombre }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="row mb-3">
+        <div class="col-md-6">
+          <div class="info-item">
+            <strong>Fecha Entrada:</strong>
+            <span class="ms-2"
+              >{{ folio.fecha_entrada | date:'dd/MM/yyyy' }}</span
+            >
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="info-item">
+            <strong>Fecha Salida:</strong>
+            <span class="ms-2"
+              >{{ folio.fecha_salida | date:'dd/MM/yyyy' }}</span
+            >
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tabla de conceptos -->
+    <div class="conceptos-section">
+      <h4 class="mb-3">
+        <mat-icon class="me-2" style="vertical-align: middle"
+          >receipt_long</mat-icon
+        >
+        Desglose de Conceptos
+      </h4>
+
+      <div class="table-responsive">
+        <table mat-table [dataSource]="folio.conceptos" class="w-100">
+          <!-- Columna Concepto -->
+          <ng-container matColumnDef="concepto">
+            <th mat-header-cell *matHeaderCellDef>Concepto</th>
+            <td mat-cell *matCellDef="let item">{{ item.concepto }}</td>
+            <td mat-footer-cell *matFooterCellDef>
+              <strong>TOTAL GENERAL</strong>
+            </td>
+          </ng-container>
+
+          <!-- Columna Descripción -->
+          <ng-container matColumnDef="descripcion">
+            <th mat-header-cell *matHeaderCellDef>Descripción</th>
+            <td mat-cell *matCellDef="let item">{{ item.descripcion }}</td>
+            <td mat-footer-cell *matFooterCellDef></td>
+          </ng-container>
+
+          <!-- Columna Cantidad -->
+          <ng-container matColumnDef="cantidad">
+            <th mat-header-cell *matHeaderCellDef class="text-center">
+              Cantidad
+            </th>
+            <td mat-cell *matCellDef="let item" class="text-center">
+              {{ item.cantidad }}
+            </td>
+            <td mat-footer-cell *matFooterCellDef></td>
+          </ng-container>
+
+          <!-- Columna Precio Unitario -->
+          <ng-container matColumnDef="precio_unitario">
+            <th mat-header-cell *matHeaderCellDef class="text-end">
+              Precio Unitario
+            </th>
+            <td mat-cell *matCellDef="let item" class="text-end">
+              ${{ item.precio_unitario }}
+            </td>
+            <td mat-footer-cell *matFooterCellDef></td>
+          </ng-container>
+
+          <!-- Columna Subtotal -->
+          <ng-container matColumnDef="subtotal">
+            <th mat-header-cell *matHeaderCellDef class="text-end">Subtotal</th>
+            <td mat-cell *matCellDef="let item" class="text-end">
+              <strong>${{ item.subtotal }}</strong>
+            </td>
+            <td mat-footer-cell *matFooterCellDef class="text-end">
+              <strong class="total-amount">${{ folio.total_general }}</strong>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+          <tr mat-footer-row *matFooterRowDef="displayedColumns"></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Error -->
+  <div *ngIf="!cargando && !folio" class="text-center py-4">
+    <mat-icon
+      style="font-size: 48px; width: 48px; height: 48px"
+      class="text-muted"
+      >error_outline</mat-icon
+    >
+    <p class="mt-2 text-muted">No se pudo cargar el detalle del folio</p>
+  </div>
+</div>
+
+<div mat-dialog-actions class="d-flex justify-content-end gap-2">
+  <button mat-button (click)="cancelar()" type="button">
+    <mat-icon class="me-1">close</mat-icon>
+    Cerrar
+  </button>
+</div>

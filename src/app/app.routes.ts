@@ -12,7 +12,7 @@ export const routes: Routes = [
     component: BlankComponent,
     children: [
       {
-        path: '',
+        path: 'principal',
         component: MainPageComponent, // ✅ Página principal como inicio
         pathMatch: 'full',
       },
@@ -30,13 +30,13 @@ export const routes: Routes = [
     ],
   },
   {
-    path: 'dashboard',
+    path: '',
     component: FullComponent,
-    canActivate: [authGuard], // ← Agregar esto
+    // canActivate: [authGuard], // ← Agregar esto
     children: [
       {
         path: '',
-        redirectTo: '/dashboard',
+        redirectTo: 'dashboard', // ✅ Sin barra inicial - redirección relativa
         pathMatch: 'full',
       },
       {
@@ -52,6 +52,11 @@ export const routes: Routes = [
           ),
       },
       {
+        path: 'usuarios',
+        loadComponent: () =>
+          import('./pages/usuarios/usuarios').then((m) => m.Usuarios),
+      },
+      {
         path: 'hoteles',
         loadComponent: () =>
           import('./pages/hoteles/hoteles.component').then(
@@ -64,31 +69,56 @@ export const routes: Routes = [
           import('./pages/habitaciones/habitaciones.component').then(
             (m) => m.HabitacionesComponent
           ),
-        // data: {
-        //   title: 'Habitaciones',
-        //   urls: [
-        //     { title: 'Dashboard', url: '/dashboard' },
-        //     { title: 'Habitaciones' },
-        //   ],
-        // },
       },
-      // {
-      //   path: '',
-      //   component: BlankComponent,
-      //   children: [
-      //     {
-      //       path: 'hoteles',
-      //       loadChildren: () =>
-      //         import('./pages/hoteles/hoteles.routes').then(
-      //           (m) => m.HotelesRoutes
-      //         ),
-      //     },
-      //   ],
-      // },
+      {
+        path: 'reservas',
+        loadComponent: () =>
+          import('./pages/reservas/reservas').then((m) => m.Reservas),
+      },
+      {
+        path: 'pagos',
+        loadComponent: () =>
+          import('./pages/pagos/pagos.component').then((m) => m.PagosComponent),
+      },
+      {
+        path: 'fidelizacion',
+        loadComponent: () =>
+          import('./pages/fidelizacion/fidelizacion.component').then(
+            (m) => m.FidelizacionComponent
+          ),
+      },
+      {
+        path: 'roles-permisos',
+        loadComponent: () =>
+          import('./pages/roles-permisos/roles-permisos').then(
+            (m) => m.RolesPermisos
+          ),
+      },
       {
         path: 'extra',
         loadChildren: () =>
           import('./pages/extra/extra.routes').then((m) => m.ExtraRoutes),
+      },
+      {
+        path: 'servicios',
+        loadComponent: () =>
+          import('./pages/servicios/servicios.component').then(
+            (m) => m.ServiciosComponent
+          ),
+      },
+      {
+        path: 'servicios-asociados',
+        loadComponent: () =>
+          import(
+            './pages/servicios-asociados/servicios-asociados.component'
+          ).then((m) => m.ServiciosAsociadosComponent),
+      },
+      {
+        path: 'folio-estancia',
+        loadComponent: () =>
+          import('./pages/folio-estancia/folio-estancia').then(
+            (m) => m.FolioEstanciaComponent
+          ),
       },
     ],
   },
@@ -97,13 +127,4 @@ export const routes: Routes = [
     path: '**',
     redirectTo: 'authentication/error',
   },
-
-
-
-  {
-  path: 'servicios',
-  loadComponent: () =>
-    import('./pages/servicios/servicios.component').then((m) => m.ServiciosComponent),
-},
-
 ];

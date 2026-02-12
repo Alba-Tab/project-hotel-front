@@ -1,0 +1,153 @@
+<div class="reportes-dialog">
+  <h2 mat-dialog-title class="dialog-title">
+    <mat-icon>assessment</mat-icon>
+    Reporte de Habitaciones
+  </h2>
+
+  <mat-dialog-content class="dialog-content">
+    <form [formGroup]="parametrosForm" class="parametros-form">
+
+      <!-- Sección Izquierda: Parámetros -->
+      <div class="parametros-section">
+        <h3 class="section-title">Filtros</h3>
+
+        <!-- Hotel -->
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Hotel</mat-label>
+          <mat-select formControlName="hotel">
+            <mat-option *ngFor="let hotel of hotelesDisponibles" [value]="hotel.value">
+              {{hotel.label}}
+            </mat-option>
+          </mat-select>
+          <mat-icon matIconPrefix>hotel</mat-icon>
+        </mat-form-field>
+
+        <!-- Estado -->
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Estado</mat-label>
+          <mat-select formControlName="estado">
+            <mat-option *ngFor="let estado of estadosDisponibles" [value]="estado.value">
+              {{estado.label}}
+            </mat-option>
+          </mat-select>
+          <mat-icon matIconPrefix>info</mat-icon>
+        </mat-form-field>
+
+        <!-- Número -->
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Número de Habitación</mat-label>
+          <input matInput formControlName="numero" placeholder="Ej: 101, 202">
+          <mat-icon matIconPrefix>meeting_room</mat-icon>
+        </mat-form-field>
+
+        <!-- Tipo -->
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Tipo</mat-label>
+          <input matInput formControlName="tipo" placeholder="Ej: Individual, Doble, Suite">
+          <mat-icon matIconPrefix>bed</mat-icon>
+        </mat-form-field>
+
+        <!-- Fechas de Ocupación -->
+        <div class="fechas-ocupacion-section">
+          <h4 class="subsection-title">Período de Ocupación (Opcional)</h4>
+          <p class="help-text">
+            <mat-icon class="help-icon">info_outline</mat-icon>
+            Si no se especifican fechas, el % ocupación se calculará para los últimos 30 días
+          </p>
+          
+          <div class="fechas-group">
+            <mat-form-field appearance="outline" class="fecha-field">
+              <mat-label>Fecha Inicio</mat-label>
+              <input matInput [matDatepicker]="pickerInicio" formControlName="fechaInicioOcupacion">
+              <mat-datepicker-toggle matIconSuffix [for]="pickerInicio"></mat-datepicker-toggle>
+              <mat-datepicker #pickerInicio></mat-datepicker>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="fecha-field">
+              <mat-label>Fecha Fin</mat-label>
+              <input matInput [matDatepicker]="pickerFin" formControlName="fechaFinOcupacion">
+              <mat-datepicker-toggle matIconSuffix [for]="pickerFin"></mat-datepicker-toggle>
+              <mat-datepicker #pickerFin></mat-datepicker>
+            </mat-form-field>
+          </div>
+        </div>
+
+        <!-- Formato -->
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Formato</mat-label>
+          <mat-select formControlName="formato">
+            <mat-option *ngFor="let formato of formatosDisponibles" [value]="formato.value">
+              {{formato.label}}
+            </mat-option>
+          </mat-select>
+          <mat-icon matIconPrefix>description</mat-icon>
+        </mat-form-field>
+
+        <!-- Envío por Email -->
+        <div class="email-section">
+          <mat-checkbox
+            formControlName="enviarPorEmail"
+            (change)="onEnviarEmailChange()"
+            class="email-checkbox">
+            <strong>Enviar por Email</strong>
+          </mat-checkbox>
+
+          <div *ngIf="parametrosForm.get('enviarPorEmail')?.value" class="email-fields">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Email Destinatario</mat-label>
+              <input matInput type="email" formControlName="emailDestinatario" required>
+              <mat-icon matIconPrefix>email</mat-icon>
+              <mat-error>Ingrese un email válido</mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Asunto</mat-label>
+              <input matInput formControlName="asuntoEmail" required>
+              <mat-icon matIconPrefix>subject</mat-icon>
+              <mat-error>El asunto es requerido</mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Mensaje (opcional)</mat-label>
+              <textarea matInput formControlName="mensajeEmail" rows="3"
+                        placeholder="Mensaje personalizado para el email..."></textarea>
+              <mat-icon matIconPrefix>message</mat-icon>
+            </mat-form-field>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sección Derecha: Columnas -->
+      <div class="columnas-section">
+        <h3 class="section-title">Columnas a Incluir</h3>
+
+        <div class="columnas-list">
+          <mat-checkbox *ngFor="let columna of columnasDisponibles"
+                        [(ngModel)]="columna.selected"
+                        [ngModelOptions]="{standalone: true}"
+                        class="columna-checkbox">
+            {{columna.label}}
+          </mat-checkbox>
+        </div>
+      </div>
+
+    </form>
+  </mat-dialog-content>
+
+  <mat-dialog-actions class="dialog-actions">
+    <button mat-button (click)="cancelar()" [disabled]="generando">
+      Cancelar
+    </button>
+
+    <button mat-raised-button
+            color="primary"
+            (click)="generarReporte()"
+            [disabled]="parametrosForm.invalid || generando">
+
+      <mat-spinner *ngIf="generando" diameter="16" class="spinner-btn"></mat-spinner>
+      <mat-icon *ngIf="!generando">download</mat-icon>
+
+      {{ generando ? 'Generando...' : 'Generar Reporte' }}
+    </button>
+  </mat-dialog-actions>
+</div>

@@ -1,0 +1,59 @@
+.status-chip {
+  font-size: 12px;
+  min-height: 24px;
+  padding: 4px 8px;
+}
+
+.action-btn {
+  width: 32px;
+  height: 32px;
+  line-height: 32px;
+
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+    line-height: 18px;
+  }
+}
+
+.check-info {
+  margin-top: 4px;
+
+  small {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 11px;
+  }
+
+  .small-icon {
+    font-size: 14px;
+    width: 14px;
+    height: 14px;
+    line-height: 14px;
+  }
+}
+
+// Estilos para mejorar la tabla
+.table-responsive {
+  overflow-x: auto;
+}
+
+mat-cell,
+mat-header-cell {
+  padding: 8px 16px;
+}
+
+mat-row {
+  &:hover {
+    background-color: rgba(0, 0, 0, 0.02);
+  }
+}
+
+// Estilo para chips de estado
+mat-chip {
+  &.mat-mdc-chip {
+    font-weight: 500;
+  }
+}

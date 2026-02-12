@@ -13,7 +13,7 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
   console.log('🔑 Token encontrado:', token ? 'SÍ' : 'NO');
 
   // Endpoints que NO deben tener token de autorización
-  const publicEndpoints = ['/usuarios/login/', '/usuarios/logout/'];
+  const publicEndpoints = ['/usuarios/login/', '/usuarios/logout/' , '/public/tenants-forms/'];
   const isPublicEndpoint = publicEndpoints.some(endpoint => req.url.includes(endpoint));
 
   // 🔒 Agregar token si es necesario

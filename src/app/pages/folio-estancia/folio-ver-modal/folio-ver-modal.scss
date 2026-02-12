@@ -1,0 +1,111 @@
+// Información general
+.info-section {
+  background: #f8f9fa;
+  padding: 1.5rem;
+  border-radius: 8px;
+  border-left: 4px solid #5d87ff;
+}
+
+.info-item {
+  padding: 0.5rem 0;
+
+  strong {
+    color: #2a3547;
+    font-weight: 600;
+  }
+
+  span {
+    color: #5a6a85;
+  }
+}
+
+// Badges
+.badge {
+  padding: 0.35rem 0.75rem;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: white;
+  display: inline-block;
+
+  &.bg-warning {
+    background-color: #fb9678 !important;
+  }
+
+  &.bg-success {
+    background-color: #00c292 !important;
+  }
+
+  &.bg-info {
+    background-color: #03a9f4 !important;
+  }
+
+  &.bg-danger {
+    background-color: #e46a76 !important;
+  }
+}
+
+// Tabla de conceptos
+.conceptos-section {
+  margin-top: 1.5rem;
+
+  h4 {
+    color: #2a3547;
+    font-weight: 600;
+  }
+}
+
+.table-responsive {
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  background: white;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+
+  th {
+    background-color: #5d87ff !important;
+    color: white !important;
+    font-weight: 600;
+    padding: 1rem;
+  }
+
+  td {
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid #e9ecef;
+  }
+
+  tr:hover {
+    background-color: #f8f9fa;
+  }
+
+  mat-footer-row {
+    background-color: #f1f5f9;
+    font-weight: 700;
+
+    td {
+      border-top: 2px solid #5d87ff;
+      padding: 1rem;
+    }
+  }
+}
+
+.total-amount {
+  font-size: 1.2rem;
+  color: #5d87ff;
+}
+
+// Responsive
+@media (max-width: 768px) {
+  .info-section {
+    padding: 1rem;
+  }
+
+  .table-responsive {
+    overflow-x: auto;
+  }
+}
